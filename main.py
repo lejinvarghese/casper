@@ -3,9 +3,10 @@ from datetime import datetime
 from dotenv import load_dotenv
 import comet_ml
 
-from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.metrics import SparseTopKCategoricalAccuracy
-from transformers import GPT2Tokenizer
+
+# from transformers import GPT2Tokenizer
 
 load_dotenv()
 run_time = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -32,9 +33,8 @@ experiment = comet_ml.Experiment(
 
 
 def tokenize_function(examples):
-    from transformers import GPT2Tokenizer
-
-    tokenizer = GPT2Tokenizer.from_pretrained(params["model"])
+    tokenizer_checkpoint = params["model"]
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_checkpoint)
     return tokenizer(examples["text"])
 
 
@@ -63,7 +63,6 @@ import math
 def train():
     experiment.log_parameters(params)
     model_checkpoint = params["model"]
-    tokenizer_checkpoint = params["model"]
 
     dataset = load_dataset("Whispering-GPT/lex-fridman-podcast")
 
@@ -87,8 +86,8 @@ def train():
     print(filtered_dataset["train"]["title"][:3])
 
     ## tokenize
-    tokenizer = GPT2Tokenizer.from_pretrained(params["model"])
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_checkpoint)
+    # tokenizer = GPT2Tokenizer.from_pretrained(params["model"])
+
     tokenized_datasets = filtered_dataset.map(
         tokenize_function,
         batched=True,
@@ -127,7 +126,15 @@ def train():
         save_best_only=False,
         save_freq="epoch",
     )
-    model.compile(optimizer=optimizer)
+    early_stopping_callback = EarlyStopping(patience=2)
+    model.compile(
+        optimizer=optimizer,
+        loss="sparse_categorical_crossentropy",
+        metrics=[
+            SparseTopKCategoricalAccuracy(k=1, name="top_1_accuracy"),
+            SparseTopKCategoricalAccuracy(k=5, name="top_5_accuracy"),
+        ],
+    )
 
     data_collator = DefaultDataCollator(return_tensors="tf")
 
@@ -141,12 +148,7 @@ def train():
     model.fit(
         train_set,
         epochs=params["epochs"],
-        callbacks=[checkpoint_callback],
-        loss="sparse_categorical_crossentropy",
-        metrics=[
-            SparseTopKCategoricalAccuracy(k=1),
-            SparseTopKCategoricalAccuracy(k=5),
-        ],
+        callbacks=[checkpoint_callback, early_stopping_callback],
     )
     experiment.get_callback("keras")
     train_loss = model.evaluate(train_set)
@@ -156,6 +158,7 @@ def train():
     experiment.log_model(
         name=f"saved_model_{run_time}", file_or_folder="trained_model/"
     )
+    experiment.end()
 
 
 if __name__ == "__main__":
