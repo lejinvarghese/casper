@@ -1,4 +1,4 @@
-# Prometheus
+# Casper
 
 ## Run
 
@@ -6,5 +6,5 @@
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python -m ipykernel install --user --name=promotheus
+python -m ipykernel install --user --name=casper
 ```
