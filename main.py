@@ -1,16 +1,20 @@
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 import comet_ml
+
+from tensorflow.keras.callbacks import ModelCheckpoint
+from tensorflow.keras.metrics import SparseTopKCategoricalAccuracy
 from transformers import GPT2Tokenizer
 
-
 load_dotenv()
+run_time = datetime.now().strftime("%Y%m%d%H%M%S")
 
 COMET_API_KEY = os.getenv("COMET_API_KEY")
 params = {
     "model": "distilgpt2",
-    "epochs": 50,
-    "batch_size": 32,
+    "epochs": 2,
+    "batch_size": 1024,
     "learning_rate": 2e-5,
     "weight_decay": 0.01,
 }
@@ -84,7 +88,7 @@ def train():
 
     ## tokenize
     tokenizer = GPT2Tokenizer.from_pretrained(params["model"])
-    # tokenizer = AutoTokenizer.from_pretrained(tokenizer_checkpoint)
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_checkpoint)
     tokenized_datasets = filtered_dataset.map(
         tokenize_function,
         batched=True,
@@ -117,6 +121,12 @@ def train():
     optimizer = AdamWeightDecay(
         learning_rate=learning_rate, weight_decay_rate=weight_decay
     )
+    checkpoint_callback = ModelCheckpoint(
+        filepath="trained_model/checkpoints",  # customize checkpoint file name
+        save_weights_only=False,
+        save_best_only=False,
+        save_freq="epoch",
+    )
     model.compile(optimizer=optimizer)
 
     data_collator = DefaultDataCollator(return_tensors="tf")
@@ -128,11 +138,24 @@ def train():
         collate_fn=data_collator,
     )
 
-    model.fit(train_set, epochs=params["epochs"])
+    model.fit(
+        train_set,
+        epochs=params["epochs"],
+        callbacks=[checkpoint_callback],
+        loss="sparse_categorical_crossentropy",
+        metrics=[
+            SparseTopKCategoricalAccuracy(k=1),
+            SparseTopKCategoricalAccuracy(k=5),
+        ],
+    )
+    experiment.get_callback("keras")
     train_loss = model.evaluate(train_set)
     experiment.log_metrics({"train_loss": train_loss})
     print(f"Perplexity: {math.exp(train_loss):.2f}")
     model.save("trained_model")
+    experiment.log_model(
+        name=f"saved_model_{run_time}", file_or_folder="trained_model/"
+    )
 
 
 if __name__ == "__main__":
