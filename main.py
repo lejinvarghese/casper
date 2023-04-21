@@ -6,11 +6,11 @@ import comet_ml
 import pandas as pd
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.metrics import SparseTopKCategoricalAccuracy
+from tensorflow.keras.optimizers.schedules import ExponentialDecay
 
-from transformers import GPT2Tokenizer
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
-from transformers import AutoConfig, TFAutoModelForCausalLM
+from transformers import TFAutoModelForCausalLM
 from transformers import AdamWeightDecay
 from transformers import DefaultDataCollator
 import math
@@ -60,6 +60,9 @@ params = {
     "weight_decay": 0.01,
 }
 
+tokenizer = AutoTokenizer.from_pretrained(params["model"])
+tokenizer.pad_token = tokenizer.eos_token
+
 
 def extract_segments(dataset):
     df = pd.DataFrame(dataset).dropna()[["id", "segments"]]
@@ -69,23 +72,14 @@ def extract_segments(dataset):
 
 
 def tokenize_function(examples):
-    tokenizer_checkpoint = params["model"]
-    tokenizer = AutoTokenizer.from_pretrained(tokenizer_checkpoint)
-    return tokenizer(examples["text"])
+    return tokenizer(
+        examples["text"], padding="max_length", truncation=True, max_length=300
+    )
 
 
-def group_texts(examples):
-    concatenated_examples = {k: sum(examples[k], []) for k in examples.keys()}
-    total_length = len(concatenated_examples[list(examples.keys())[0]])
-    block_size = params["block_size"]
-    total_length = (total_length // block_size) * block_size
-
-    result = {
-        k: [t[i : i + block_size] for i in range(0, total_length, block_size)]
-        for k, t in concatenated_examples.items()
-    }
-    result["labels"] = result["input_ids"].copy()
-    return result
+def create_labels(examples):
+    examples["labels"] = examples["input_ids"].copy()
+    return examples
 
 
 def train():
@@ -116,9 +110,12 @@ def train():
     filtered_dataset = extract_segments(filtered_dataset)
 
     ## tokenize
-    tokenizer = GPT2Tokenizer.from_pretrained(params["model"])
 
-    tokenized_datasets = filtered_dataset.map(
+    data = filtered_dataset.train_test_split(shuffle=True, seed=42, test_size=0.2)
+    data_train = data["train"]
+    data_val = data["test"]
+
+    data_train_tk = data_train.map(
         tokenize_function,
         batched=True,
         num_proc=8,
@@ -127,21 +124,52 @@ def train():
             "text",
         ],
     )
-    lm_datasets = tokenized_datasets.map(
-        group_texts,
+    data_val_tk = data_val.map(
+        tokenize_function,
         batched=True,
-        batch_size=1000,
         num_proc=8,
+        remove_columns=[
+            "id",
+            "text",
+        ],
+    )
+    data_train_lm = data_train_tk.map(
+        create_labels,
+        batched=True,
+        num_proc=8,
+    )
+    data_val_lm = data_val_tk.map(
+        create_labels,
+        batched=True,
+        num_proc=8,
+    )
+    data_collator = DefaultDataCollator(return_tensors="tf")
+    train_set = data_train_lm.to_tf_dataset(
+        columns=["attention_mask", "input_ids", "labels"],
+        shuffle=True,
+        batch_size=params["batch_size"],
+        collate_fn=data_collator,
+    )
+    val_set = data_val_lm.to_tf_dataset(
+        columns=["attention_mask", "input_ids", "labels"],
+        shuffle=True,
+        batch_size=params["batch_size"],
+        collate_fn=data_collator,
     )
 
     ## compile model
-    config = AutoConfig.from_pretrained(model_checkpoint)
-    model = TFAutoModelForCausalLM.from_config(config)
-    learning_rate = params["learning_rate"]
-    weight_decay = params["weight_decay"]
+    model = TFAutoModelForCausalLM.from_pretrained(
+        model_checkpoint, pad_token_id=tokenizer.eos_token_id
+    )
+    lr_schedule = ExponentialDecay(
+        initial_learning_rate=params["learning_rate"],
+        decay_steps=500,
+        decay_rate=0.95,
+        staircase=False,
+    )
 
     optimizer = AdamWeightDecay(
-        learning_rate=learning_rate, weight_decay_rate=weight_decay
+        learning_rate=lr_schedule, weight_decay_rate=params["weight_decay"]
     )
     # set up checkpointing
     checkpoint_dir = "./checkpoints"
@@ -162,19 +190,11 @@ def train():
         ],
     )
 
-    data_collator = DefaultDataCollator(return_tensors="tf")
-
-    train_set = lm_datasets.to_tf_dataset(
-        columns=["attention_mask", "input_ids", "labels"],
-        shuffle=True,
-        batch_size=params["batch_size"],
-        collate_fn=data_collator,
-    )
-
     ##train model
 
     model.fit(
         train_set,
+        validation_data=val_set,
         epochs=params["epochs"],
         callbacks=[
             checkpoint_callback,
