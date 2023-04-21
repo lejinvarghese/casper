@@ -3,11 +3,12 @@ from datetime import datetime
 from dotenv import load_dotenv
 import comet_ml
 
+import pandas as pd
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.metrics import SparseTopKCategoricalAccuracy
 
 from transformers import GPT2Tokenizer
-from datasets import load_dataset
+from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
 from transformers import AutoConfig, TFAutoModelForCausalLM
 from transformers import AdamWeightDecay
@@ -51,12 +52,20 @@ experiment = comet_ml.Experiment(
 )
 
 params = {
-    "model": "distilgpt2",
+    "model": "gpt2",
     "epochs": 2,
-    "batch_size": 64,
-    "learning_rate": 2e-5,
+    "batch_size": 16,
+    "block_size": 64,
+    "learning_rate": 1e-5,
     "weight_decay": 0.01,
 }
+
+
+def extract_segments(dataset):
+    df = pd.DataFrame(dataset).dropna()[["id", "segments"]]
+    df = pd.DataFrame(df.set_index("id").segments.explode()).reset_index()
+    df["text"] = df["segments"].apply(lambda x: x.get("text"))
+    return Dataset.from_pandas(df[["id", "text"]])
 
 
 def tokenize_function(examples):
@@ -68,7 +77,7 @@ def tokenize_function(examples):
 def group_texts(examples):
     concatenated_examples = {k: sum(examples[k], []) for k in examples.keys()}
     total_length = len(concatenated_examples[list(examples.keys())[0]])
-    block_size = 128
+    block_size = params["block_size"]
     total_length = (total_length // block_size) * block_size
 
     result = {
@@ -83,13 +92,13 @@ def train():
     experiment.log_parameters(params)
     model_checkpoint = params["model"]
 
-    dataset = load_dataset("Whispering-GPT/lex-fridman-podcast")
+    dataset = load_dataset("Whispering-GPT/lex-fridman-podcast", split="train")
 
     target_topics = [
         "agi",
         "ai",
-        # "intelligence",
-        # "learning",
+        "intelligence",
+        "learning",
         # "consciousness",
         # "robotics",
         # "psychology",
@@ -100,9 +109,11 @@ def train():
     filtered_dataset = dataset.filter(
         lambda x: any(s in x["tags"] for s in target_topics)
     )
-    print(dataset["train"])
-    print(filtered_dataset["train"])
-    print(filtered_dataset["train"]["title"][:3])
+    print(dataset)
+    print(filtered_dataset)
+    print(filtered_dataset["title"][:3])
+
+    filtered_dataset = extract_segments(filtered_dataset)
 
     ## tokenize
     tokenizer = GPT2Tokenizer.from_pretrained(params["model"])
@@ -110,24 +121,17 @@ def train():
     tokenized_datasets = filtered_dataset.map(
         tokenize_function,
         batched=True,
-        num_proc=4,
+        num_proc=8,
         remove_columns=[
             "id",
-            "channel",
-            "channel_id",
-            "title",
-            "categories",
-            "tags",
-            "description",
             "text",
-            "segments",
         ],
     )
     lm_datasets = tokenized_datasets.map(
         group_texts,
         batched=True,
         batch_size=1000,
-        num_proc=4,
+        num_proc=8,
     )
 
     ## compile model
@@ -152,7 +156,6 @@ def train():
     early_stopping_callback = EarlyStopping(patience=2)
     model.compile(
         optimizer=optimizer,
-        loss="sparse_categorical_crossentropy",
         metrics=[
             SparseTopKCategoricalAccuracy(k=1, name="top_1_accuracy"),
             SparseTopKCategoricalAccuracy(k=5, name="top_5_accuracy"),
@@ -161,7 +164,7 @@ def train():
 
     data_collator = DefaultDataCollator(return_tensors="tf")
 
-    train_set = lm_datasets["train"].to_tf_dataset(
+    train_set = lm_datasets.to_tf_dataset(
         columns=["attention_mask", "input_ids", "labels"],
         shuffle=True,
         batch_size=params["batch_size"],
@@ -180,15 +183,12 @@ def train():
         ],
     )
 
-    ##evaluate model
-    train_loss = model.evaluate(train_set)
-    experiment.log_metrics({"train_loss": train_loss})
-    print(f"Perplexity: {math.exp(train_loss):.2f}")
     model.save("trained_model/final_model")
     experiment.log_model(
         name=f"final_model_{run_time}", file_or_folder="trained_model/final_model"
     )
     experiment.end()
+    return model
 
 
 if __name__ == "__main__":
