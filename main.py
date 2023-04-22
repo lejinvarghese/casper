@@ -7,6 +7,7 @@ import pandas as pd
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.metrics import SparseTopKCategoricalAccuracy
 from tensorflow.keras.optimizers.schedules import ExponentialDecay
+import tensorflow as tf
 
 from datasets import load_dataset, Dataset
 from transformers import AutoTokenizer
@@ -53,10 +54,10 @@ experiment = comet_ml.Experiment(
 
 params = {
     "model": "gpt2",
-    "epochs": 2,
-    "batch_size": 16,
+    "epochs": 5,
+    "batch_size": 256,
     "block_size": 64,
-    "learning_rate": 1e-5,
+    "learning_rate": 1e-3,
     "weight_decay": 0.01,
 }
 
@@ -73,7 +74,7 @@ def extract_segments(dataset):
 
 def tokenize_function(examples):
     return tokenizer(
-        examples["text"], padding="max_length", truncation=True, max_length=300
+        examples["text"], padding="max_length", truncation=True, max_length=256
     )
 
 
@@ -92,8 +93,8 @@ def train():
         "agi",
         "ai",
         "intelligence",
-        "learning",
-        # "consciousness",
+        "consciousness",
+        # "learning",
         # "robotics",
         # "psychology",
         # "evolution",
@@ -182,6 +183,7 @@ def train():
     )
 
     early_stopping_callback = EarlyStopping(patience=2)
+    tf.keras.mixed_precision.set_global_policy("mixed_float16")
     model.compile(
         optimizer=optimizer,
         metrics=[
