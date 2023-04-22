@@ -55,9 +55,9 @@ experiment = comet_ml.Experiment(
 )
 
 params = {
-    "model": "gpt2",
-    "epochs": 2,
-    "batch_size": 64,
+    "model": "distilgpt2",
+    "epochs": 5,
+    "batch_size": 16,
     "learning_rate": 1e-4,
     "weight_decay": 0.01,
 }
@@ -92,10 +92,10 @@ def train():
 
     target_topics = [
         "agi",
-        "ai",
-        "intelligence",
-        "consciousness",
+        # "ai",
         # "learning",
+        # "intelligence",
+        # "consciousness",
         # "robotics",
         # "psychology",
         # "evolution",
@@ -104,14 +104,14 @@ def train():
     ]
     filtered_dataset = dataset.filter(
         lambda x: any(s in x["tags"] for s in target_topics)
-    )
-    print(dataset)
-    print(filtered_dataset)
+    ).train_test_split(shuffle=True, seed=42, train_size=50)["train"]
+    print(len(dataset))
+    print(len(filtered_dataset))
     print(filtered_dataset["title"][:3])
 
     filtered_dataset = extract_segments(filtered_dataset)
 
-    ## tokenize
+    # tokenize
 
     data = filtered_dataset.train_test_split(shuffle=True, seed=42, test_size=0.2)
     data_train = data["train"]
@@ -192,7 +192,10 @@ def train():
         save_freq="epoch",
     )
 
-    early_stopping_callback = EarlyStopping(patience=2)
+    early_stopping_callback = EarlyStopping(
+        patience=0,
+        monitor="val_loss",
+    )
     model.fit(
         train_set,
         validation_data=val_set,
