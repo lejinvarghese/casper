@@ -3,21 +3,23 @@ from datetime import datetime
 from dotenv import load_dotenv
 import comet_ml
 
-import pandas as pd
+from pandas import DataFrame
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tensorflow.keras.metrics import SparseTopKCategoricalAccuracy
 from tensorflow.keras.optimizers.schedules import ExponentialDecay
-import tensorflow as tf
+from tensorflow.keras import mixed_precision
 
 from datasets import load_dataset, Dataset
-from transformers import AutoTokenizer
-from transformers import TFAutoModelForCausalLM
-from transformers import AdamWeightDecay
-from transformers import DefaultDataCollator
-import math
+from transformers import (
+    AutoTokenizer,
+    DefaultDataCollator,
+    TFAutoModelForCausalLM,
+    AdamWeightDecay,
+)
 
 load_dotenv()
 run_time = datetime.now().strftime("%Y%m%d%H%M%S")
+mixed_precision.set_global_policy("mixed_float16")
 project_id = "projects-264723"
 secret_id = "COMET_API_KEY"
 
@@ -55,9 +57,9 @@ experiment = comet_ml.Experiment(
 params = {
     "model": "gpt2",
     "epochs": 5,
-    "batch_size": 128,
+    "batch_size": 64,
     "block_size": 64,
-    "learning_rate": 1e-3,
+    "learning_rate": 1e-2,
     "weight_decay": 0.01,
 }
 
@@ -66,8 +68,8 @@ tokenizer.pad_token = tokenizer.eos_token
 
 
 def extract_segments(dataset):
-    df = pd.DataFrame(dataset).dropna()[["id", "segments"]]
-    df = pd.DataFrame(df.set_index("id").segments.explode()).reset_index()
+    df = DataFrame(dataset).dropna()[["id", "segments"]]
+    df = DataFrame(df.set_index("id").segments.explode()).reset_index()
     df["text"] = df["segments"].apply(lambda x: x.get("text"))
     return Dataset.from_pandas(df[["id", "text"]])
 
@@ -119,7 +121,7 @@ def train():
     data_train_tk = data_train.map(
         tokenize_function,
         batched=True,
-        num_proc=8,
+        num_proc=16,
         remove_columns=[
             "id",
             "text",
@@ -137,7 +139,7 @@ def train():
     data_train_lm = data_train_tk.map(
         create_labels,
         batched=True,
-        num_proc=8,
+        num_proc=16,
     )
     data_val_lm = data_val_tk.map(
         create_labels,
@@ -172,7 +174,16 @@ def train():
     optimizer = AdamWeightDecay(
         learning_rate=lr_schedule, weight_decay_rate=params["weight_decay"]
     )
-    # set up checkpointing
+
+    model.compile(
+        optimizer=optimizer,
+        metrics=[
+            SparseTopKCategoricalAccuracy(k=1, name="top_1_accuracy"),
+            SparseTopKCategoricalAccuracy(k=5, name="top_5_accuracy"),
+        ],
+    )
+
+    ##train model
     checkpoint_dir = "./checkpoints"
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")
     checkpoint_callback = ModelCheckpoint(
@@ -183,17 +194,6 @@ def train():
     )
 
     early_stopping_callback = EarlyStopping(patience=2)
-    tf.keras.mixed_precision.set_global_policy("mixed_float16")
-    model.compile(
-        optimizer=optimizer,
-        metrics=[
-            SparseTopKCategoricalAccuracy(k=1, name="top_1_accuracy"),
-            SparseTopKCategoricalAccuracy(k=5, name="top_5_accuracy"),
-        ],
-    )
-
-    ##train model
-
     model.fit(
         train_set,
         validation_data=val_set,
