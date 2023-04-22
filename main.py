@@ -56,9 +56,8 @@ experiment = comet_ml.Experiment(
 
 params = {
     "model": "gpt2",
-    "epochs": 5,
-    "batch_size": 64,
-    "block_size": 64,
+    "epochs": 2,
+    "batch_size": 32,
     "learning_rate": 1e-2,
     "weight_decay": 0.01,
 }
