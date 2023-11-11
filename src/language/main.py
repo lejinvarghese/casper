@@ -1,4 +1,5 @@
 import os
+from warnings import filterwarnings
 from datetime import datetime
 from dotenv import load_dotenv
 import comet_ml
@@ -16,15 +17,19 @@ from transformers import (
     TFAutoModelForCausalLM,
     AdamWeightDecay,
 )
-from utils import get_secret
 
+try:
+    from src.utils import get_secret
+except ModuleNotFoundError:
+    from casper.src.utils import get_secret
+
+filterwarnings("ignore")
 load_dotenv()
 run_time = datetime.now().strftime("%Y%m%d%H%M%S")
-mixed_precision.set_global_policy("mixed_float16")
-secret_id = "COMET_API_KEY"
-
-COMET_API_KEY = get_secret(secret_id=secret_id)
 os.environ["COMET_LOG_ASSETS"] = "True"
+mixed_precision.set_global_policy("mixed_float16")
+
+COMET_API_KEY = get_secret(secret_id="COMET_API_KEY")
 
 experiment = comet_ml.Experiment(
     api_key=COMET_API_KEY,
@@ -165,7 +170,7 @@ def train():
         ],
     )
 
-    ##train model
+    ## train model
     checkpoint_dir = "./checkpoints"
     checkpoint_prefix = os.path.join(checkpoint_dir, "ckpt_{epoch}")
     checkpoint_callback = ModelCheckpoint(
