@@ -16,31 +16,14 @@ from transformers import (
     TFAutoModelForCausalLM,
     AdamWeightDecay,
 )
+from utils import get_secret
 
 load_dotenv()
 run_time = datetime.now().strftime("%Y%m%d%H%M%S")
 mixed_precision.set_global_policy("mixed_float16")
-project_id = "projects-264723"
 secret_id = "COMET_API_KEY"
 
-
-def get_secret(project_id, secret_id, version=1):
-    """
-    Access a secret- API token, etc- stored in Secret Manager
-
-    Code from https://cloud.google.com/secret-manager/docs/creating-and-accessing-secrets#secretmanager-access-secret-version-python
-    """
-    from google.cloud import secretmanager
-
-    client = secretmanager.SecretManagerServiceClient()
-    name = client.secret_version_path(project_id, secret_id, version)
-    response = client.access_secret_version(request={"name": name})
-    payload = response.payload.data.decode("UTF-8")
-
-    return payload
-
-
-COMET_API_KEY = get_secret(project_id=project_id, secret_id=secret_id)
+COMET_API_KEY = get_secret(secret_id=secret_id)
 os.environ["COMET_LOG_ASSETS"] = "True"
 
 experiment = comet_ml.Experiment(
