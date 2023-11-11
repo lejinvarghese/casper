@@ -1,7 +1,6 @@
 import os
 from warnings import filterwarnings
 from datetime import datetime
-from dotenv import load_dotenv
 import comet_ml
 
 from pandas import DataFrame
@@ -24,7 +23,6 @@ except ModuleNotFoundError:
     from casper.src.utils import get_secret
 
 filterwarnings("ignore")
-load_dotenv()
 run_time = datetime.now().strftime("%Y%m%d%H%M%S")
 os.environ["COMET_LOG_ASSETS"] = "True"
 mixed_precision.set_global_policy("mixed_float16")
