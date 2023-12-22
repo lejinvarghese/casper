@@ -1,0 +1,16 @@
+transformers==4.36.2
+huggingface==0.0.1
+torch==2.1.2
+bitsandbytes==0.41.3.post2
+accelerate==0.25.0
+scipy
+ctransformers[cuda]
+
+# for training
+# peft
+
+# trl
+
+# for jupyterlab
+jupyterlab==4.0.9
+ipykernel==6.27.1
