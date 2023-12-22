@@ -3,8 +3,8 @@ huggingface==0.0.1
 torch==2.1.2
 bitsandbytes==0.41.3.post2
 accelerate==0.25.0
-scipy
-ctransformers[cuda]
+scipy==1.10.1
+huggingface-hub==0.20.1
 
 # for training
 # peft
