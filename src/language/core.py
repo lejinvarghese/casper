@@ -1,22 +1,22 @@
 """
 Core abstract functionalities.
 """
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod, property
 
 class Agent(ABC):
     """
     Abstract class for an agent.
     """
 
-    @abstractproperty
+    @property
     def role(self):
         pass
 
-    @abstractproperty
+    @property
     def objective(self):
         pass
 
-    @abstractproperty
+    @property
     def max_radius(self):
         pass
 
@@ -28,7 +28,7 @@ class Agent(ABC):
 class Researcher(Agent):
     pass
 
-    @abstractproperty
+    @property
     def subject(self):
         pass
     
