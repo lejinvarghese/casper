@@ -5,10 +5,11 @@ bitsandbytes==0.41.3.post2
 accelerate==0.25.0
 scipy==1.10.1
 huggingface-hub==0.20.1
+llama-index==0.9.21
+pypdf==3.17.4
 
 # for training
 # peft
-
 # trl
 
 # for jupyterlab
