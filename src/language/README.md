@@ -28,7 +28,7 @@ huggingface-cli download ${MODEL_NAME} ${QUANT_VERSION} --local-dir ./models/ --
 
 ### Optional: Jupyter
 ```bash
-python -m ipykernel install --user --name=.venv --display-name="mistral"
+python -m ipykernel install --user --name=.venv --display-name="mistral_u"
 ```
 
 ## References
