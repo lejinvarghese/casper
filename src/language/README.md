@@ -11,7 +11,7 @@ pip3 install -r requirements.txt
 
 ### Llama cpp
 ```bash
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python
+CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python==0.2.25
 
 # optional: if errors that cant find GLIBCXX_3.4.30
 SRC_PATH=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30
@@ -30,6 +30,9 @@ huggingface-cli download ${MODEL_NAME} ${QUANT_VERSION} --local-dir ./models/ --
 ```bash
 python -m ipykernel install --user --name=.venv --display-name="mistral"
 ```
+
+## References
+https://www.analyticsvidhya.com/blog/2023/10/rag-pipeline-with-the-llama-index/
 
 ## Roast Battle
 
