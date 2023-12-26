@@ -8,6 +8,9 @@ huggingface-hub==0.20.1
 llama-index==0.9.21
 pypdf==3.17.4
 span-marker==1.5.0
+matplotlib==3.7.4
+chromadb==0.4.21
+pysqlite3-binary==0.5.2.post2
 
 # for training
 # peft
