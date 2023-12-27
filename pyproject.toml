@@ -4,8 +4,9 @@ addopts = [
     '--cov-report=xml',
     '--cov-report=term',
     '-vv',
-    '--workers=auto',
+    '-n=6',
     '-s',
+    '--dist=loadgroup',
 ]
 pythonpath = [
     '.',

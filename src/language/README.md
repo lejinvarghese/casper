@@ -9,7 +9,7 @@ source .venv/bin/activate
 pip3 install -r requirements.txt
 ```
 
-### Llama cpp
+### Llama CPP
 ```bash
 CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python==0.2.25
 
@@ -23,7 +23,7 @@ ln -s ${SRC_PATH} ${DST_PATH}/libstdc++.so.6
 # download huggingface model, instructions: https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF
 MODEL_DIR = "data/.models"
 MODEL_NAME=TheBloke/Mistral-7B-Instruct-v0.2-GGUF
-QUANT_VERSION=mistral-7b-instruct-v0.2.Q3_K_S.gguf
+QUANT_VERSION=mistral-7b-instruct-v0.2.Q3_K_S.gguf #largest that can fit in a 6GB GPU
 huggingface-cli download ${MODEL_NAME} ${QUANT_VERSION} --local-dir ./${MODEL_DIR}/ --local-dir-use-symlinks False
 ```
 
@@ -44,8 +44,13 @@ python3 -m src.language.indexer
 pytest .
 ```
 
-## References
-https://www.analyticsvidhya.com/blog/2023/10/rag-pipeline-with-the-llama-index/
+## RAG
+
+```md
+Query: "Does emergence in LLMs really happen and when?"
+```
+
+![x](../../assets/rag.png)
 
 ## Roast Battle
 
@@ -98,3 +103,6 @@ Whitney Cummings (to Kevin Hart): "Kevin, I respect your decision to keep it cle
 Andrew Schulz (to Whitney Cummings): "Whitney, you may have a point about depth in comedy, but let me tell you, there's a time and place for that. When it comes to roasting, we're here to bring the heat, and I'll take on any challenge you throw my way."
 
 Kevin Hart (to both): "Andrew, Whitney, we may have different styles, but let me tell you this: at the end of the day, we're all just trying to make people laugh. And if that means
+
+## References
+https://www.analyticsvidhya.com/blog/2023/10/rag-pipeline-with-the-llama-index/

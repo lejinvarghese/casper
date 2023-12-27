@@ -17,7 +17,6 @@ p = Pipeline(llm=llm.model, embed_model=emb.model, storage=st)
 def load_documents(sample_size=3, randomize=False):
     pf = PDFLoader()
     documents = pf.load_data(sample_size=sample_size, randomize=randomize)
-    logger.info(f"Loaded {len(documents)} documents")
     logger.info(f"First document: {documents[0]}")
     return documents
 
@@ -25,12 +24,11 @@ def load_documents(sample_size=3, randomize=False):
 async def main():
     documents = load_documents(sample_size=6)
     nodes = await p.run(documents=documents)
-    logger.info(f"Ingested {len(nodes)} nodes")
     index = st.create_vector_index(nodes=nodes)
 
     query_str = "Does emergence in LLMs really happen and when?"
     response = llm.generate(query_str)
-    logger.info(f"Raw response: {str(response)}")
+    logger.warning(f"Raw response: {str(response)}")
 
     query_engine = index.as_query_engine()
     response = query_engine.query(query_str)
@@ -39,27 +37,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-# try:
-#     docstore = SimpleDocumentStore.from_persist_dir(persist_dir=STORAGE_PATH)
-# except FileNotFoundError:
-#     docstore = SimpleDocumentStore()
-
-
-# pipeline = IngestionPipeline(
-#     transformations=extractors,
-#     docstore=docstore,
-# )
-# try:
-#     pipeline.load(STORAGE_PATH)
-# except FileNotFoundError:
-#     pass
-
-# nodes = pipeline.run(
-#     documents=documents,
-#     in_place=True,
-#     show_progress=True,
-# )
-# pipeline.persist(STORAGE_PATH)
-# logging.info(f"Ingested {len(nodes)} Nodes")

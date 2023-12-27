@@ -39,10 +39,15 @@ class InstuctModel:
             verbose=False,
         )
 
-    def generate(self, prompt: str, **kwargs) -> str:
-        prompt = """<s>[INST] """ + prompt + """[/INST]"""
-        prompt = PromptTemplate(template=prompt)
-        return self.model.predict(prompt, context_str=kwargs.get("context_str", ""))
+    def generate(self, prompt: str, stream: bool = False, **kwargs) -> str:
+        if stream:
+            return self.model.stream_complete(
+                prompt, context_str=kwargs.get("context_str", "")
+            )
+        else:
+            return self.model.complete(
+                prompt, context_str=kwargs.get("context_str", "")
+            )
 
 
 class EmbeddingModel:

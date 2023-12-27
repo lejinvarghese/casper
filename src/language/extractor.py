@@ -80,6 +80,7 @@ class Pipeline:
             logger.info(n.metadata)
         nodes = self._extract_embeddings(nodes)
         self.pipeline.persist(PERSIST_DIR)
+        logger.info(f"Ingested {len(nodes)} nodes")
         return nodes
 
     async def _extract_metadata(
