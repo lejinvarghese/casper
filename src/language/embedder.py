@@ -13,13 +13,11 @@ class EmbeddingModel:
     def __init__(
         self,
         model_name: str = EMBEDDING_MODEL,
+        device="cuda",
     ):
-        self.model = HuggingFaceEmbedding(model_name=model_name)
-
-    def get_embeddings(self, text: str) -> str:
-        return self.model.get_text_embedding(text)
+        self.model = HuggingFaceEmbedding(model_name=model_name, device=device)
 
     def test(self):
         text = """fleetwood mac"""
-        response = self.get_embeddings(text)
+        response = self.model.get_text_embedding(text)
         logger.info(f"Response: {response}")

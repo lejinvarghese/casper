@@ -4,7 +4,7 @@ from llama_index.llms.llama_utils import (
     completion_to_prompt,
 )
 from llama_index.prompts import PromptTemplate
-from constants import INSTRUCTION_MODEL
+from constants import INSTRUCTION_MODEL, SUMMARIZATION_PROMPT
 from utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
@@ -37,15 +37,10 @@ class InstuctModel:
         )
 
     def generate(self, prompt: str, **kwargs) -> str:
-        prompt = PromptTemplate(template=prompt, context_str=kwargs.get("context_str"))
+        prompt = PromptTemplate(template=prompt, context_str=kwargs.get("context_str", ""))
         return self.model.predict(prompt)
 
-    def test(self, context):
-        prompt = """<s> [INST] Context: {context_str}. Given this context, generate a highly concise title that summarizes \
-        the unique themes found in the context, in no more than 20 words. \
-        Dont include descriptions of what you are doing, such as this document summarizes. Be as concise as possible. </s>\
-
-        Title: [/INST]"""
+    def test(self, context: str, prompt: str = SUMMARIZATION_PROMPT):
         response = self.generate(prompt, context_str=context)
 
         logger.info(f"Response: {response}")

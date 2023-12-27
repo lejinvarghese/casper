@@ -37,9 +37,7 @@ class ArxivConnector(Connector):
     def destination(self) -> str:
         return self._destination
 
-    def get_articles_by_ids(
-        self, ids=Union[List[str], str], download: bool = True
-    ) -> List[Result]:
+    def get_articles_by_ids(self, ids=Union[List[str], str], download: bool = True) -> List[Result]:
         if not isinstance(ids, List):
             ids = [ids]
         search = Search(id_list=ids)

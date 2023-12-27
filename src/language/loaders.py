@@ -17,9 +17,7 @@ class PDFLoader:
         self._files = os.listdir(self._source_path)
         self._loader = PDFReader()
 
-    def load_data(
-        self, sample_size: int = None, randomize: bool = False, random_seed: int = 42
-    ):
+    def load_data(self, sample_size: int = None, randomize: bool = False, random_seed: int = 42):
         documents = []
         for i in self._files:
             file_path = os.path.join(self._source_path, i)

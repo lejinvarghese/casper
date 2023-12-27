@@ -1,28 +1,16 @@
-import os
-
-# from llama_index.extractors import (
-#     KeywordExtractor,
-#     EntityExtractor,
-#     BaseExtractor,
-# )
-# from llama_index.text_splitter import SentenceSplitter
-# from llama_index.ingestion import IngestionPipeline
-
-
-# from llama_index import ServiceContext
-# from llama_index.storage.storage_context import StorageContext
-# from llama_index import VectorStoreIndex
-# from llama_index.embeddings import HuggingFaceEmbedding
+import asyncio
 
 from loaders import PDFLoader
 from instructor import InstuctModel
 from embedder import EmbeddingModel
-from constants import (
-    PERSIST_PATH,
-)
+from extractor import Pipeline
 from utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
+
+llm = InstuctModel()
+emb = EmbeddingModel(device="cpu")
+p = Pipeline(llm=llm.model, embed_model=emb.model)
 
 
 def load_documents(sample_size=3, randomize=False):
@@ -33,23 +21,20 @@ def load_documents(sample_size=3, randomize=False):
     return documents
 
 
-if __name__ == "__main__":
-    documents = load_documents()
-    em = EmbeddingModel()
-    em.test()
-    llm = InstuctModel()
-    llm.test(context=documents[-2].text)
+async def main():
+    documents = load_documents(sample_size=6)
+    nodes = await p.extract_metadata(documents=documents)
+    for i, n in enumerate(nodes):
+        logger.info(n.metadata)
+    nodes = p.add_embeddings(nodes)
+    p.persist()
 
-# extractors = [
-#     SentenceSplitter(),
-#     TitleExtractor(nodes=5, llm=llm),
-#     EntityExtractor(
-#         prediction_threshold=0.5,
-#         label_entities=True,
-#         device="cuda",
-#     ),
-#     SummaryExtractor(summaries=["self"], llm=llm),
-# ]
+
+if __name__ == "__main__":
+    asyncio.run(main())
+    # emb.test()
+    # llm.test(context=documents[-2].text)
+
 
 # try:
 #     docstore = SimpleDocumentStore.from_persist_dir(persist_dir=STORAGE_PATH)

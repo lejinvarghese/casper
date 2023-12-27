@@ -6,3 +6,10 @@ COLLECTION_NAME = "research"
 QUANT_VERSION = "mistral-7b-instruct-v0.2.Q3_K_S.gguf"
 INSTRUCTION_MODEL = f"./models/{QUANT_VERSION}"
 EMBEDDING_MODEL = "BAAI/bge-small-en"
+
+SUMMARIZATION_PROMPT = """<s> [INST] Context: {context_str}. Given this context, generate a highly concise title that summarizes \
+        the unique themes found in the context, in no more than 20 words. \
+        Dont include descriptions of what you are doing, such as this document summarizes. Be as concise as possible. </s>\
+
+        Title: [/INST]
+"""
