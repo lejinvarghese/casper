@@ -32,6 +32,18 @@ huggingface-cli download ${MODEL_NAME} ${QUANT_VERSION} --local-dir ./${MODEL_DI
 python -m ipykernel install --user --name=.venv --display-name="mistral_u"
 ```
 
+## Run
+```bash
+
+cd ../.. #make sure you are in the root directory
+
+## 1. preprocess
+python3 -m src.language.indexer
+
+## 2. run tests
+pytest .
+```
+
 ## References
 https://www.analyticsvidhya.com/blog/2023/10/rag-pipeline-with-the-llama-index/
 
