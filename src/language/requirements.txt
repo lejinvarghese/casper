@@ -11,6 +11,7 @@ span-marker==1.5.0
 matplotlib==3.7.4
 chromadb==0.4.21
 pysqlite3-binary==0.5.2.post2
+arxiv==2.1.0
 
 # for training
 # peft

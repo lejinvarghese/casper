@@ -1,83 +1,86 @@
-import os
-from llama_index.readers import PDFReader
 import logging
-
-
-from llama_index.llms import LlamaCPP
-from llama_index.llms.llama_utils import (
-    messages_to_prompt,
-    completion_to_prompt,
-)
-from llama_index.extractors import (
-    TitleExtractor,
-    EntityExtractor,
-    SummaryExtractor
-)
-from llama_index.storage.docstore import SimpleDocumentStore
-from llama_index.ingestion import IngestionPipeline
-from llama_index.text_splitter import SentenceSplitter
-
-
-DOCUMENT_PATH = ".papers"
-STORAGE_PATH = ".pipeline_storage"
-QUANT_VERSION = "mistral-7b-instruct-v0.2.Q3_K_S.gguf"
-MODEL_PATH = f"./models/{QUANT_VERSION}"
+from typing import List, Union
+from arxiv import Client, Search, Result, SortCriterion
+from core import Connector
 
 logging.basicConfig(level=logging.INFO)
 
-files = os.listdir(DOCUMENT_PATH)
-loader = PDFReader()
+class ArxivConnector(Connector):
+    """
+    A connector to the Arxiv API.
+    """
 
-documents = []
-for i in files:
-    documents.append(loader.load_data(f".papers/{i}"))
-    
-documents = [c for d in documents for c in d]
+    def __init__(
+        self,
+        destination_path: str,
+        page_size: int = 10,
+        delay_seconds: float = 10.0,
+        num_retries: int = 20,
+    ):
+        self._source = "arxiv"
+        self._destination = destination_path
+        self._client = Client(
+            page_size=page_size,
+            delay_seconds=delay_seconds,
+            num_retries=num_retries,
+        )
 
-logging.info(f"Loaded {len(documents)} documents")
+    @property
+    def source(self) -> str:
+        return self._source
 
-llm = LlamaCPP(
-    model_path=MODEL_PATH,
-    temperature=0.1,
-    max_new_tokens=256,
-    context_window=3000,
-    generate_kwargs={},
-    model_kwargs={"n_gpu_layers": 30},
-    messages_to_prompt=messages_to_prompt,
-    completion_to_prompt=completion_to_prompt,
-    verbose=False,
-)
+    @property
+    def destination(self) -> str:
+        return self._destination
 
-extractors = [
-    SentenceSplitter(),
-    TitleExtractor(nodes=5, llm=llm),
-    EntityExtractor(
-    prediction_threshold=0.5,
-    label_entities=True, 
-    device="cuda", 
-),
-    SummaryExtractor(summaries=[ "self"], llm=llm),
-]
+    def get_articles_by_ids(
+        self, ids=Union[List[str], str], download: bool = True
+    ) -> List[Result]:
+        if not isinstance(ids, List):
+            ids = [ids]
+        search = Search(id_list=ids)
+        results = list(self._client.results(search))
+        if len(results) == 0:
+            logging.warning("No results found")
+        else:
+            logging.info(f"Found {len(results)} results")
+        if download:
+            self._download_articles(results)
+        return results
 
-try:
-    docstore = SimpleDocumentStore.from_persist_dir(persist_dir=STORAGE_PATH)
-except FileNotFoundError:
-    docstore = SimpleDocumentStore()
+    def get_articles_by_query(
+        self,
+        query: str,
+        max_results: int = 5,
+        sort_by: SortCriterion = SortCriterion.SubmittedDate,
+        download: bool = True,
+    ) -> List[Result]:
+        search = Search(
+            query=query,
+            max_results=max_results,
+            sort_by=sort_by,
+        )
+        results = list(self._client.results(search))
+        if len(results) == 0:
+            logging.warning("No results found")
+        else:
+            logging.info(f"Found {len(results)} results")
+        if download:
+            self._download_articles(results)
+        return results
+
+    def _download_articles(self, articles: List[Result]):
+        return [a.download_pdf(dirpath=self._destination) for a in articles]
 
 
-pipeline = IngestionPipeline(
-    transformations=extractors,
-    docstore=docstore,
-)
-try:
-    pipeline.load(STORAGE_PATH)
-except FileNotFoundError:
-    pass
-
-nodes = pipeline.run(
-    documents=documents,
-    in_place=True,
-    show_progress=True,
-)
-pipeline.persist(STORAGE_PATH)
-logging.info(f"Ingested {len(nodes)} Nodes")
+if __name__ == "__main__":
+    arxiv_path = "data/.papers"
+    articles = ["2305.18290", "2304.15004", "2312.08782"]
+    query = "complexity and emergence in large language models"
+    ax = ArxivConnector(destination_path=arxiv_path)
+    results = ax.get_articles_by_ids(articles)
+    for r in results:
+        logging.info(r.title)
+    results = ax.get_articles_by_query(query)
+    for r in results:
+        logging.info(r.title)
