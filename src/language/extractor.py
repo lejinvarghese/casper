@@ -16,6 +16,7 @@ from llama_index.text_splitter import SentenceSplitter
 from llama_index.ingestion import IngestionPipeline
 
 from src.language.constants import SUMMARIZATION_PROMPT, PERSIST_DIR
+from src.language.storage import Storage
 from src.language.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
@@ -42,7 +43,9 @@ class CustomTitleExtractor(BaseExtractor):
 
 class EntityFlattener(BaseExtractor):
     async def aextract(self, nodes) -> List[Dict]:
-        return [{"entities": ", ".join(node.metadata.get("entities", []))} for node in nodes]
+        return [
+            {"entities": ", ".join(node.metadata.get("entities", []))} for node in nodes
+        ]
 
 
 class Pipeline:
@@ -55,6 +58,7 @@ class Pipeline:
         chunk_overlap: int = 16,
         prediction_threshold: float = 0.5,
         keywords: int = 10,
+        storage: Storage = None,
     ):
         self.transformations = [
             SentenceSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap),
@@ -63,13 +67,27 @@ class Pipeline:
             KeywordExtractor(keywords=keywords, llm=llm),
             CustomTitleExtractor(llm=llm, prompt=prompt),
         ]
-        self.pipeline = IngestionPipeline(transformations=self.transformations)
+        self.storage = storage
         self.embed_model = embed_model
+        self.__setup_pipeline()
 
-    async def extract_metadata(self, documents: Document, verbose: bool = True) -> List[TextNode]:
+    async def run(
+        self,
+        documents: List[Document],
+    ) -> List[TextNode]:
+        nodes = await self._extract_metadata(documents=documents)
+        for n in nodes:
+            logger.info(n.metadata)
+        nodes = self._extract_embeddings(nodes)
+        self.pipeline.persist(PERSIST_DIR)
+        return nodes
+
+    async def _extract_metadata(
+        self, documents: List[Document], verbose: bool = True
+    ) -> List[TextNode]:
         return await self.pipeline.arun(documents=documents, show_progress=verbose)
 
-    def add_embeddings(self, nodes: List[TextNode]) -> List[TextNode]:
+    def _extract_embeddings(self, nodes: List[TextNode]) -> List[TextNode]:
         for node in nodes:
             node_embedding = self.embed_model.get_text_embedding(
                 node.get_content(metadata_mode="all")
@@ -77,5 +95,11 @@ class Pipeline:
             node.embedding = node_embedding
         return nodes
 
-    def persist(self, path: str = PERSIST_DIR) -> None:
-        self.pipeline.persist(path)
+    def __setup_pipeline(self, path: str = PERSIST_DIR) -> None:
+        self.pipeline = IngestionPipeline(
+            transformations=self.transformations, docstore=self.storage.docstore
+        )
+        try:
+            self.pipeline.load(path)
+        except FileNotFoundError:
+            pass

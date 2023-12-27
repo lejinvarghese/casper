@@ -3,13 +3,15 @@ import asyncio
 from src.language.loaders import PDFLoader
 from src.language.models import InstuctModel, EmbeddingModel
 from src.language.extractor import Pipeline
+from src.language.storage import Storage
 from src.language.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
 
 llm = InstuctModel()
 emb = EmbeddingModel(device="cpu")
-p = Pipeline(llm=llm.model, embed_model=emb.model)
+st = Storage(llm=llm.model, embed_model=emb.model)
+p = Pipeline(llm=llm.model, embed_model=emb.model, storage=st)
 
 
 def load_documents(sample_size=3, randomize=False):
@@ -22,17 +24,12 @@ def load_documents(sample_size=3, randomize=False):
 
 async def main():
     documents = load_documents(sample_size=6)
-    nodes = await p.extract_metadata(documents=documents)
-    for i, n in enumerate(nodes):
-        logger.info(n.metadata)
-    nodes = p.add_embeddings(nodes)
-    p.persist()
+    nodes = await p.run(documents=documents)
+    logger.info(f"Ingested {len(nodes)} nodes")
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-    # emb.test()
-    # llm.test(context=documents[-2].text)
 
 
 # try:
