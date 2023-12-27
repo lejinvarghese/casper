@@ -1,8 +1,7 @@
 import asyncio
 
 from loaders import PDFLoader
-from instructor import InstuctModel
-from embedder import EmbeddingModel
+from models import InstuctModel, EmbeddingModel
 from extractor import Pipeline
 from utils.logger import CustomLogger
 

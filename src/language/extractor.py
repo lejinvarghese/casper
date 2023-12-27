@@ -15,7 +15,7 @@ from llama_index.async_utils import run_jobs
 from llama_index.text_splitter import SentenceSplitter
 from llama_index.ingestion import IngestionPipeline
 
-from constants import SUMMARIZATION_PROMPT, PERSIST_PATH
+from constants import SUMMARIZATION_PROMPT, PERSIST_DIR
 from utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
@@ -77,5 +77,5 @@ class Pipeline:
             node.embedding = node_embedding
         return nodes
 
-    def persist(self, path: str = PERSIST_PATH) -> None:
+    def persist(self, path: str = PERSIST_DIR) -> None:
         self.pipeline.persist(path)

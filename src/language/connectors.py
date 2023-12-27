@@ -2,7 +2,7 @@ import os
 from typing import List, Union
 from arxiv import Client, Search, Result, SortCriterion
 from core import Connector
-from constants import PDF_PATH
+from constants import PDF_DIR
 from utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
@@ -37,7 +37,9 @@ class ArxivConnector(Connector):
     def destination(self) -> str:
         return self._destination
 
-    def get_articles_by_ids(self, ids=Union[List[str], str], download: bool = True) -> List[Result]:
+    def get_articles_by_ids(
+        self, ids=Union[List[str], str], download: bool = True
+    ) -> List[Result]:
         if not isinstance(ids, List):
             ids = [ids]
         search = Search(id_list=ids)
@@ -79,7 +81,7 @@ if __name__ == "__main__":
     articles = ["2305.18290", "2304.15004", "2312.08782"]
     query = "complexity and emergence in large language models"
 
-    ax = ArxivConnector(destination_path=PDF_PATH)
+    ax = ArxivConnector(destination_path=PDF_DIR)
     results = ax.get_articles_by_ids(articles)
     for r in results:
         logger.info(r.title)

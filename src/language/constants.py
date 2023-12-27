@@ -1,10 +1,11 @@
-PDF_PATH = "data/.pdfs"
-PERSIST_PATH = "data/.storage"
+PDF_DIR = "data/.pdfs"
+MODEL_DIR = "data/.models"
+PERSIST_DIR = "data/.storage"
 
 COLLECTION_NAME = "research"
 
 QUANT_VERSION = "mistral-7b-instruct-v0.2.Q3_K_S.gguf"
-INSTRUCTION_MODEL = f"./models/{QUANT_VERSION}"
+INSTRUCTION_MODEL = f"./{MODEL_DIR}/{QUANT_VERSION}"
 EMBEDDING_MODEL = "BAAI/bge-small-en"
 
 SUMMARIZATION_PROMPT = """<s> [INST] Context: {context_str}. Given this context, generate a highly concise title that summarizes \

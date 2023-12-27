@@ -6,11 +6,11 @@ from llama_index import VectorStoreIndex
 
 
 from constants import (
-    PERSIST_PATH,
+    PERSIST_DIR,
     COLLECTION_NAME,
 )
 
-chroma_client = chromadb.PersistentClient(path=PERSIST_PATH)
+chroma_client = chromadb.PersistentClient(path=PERSIST_DIR)
 chroma_collection = chroma_client.get_or_create_collection(COLLECTION_NAME)
 vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
 

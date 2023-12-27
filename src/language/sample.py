@@ -1,8 +1,8 @@
 import torch
 from llama_cpp import Llama
+from constants import MODEL_DIR, QUANT_VERSION
 
-QUANT_VERSION = "mistral-7b-instruct-v0.2.Q3_K_S.gguf"
-MODEL_PATH = f"./models/{QUANT_VERSION}"
+MODEL_PATH = f"./{MODEL_DIR}/{QUANT_VERSION}"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
