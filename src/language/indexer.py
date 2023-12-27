@@ -26,6 +26,15 @@ async def main():
     documents = load_documents(sample_size=6)
     nodes = await p.run(documents=documents)
     logger.info(f"Ingested {len(nodes)} nodes")
+    index = st.create_vector_index(nodes=nodes)
+
+    query_str = "Does emergence in LLMs really happen and when?"
+    response = llm.generate(query_str)
+    logger.info(f"Raw response: {str(response)}")
+
+    query_engine = index.as_query_engine()
+    response = query_engine.query(query_str)
+    logger.info(f"Contextual response: {str(response)}")
 
 
 if __name__ == "__main__":

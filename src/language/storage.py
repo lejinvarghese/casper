@@ -25,13 +25,14 @@ class Storage:
         llm: LLMPredictorType = None,
         embed_model: HuggingFaceEmbedding = None,
     ):
+        self.persist_directory = persist_directory
         try:
             self.docstore = SimpleDocumentStore.from_persist_dir(
-                persist_dir=persist_directory
+                persist_dir=self.persist_directory
             )
         except FileNotFoundError:
             self.docstore = SimpleDocumentStore()
-        self.chroma_client = PersistentClient(path=persist_directory)
+        self.chroma_client = PersistentClient(path=self.persist_directory)
         self.chroma_collection = self.chroma_client.get_or_create_collection(
             collection_name
         )

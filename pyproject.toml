@@ -5,6 +5,7 @@ addopts = [
     '--cov-report=term',
     '-vv',
     '--workers=auto',
+    '-s',
 ]
 pythonpath = [
     '.',

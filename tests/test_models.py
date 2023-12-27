@@ -2,6 +2,9 @@ import pytest
 from typing import List
 
 from models import InstuctModel, EmbeddingModel
+from utils.logger import CustomLogger
+
+logger = CustomLogger(__name__)
 
 
 @pytest.fixture
@@ -24,3 +27,4 @@ def test_prompt(sample_query):
     assert response is not None
     assert isinstance(response, str)
     assert len(response) > 0
+    logger.info(response)

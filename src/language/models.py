@@ -40,10 +40,9 @@ class InstuctModel:
         )
 
     def generate(self, prompt: str, **kwargs) -> str:
-        prompt = PromptTemplate(
-            template=prompt, context_str=kwargs.get("context_str", "")
-        )
-        return self.model.predict(prompt)
+        prompt = """<s>[INST] """ + prompt + """[/INST]"""
+        prompt = PromptTemplate(template=prompt)
+        return self.model.predict(prompt, context_str=kwargs.get("context_str", ""))
 
 
 class EmbeddingModel:
