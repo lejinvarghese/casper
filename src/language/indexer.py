@@ -1,44 +1,33 @@
 import os
-from llama_index.readers import PDFReader
-from llama_index.llms import LlamaCPP
-from llama_index.llms.llama_utils import (
-    messages_to_prompt,
-    completion_to_prompt,
-)
 
-from llama_index.extractors import (
-    KeywordExtractor,
-    EntityExtractor,
-    BaseExtractor,
-)
-from llama_index.text_splitter import SentenceSplitter
-from llama_index.ingestion import IngestionPipeline
+# from llama_index.extractors import (
+#     KeywordExtractor,
+#     EntityExtractor,
+#     BaseExtractor,
+# )
+# from llama_index.text_splitter import SentenceSplitter
+# from llama_index.ingestion import IngestionPipeline
 
 
-from llama_index import ServiceContext
-from llama_index.storage.storage_context import StorageContext
-from llama_index import VectorStoreIndex
-import chromadb
-from llama_index.vector_stores import ChromaVectorStore
-from llama_index.embeddings import HuggingFaceEmbedding
-from llama_index.prompts import PromptTemplate
+# from llama_index import ServiceContext
+# from llama_index.storage.storage_context import StorageContext
+# from llama_index import VectorStoreIndex
+# from llama_index.embeddings import HuggingFaceEmbedding
 
 from loaders import PDFLoader
+from instructor import InstuctModel
+from embedder import EmbeddingModel
 from constants import (
-    PDF_PATH,
     PERSIST_PATH,
-    COLLECTION_NAME,
-    INSTRUCTION_MODEL,
-    EMBEDDING_MODEL,
 )
 from utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
 
 
-def load_documents():
-    pf = PDFLoader(PDF_PATH)
-    documents = pf.load_data(sample_size=3, randomize=True)
+def load_documents(sample_size=3, randomize=False):
+    pf = PDFLoader()
+    documents = pf.load_data(sample_size=sample_size, randomize=randomize)
     logger.info(f"Loaded {len(documents)} documents")
     logger.info(f"First document: {documents[0]}")
     return documents
@@ -46,19 +35,10 @@ def load_documents():
 
 if __name__ == "__main__":
     documents = load_documents()
-
-
-# llm = LlamaCPP(
-#     model_path=MODEL_PATH,
-#     temperature=0.1,
-#     max_new_tokens=256,
-#     context_window=3000,
-#     generate_kwargs={},
-#     model_kwargs={"n_gpu_layers": 30},
-#     messages_to_prompt=messages_to_prompt,
-#     completion_to_prompt=completion_to_prompt,
-#     verbose=False,
-# )
+    em = EmbeddingModel()
+    em.test()
+    llm = InstuctModel()
+    llm.test(context=documents[-2].text)
 
 # extractors = [
 #     SentenceSplitter(),

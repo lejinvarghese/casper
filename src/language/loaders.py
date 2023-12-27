@@ -1,7 +1,6 @@
 import os
 import random
 from llama_index.readers import PDFReader
-
 from constants import PDF_PATH
 from utils.logger import CustomLogger
 
