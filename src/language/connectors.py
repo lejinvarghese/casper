@@ -1,9 +1,11 @@
-import logging
 from typing import List, Union
 from arxiv import Client, Search, Result, SortCriterion
 from core import Connector
+from utils.logger import CustomLogger
 
-logging.basicConfig(level=logging.INFO)
+ARXIV_PATH = "data/.papers"
+logger = CustomLogger(__name__)
+
 
 class ArxivConnector(Connector):
     """
@@ -41,9 +43,9 @@ class ArxivConnector(Connector):
         search = Search(id_list=ids)
         results = list(self._client.results(search))
         if len(results) == 0:
-            logging.warning("No results found")
+            logger.warning("No results found")
         else:
-            logging.info(f"Found {len(results)} results")
+            logger.info(f"Found {len(results)} results")
         if download:
             self._download_articles(results)
         return results
@@ -62,9 +64,9 @@ class ArxivConnector(Connector):
         )
         results = list(self._client.results(search))
         if len(results) == 0:
-            logging.warning("No results found")
+            logger.warning("No results found")
         else:
-            logging.info(f"Found {len(results)} results")
+            logger.info(f"Found {len(results)} results")
         if download:
             self._download_articles(results)
         return results
@@ -74,13 +76,13 @@ class ArxivConnector(Connector):
 
 
 if __name__ == "__main__":
-    arxiv_path = "data/.papers"
     articles = ["2305.18290", "2304.15004", "2312.08782"]
     query = "complexity and emergence in large language models"
-    ax = ArxivConnector(destination_path=arxiv_path)
+
+    ax = ArxivConnector(destination_path=ARXIV_PATH)
     results = ax.get_articles_by_ids(articles)
     for r in results:
-        logging.info(r.title)
+        logger.info(r.title)
     results = ax.get_articles_by_query(query)
     for r in results:
-        logging.info(r.title)
+        logger.info(r.title)
