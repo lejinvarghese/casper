@@ -1,6 +1,8 @@
 import os
 import random
 from llama_index.readers import PDFReader
+
+from constants import PDF_PATH
 from utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
@@ -11,7 +13,7 @@ class PDFLoader:
     A loader for PDF files.
     """
 
-    def __init__(self, source_path: str):
+    def __init__(self, source_path: str = PDF_PATH):
         self._source_path = source_path
         self._files = os.listdir(self._source_path)
         self._loader = PDFReader()

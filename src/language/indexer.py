@@ -25,7 +25,7 @@ from llama_index.prompts import PromptTemplate
 
 from loaders import PDFLoader
 from constants import (
-    ARXIV_PATH,
+    PDF_PATH,
     PERSIST_PATH,
     COLLECTION_NAME,
     INSTRUCTION_MODEL,
@@ -35,11 +35,17 @@ from utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
 
-if __name__ == "__main__":
-    pf = PDFLoader(ARXIV_PATH)
+
+def load_documents():
+    pf = PDFLoader(PDF_PATH)
     documents = pf.load_data(sample_size=3, randomize=True)
     logger.info(f"Loaded {len(documents)} documents")
     logger.info(f"First document: {documents[0]}")
+    return documents
+
+
+if __name__ == "__main__":
+    documents = load_documents()
 
 
 # llm = LlamaCPP(

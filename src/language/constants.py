@@ -1,4 +1,4 @@
-ARXIV_PATH = "data/.papers"
+PDF_PATH = "data/.pdfs"
 PERSIST_PATH = "data/.storage"
 
 COLLECTION_NAME = "research"
