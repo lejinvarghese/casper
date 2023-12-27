@@ -15,6 +15,7 @@ arxiv==2.1.0
 pytest==7.4.3
 pytest-parallel==0.1.1
 pytest-cov==4.1.0
+py==1.11.0
 
 # for training
 # peft
