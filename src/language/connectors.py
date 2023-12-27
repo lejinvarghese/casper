@@ -1,9 +1,9 @@
 from typing import List, Union
 from arxiv import Client, Search, Result, SortCriterion
 from core import Connector
+from constants import ARXIV_PATH
 from utils.logger import CustomLogger
 
-ARXIV_PATH = "data/.papers"
 logger = CustomLogger(__name__)
 
 

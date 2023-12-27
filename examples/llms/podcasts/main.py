@@ -18,9 +18,9 @@ from transformers import (
 )
 
 try:
-    from src.utils import get_secret
+    from src.language.utils.secrets import get_secret
 except ModuleNotFoundError:
-    from casper.src.utils import get_secret
+    from casper.src.language.utils.secrets import get_secret
 
 filterwarnings("ignore")
 run_time = datetime.now().strftime("%Y%m%d%H%M%S")
