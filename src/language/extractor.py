@@ -15,8 +15,8 @@ from llama_index.async_utils import run_jobs
 from llama_index.text_splitter import SentenceSplitter
 from llama_index.ingestion import IngestionPipeline
 
-from constants import SUMMARIZATION_PROMPT, PERSIST_DIR
-from utils.logger import CustomLogger
+from src.language.constants import SUMMARIZATION_PROMPT, PERSIST_DIR
+from src.language.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
 os.environ["TOKENIZERS_PARALLELISM"] = "false"

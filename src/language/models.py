@@ -5,8 +5,10 @@ from llama_index.llms.llama_utils import (
 )
 from llama_index.prompts import PromptTemplate
 from llama_index.embeddings import HuggingFaceEmbedding
-from constants import INSTRUCTION_MODEL, EMBEDDING_MODEL, SUMMARIZATION_PROMPT
-from utils.logger import CustomLogger
+
+from src.language.constants import INSTRUCTION_MODEL, EMBEDDING_MODEL
+from src.language.utils.logger import CustomLogger
+
 
 logger = CustomLogger(__name__)
 
@@ -43,11 +45,6 @@ class InstuctModel:
         )
         return self.model.predict(prompt)
 
-    def test(self, context: str, prompt: str = SUMMARIZATION_PROMPT):
-        response = self.generate(prompt, context_str=context)
-
-        logger.info(f"Response: {response}")
-
 
 class EmbeddingModel:
     """
@@ -60,8 +57,3 @@ class EmbeddingModel:
         device="cuda",
     ):
         self.model = HuggingFaceEmbedding(model_name=model_name, device=device)
-
-    def test(self):
-        text = """fleetwood mac"""
-        response = self.model.get_text_embedding(text)
-        logger.info(f"Response: {response}")

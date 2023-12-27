@@ -1,8 +1,8 @@
 import os
 import random
 from llama_index.readers import PDFReader
-from constants import PDF_DIR
-from utils.logger import CustomLogger
+from src.language.constants import PDF_DIR
+from src.language.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
 

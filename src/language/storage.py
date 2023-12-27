@@ -5,7 +5,7 @@ from llama_index.vector_stores import ChromaVectorStore
 from llama_index import VectorStoreIndex
 
 
-from constants import (
+from src.language.constants import (
     PERSIST_DIR,
     COLLECTION_NAME,
 )

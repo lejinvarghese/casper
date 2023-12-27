@@ -1,9 +1,9 @@
 import asyncio
 
-from loaders import PDFLoader
-from models import InstuctModel, EmbeddingModel
-from extractor import Pipeline
-from utils.logger import CustomLogger
+from src.language.loaders import PDFLoader
+from src.language.models import InstuctModel, EmbeddingModel
+from src.language.extractor import Pipeline
+from src.language.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
 

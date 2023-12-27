@@ -1,6 +1,6 @@
-PDF_DIR = "data/.pdfs"
-MODEL_DIR = "data/.models"
-PERSIST_DIR = "data/.storage"
+PDF_DIR = "src/language/data/.pdfs"
+MODEL_DIR = "src/language/data/.models"
+PERSIST_DIR = "src/language/data/.storage"
 
 COLLECTION_NAME = "research"
 

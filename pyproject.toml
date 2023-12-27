@@ -1,0 +1,13 @@
+[tool.pytest.ini_options]
+addopts = [
+    '--cov=src',
+    '--cov-report=xml',
+    '--cov-report=term',
+    '-vv'
+]
+pythonpath = [
+    '.',
+    'src/language',
+    
+]
+testpaths = ['tests']
