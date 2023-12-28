@@ -26,15 +26,5 @@ async def main():
     nodes = await p.run(documents=documents)
     st.create_vector_index(nodes=nodes)
 
-    query_str = "Does emergence really occur in LLMs and if so, when?"
-    response = llm.generate(query_str)
-    logger.warning(f"Raw response: {str(response)}")
-
-    index = st.load_vector_index()
-    query_engine = index.as_query_engine()
-    response = query_engine.query(query_str)
-    logger.info(f"Contextual response: {str(response)}")
-
-
 if __name__ == "__main__":
     asyncio.run(main())
