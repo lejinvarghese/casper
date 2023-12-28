@@ -58,6 +58,9 @@ class EmbeddingModel:
     def __init__(
         self,
         model_name: str = EMBEDDING_MODEL,
+        batch_size: int = 10,
         device="cuda",
     ):
-        self.model = HuggingFaceEmbedding(model_name=model_name, device=device)
+        self.model = HuggingFaceEmbedding(
+            model_name=model_name, device=device, embed_batch_size=batch_size
+        )

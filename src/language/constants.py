@@ -14,3 +14,4 @@ SUMMARIZATION_PROMPT = """<s> [INST] Context: {context_str}. Given this context,
 
         Title: [/INST]
 """
+NUM_WORKERS = 15

@@ -3,7 +3,9 @@ from google.cloud.secretmanager import SecretManagerServiceClient
 PROJECT_ID = "projects-264723"
 
 
-def get_secret(secret_id: str, project_id: str = PROJECT_ID, version: str = "latest"):
+def get_secret(
+    secret_id: str, project_id: str = PROJECT_ID, version: str = "latest"
+):
     """
     Access a secret stored in Google Secret Manager
     """

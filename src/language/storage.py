@@ -36,7 +36,9 @@ class Storage:
         self.chroma_collection = self.chroma_client.get_or_create_collection(
             collection_name
         )
-        self.vector_store = ChromaVectorStore(chroma_collection=self.chroma_collection)
+        self.vector_store = ChromaVectorStore(
+            chroma_collection=self.chroma_collection
+        )
         self.storage_context = StorageContext.from_defaults(
             vector_store=self.vector_store,
             docstore=self.docstore,
@@ -52,4 +54,8 @@ class Storage:
             service_context=self.service_context,
         )
         index.storage_context.persist(persist_dir=self.persist_directory)
-        return index
+
+    def load_vector_index(self) -> VectorStoreIndex:
+        return VectorStoreIndex.from_vector_store(
+            self.vector_store, self.service_context
+        )
