@@ -13,15 +13,17 @@ class CustomFormatter(logging.Formatter):
     red = "\x1b[31;20m"
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
-    format = "%(asctime)s: %(levelname)s: %(message)s (%(filename)s:%(lineno)d)"
 
-    formats = {
-        logging.DEBUG: pink + format + reset,
-        logging.INFO: green + format + reset,
-        logging.WARNING: yellow + format + reset,
-        logging.ERROR: red + format + reset,
-        logging.CRITICAL: bold_red + format + reset,
-    }
+    def __init__(self, message_format="%(asctime)s: %(levelname)s: %(message)s (%(filename)s:%(lineno)d)"):
+        super().__init__()
+        self.message_format = message_format
+        self.formats = {
+            logging.DEBUG: self.pink + self.message_format + self.reset,
+            logging.INFO: self.green + self.message_format + self.reset,
+            logging.WARNING: self.yellow + self.message_format + self.reset,
+            logging.ERROR: self.red + self.message_format + self.reset,
+            logging.CRITICAL: self.bold_red + self.message_format + self.reset,
+        }
 
     def format(self, record):
         log_fmt = self.formats.get(record.levelno)
@@ -33,10 +35,26 @@ class CustomLogger(logging.Logger):
     def __init__(self, name, level=logging.DEBUG):
         logging.Logger.__init__(self, name, level)
 
-        console_handler = logging.StreamHandler(stream=stdout)
-        console_handler.setLevel(level)
+        handler = logging.StreamHandler()
+        handler.setLevel(level)
+        handler.setFormatter(CustomFormatter())
+        self.addHandler(handler)
+        
+    
+class StreamingFormatter(CustomFormatter):
+    
+    def __init__(self, message_format="%(message)s"):
+        super().__init__(message_format)
 
-        console_handler.setFormatter(CustomFormatter())
-
-        self.addHandler(console_handler)
-        return
+class StreamingLogger(logging.Logger):
+    def __init__(self, name, level=logging.DEBUG):
+        logging.Logger.__init__(self, name, level)
+        handler = logging.StreamHandler(stream=stdout)
+        handler.terminator = ""
+        handler.setLevel(level)
+        handler.setFormatter(StreamingFormatter())
+        self.addHandler(handler)
+        
+    def flush(self):
+        self.handlers[0].flush()
+        self.log(logging.INFO, "\n \n")

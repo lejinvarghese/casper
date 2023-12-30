@@ -39,8 +39,8 @@ class InstuctModel:
             verbose=False,
         )
 
-    def generate(self, prompt: str, stream: bool = False, **kwargs) -> str:
-        if stream:
+    def generate(self, prompt: str, streaming: bool = False, **kwargs) -> str:
+        if streaming:
             return self.model.stream_complete(
                 prompt, context_str=kwargs.get("context_str", "")
             )

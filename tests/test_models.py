@@ -54,7 +54,7 @@ def test_response(sample_llm, sample_query):
 
 @pytest.mark.xdist_group(name="llm")
 def test_stream_response(sample_llm, sample_query):
-    response = str(sample_llm.generate(prompt=sample_query, stream=True))
+    response = str(sample_llm.generate(prompt=sample_query, streaming=True))
     assert response is not None
     assert isinstance(response, str)
     assert len(response) > 0
