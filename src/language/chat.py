@@ -7,7 +7,7 @@ st_logger = StreamingLogger(__name__)
 llm = InstuctModel()
 emb = EmbeddingModel(device="cuda")
 index = Storage(llm=llm.model, embed_model=emb.model).load_vector_index()
-chat_engine = index.as_chat_engine(chat_mode="condense_question", verbose=True)
+chat_engine = index.as_chat_engine(chat_mode="condense_plus_context", verbose=False)
 
 def main():
         while True:
