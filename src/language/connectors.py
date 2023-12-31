@@ -1,8 +1,9 @@
 import os
 from typing import List, Union
 from arxiv import Client, Search, Result, SortCriterion
+from llama_index import download_loader
+from llama_index.schema import Document
 from src.language.core import Connector
-from src.language.constants import PDF_DIR
 from src.language.utils.logger import CustomLogger
 
 logger = CustomLogger(__name__)
@@ -15,13 +16,14 @@ class ArxivConnector(Connector):
 
     def __init__(
         self,
-        destination_path: str,
+        destination_path: str = None,
         page_size: int = 10,
         delay_seconds: float = 10.0,
         num_retries: int = 20,
     ):
         self._source = "arxiv"
-        os.makedirs(destination_path, exist_ok=True)
+        if destination_path:
+            os.makedirs(destination_path, exist_ok=True)
         self._destination = destination_path
         self._client = Client(
             page_size=page_size,
@@ -52,7 +54,7 @@ class ArxivConnector(Connector):
             self._download_articles(results)
         return results
 
-    def get_articles_by_query(
+    def get_articles_by_topic(
         self,
         query: str,
         max_results: int = 5,
@@ -77,14 +79,26 @@ class ArxivConnector(Connector):
         return [a.download_pdf(dirpath=self._destination) for a in articles]
 
 
-if __name__ == "__main__":
-    articles = ["2305.18290", "2304.15004", "2312.08782"]
-    query = "complexity and emergence in large language models"
+class WebConnector(Connector):
+    """
+    A connector to text on the web.
+    """
+    def __init__(
+        self
+    ):
+        self._source = "web"
+        self._destination = "db"
+        self.web_reader = download_loader("BeautifulSoupWebReader")()
+        
+    @property
+    def source(self) -> str:
+        return self._source
 
-    ax = ArxivConnector(destination_path=PDF_DIR)
-    results = ax.get_articles_by_ids(articles)
-    for r in results:
-        logger.info(r.title)
-    results = ax.get_articles_by_query(query)
-    for r in results:
-        logger.info(r.title)
+    @property
+    def destination(self) -> str:
+        return self._destination
+    
+    def get_articles_by_urls(self, urls: Union[List[str], str], custom_hostname: str = None) -> List[Document]:
+        if not isinstance(urls, List):
+            urls = [urls]
+        return self.web_reader.load_data(urls=urls, custom_hostname=custom_hostname)
