@@ -7,10 +7,10 @@ from llama_index.prompts import PromptTemplate
 from llama_index.embeddings import HuggingFaceEmbedding
 
 from src.language.constants import INSTRUCTION_MODEL, EMBEDDING_MODEL
-from src.language.utils.logger import CustomLogger
+from src.language.utils.logger import BaseLogger
 
 
-logger = CustomLogger(__name__)
+logger = BaseLogger(__name__)
 
 
 class InstuctModel:

@@ -4,9 +4,9 @@ from arxiv import Client, Search, Result, SortCriterion
 from llama_index import download_loader
 from llama_index.schema import Document
 from src.language.core import Connector
-from src.language.utils.logger import CustomLogger
+from src.language.utils.logger import BaseLogger
 
-logger = CustomLogger(__name__)
+logger = BaseLogger(__name__)
 
 
 class ArxivConnector(Connector):

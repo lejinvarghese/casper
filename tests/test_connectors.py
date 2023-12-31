@@ -4,9 +4,9 @@ from arxiv import Result
 from llama_index.schema import Document
 
 from connectors import ArxivConnector, WebConnector
-from utils.logger import CustomLogger
+from utils.logger import BaseLogger
 
-logger = CustomLogger(__name__)
+logger = BaseLogger(__name__)
 
 
 @pytest.fixture

@@ -4,9 +4,9 @@ from src.language.loaders import PDFLoader
 from src.language.models import InstuctModel, EmbeddingModel
 from src.language.extractor import Pipeline
 from src.language.storage import Storage
-from src.language.utils.logger import CustomLogger
+from src.language.utils.logger import BaseLogger
 
-logger = CustomLogger(__name__)
+logger = BaseLogger(__name__)
 
 llm = InstuctModel()
 emb = EmbeddingModel(batch_size=32, device="cpu")

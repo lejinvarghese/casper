@@ -2,9 +2,9 @@ import pytest
 from typing import List
 
 from models import InstuctModel, EmbeddingModel
-from utils.logger import CustomLogger
+from utils.logger import BaseLogger
 
-logger = CustomLogger(__name__)
+logger = BaseLogger(__name__)
 
 EMBEDDING_SIZE = 384
 BOS, EOS = "<s>", "</s>"

@@ -2,7 +2,7 @@ import logging
 from sys import stdout
 
 
-class CustomFormatter(logging.Formatter):
+class BaseFormatter(logging.Formatter):
     grey = "\x1b[38;20m"
     pink = "\x1b[38;5;219m"
     aqua = "\x1b[38;5;51m" 
@@ -31,17 +31,17 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-class CustomLogger(logging.Logger):
+class BaseLogger(logging.Logger):
     def __init__(self, name, level=logging.DEBUG):
         logging.Logger.__init__(self, name, level)
 
         handler = logging.StreamHandler()
         handler.setLevel(level)
-        handler.setFormatter(CustomFormatter())
+        handler.setFormatter(BaseFormatter())
         self.addHandler(handler)
         
     
-class StreamingFormatter(CustomFormatter):
+class StreamingFormatter(BaseFormatter):
     
     def __init__(self, message_format="%(message)s"):
         super().__init__(message_format)
