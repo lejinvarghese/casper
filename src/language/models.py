@@ -22,7 +22,7 @@ class InstuctModel:
         self,
         model_path: str = INSTRUCTION_MODEL,
         temperature: float = 0.0,
-        max_new_tokens: int = 256,
+        max_new_tokens: int = 1024,
         context_window: int = 3000,
         generate_kwargs: dict = {},
         model_kwargs: dict = {"n_gpu_layers": 50},
