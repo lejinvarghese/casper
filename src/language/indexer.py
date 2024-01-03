@@ -1,8 +1,8 @@
 import asyncio
 
-from src.language.loaders import PDFLoader
-from src.language.models import InstuctModel, EmbeddingModel
 from src.language.extractor import Pipeline
+from src.language.loaders import PDFLoader
+from src.language.models import EmbeddingModel, InstuctModel
 from src.language.storage import Storage
 from src.language.utils.logger import BaseLogger
 

@@ -8,8 +8,9 @@ def get_secret(secret_id: str, project_id: str = None, version: str = "latest"):
     Access a secret stored in Google Secret Manager
     """
     if not project_id:
-        from dotenv import load_dotenv
         from os import getenv
+
+        from dotenv import load_dotenv
 
         load_dotenv()
         return getenv(secret_id)

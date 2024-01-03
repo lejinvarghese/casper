@@ -1,14 +1,10 @@
-from llama_index.llms import LlamaCPP
-from llama_index.llms.llama_utils import (
-    messages_to_prompt,
-    completion_to_prompt,
-)
-from llama_index.prompts import PromptTemplate
 from llama_index.embeddings import HuggingFaceEmbedding
-
-from src.language.constants import INSTRUCTION_MODEL, EMBEDDING_MODEL
+from llama_index.llms import LlamaCPP
+from llama_index.llms.llama_utils import (completion_to_prompt,
+                                          messages_to_prompt)
+from llama_index.prompts import PromptTemplate
+from src.language.constants import EMBEDDING_MODEL, INSTRUCTION_MODEL
 from src.language.utils.logger import BaseLogger
-
 
 logger = BaseLogger(__name__)
 
@@ -41,9 +37,13 @@ class InstuctModel:
 
     def generate(self, prompt: str, streaming: bool = False, **kwargs) -> str:
         if streaming:
-            return self.model.stream_complete(prompt, context_str=kwargs.get("context_str", ""))
+            return self.model.stream_complete(
+                prompt, context_str=kwargs.get("context_str", "")
+            )
         else:
-            return self.model.complete(prompt, context_str=kwargs.get("context_str", ""))
+            return self.model.complete(
+                prompt, context_str=kwargs.get("context_str", "")
+            )
 
 
 class EmbeddingModel:
