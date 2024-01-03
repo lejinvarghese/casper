@@ -1,8 +1,8 @@
-import logging
+from  logging import Logger, StreamHandler, Formatter, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from sys import stdout
 
 
-class BaseFormatter(logging.Formatter):
+class BaseFormatter(Formatter):
     grey = "\x1b[38;20m"
     pink = "\x1b[38;5;219m"
     aqua = "\x1b[38;5;51m" 
@@ -18,24 +18,24 @@ class BaseFormatter(logging.Formatter):
         super().__init__()
         self.message_format = message_format
         self.formats = {
-            logging.DEBUG: self.pink + self.message_format + self.reset,
-            logging.INFO: self.green + self.message_format + self.reset,
-            logging.WARNING: self.yellow + self.message_format + self.reset,
-            logging.ERROR: self.red + self.message_format + self.reset,
-            logging.CRITICAL: self.bold_red + self.message_format + self.reset,
+            DEBUG: self.pink + self.message_format + self.reset,
+            INFO: self.green + self.message_format + self.reset,
+            WARNING: self.yellow + self.message_format + self.reset,
+            ERROR: self.red + self.message_format + self.reset,
+            CRITICAL: self.bold_red + self.message_format + self.reset,
         }
 
     def format(self, record):
         log_fmt = self.formats.get(record.levelno)
-        formatter = logging.Formatter(log_fmt)
+        formatter = Formatter(log_fmt)
         return formatter.format(record)
 
 
-class BaseLogger(logging.Logger):
-    def __init__(self, name, level=logging.DEBUG):
-        logging.Logger.__init__(self, name, level)
+class BaseLogger(Logger):
+    def __init__(self, name, level=DEBUG):
+        Logger.__init__(self, name, level)
 
-        handler = logging.StreamHandler()
+        handler = StreamHandler()
         handler.setLevel(level)
         handler.setFormatter(BaseFormatter())
         self.addHandler(handler)
@@ -46,10 +46,10 @@ class StreamingFormatter(BaseFormatter):
     def __init__(self, message_format="%(message)s"):
         super().__init__(message_format)
 
-class StreamingLogger(logging.Logger):
-    def __init__(self, name, level=logging.DEBUG):
-        logging.Logger.__init__(self, name, level)
-        handler = logging.StreamHandler(stream=stdout)
+class StreamingLogger(Logger):
+    def __init__(self, name, level=DEBUG):
+        Logger.__init__(self, name, level)
+        handler = StreamHandler(stream=stdout)
         handler.terminator = ""
         handler.setLevel(level)
         handler.setFormatter(StreamingFormatter())
@@ -57,4 +57,4 @@ class StreamingLogger(logging.Logger):
         
     def flush(self):
         self.handlers[0].flush()
-        self.log(logging.INFO, "\n \n")
+        self.log(INFO, "\n \n")
