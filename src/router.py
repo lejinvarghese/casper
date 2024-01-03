@@ -15,9 +15,8 @@ from telegram.ext import (
 
 from src.language.chat import chat_engine
 
-logger = BaseLogger(__name__)
 TELEGRAM_TOKEN = get_secret("TELEGRAM_TOKEN")
-
+logger = BaseLogger(__name__)
 query = range(2)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -71,4 +70,4 @@ def main() -> None:
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
- main()
+    main()
