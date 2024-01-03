@@ -32,6 +32,8 @@ python3 -m src.language.chat
 Add environment variables to `.env` file. This requires an environment variable with your Telegram bot token `TELEGRAM_TOKEN`.
 
 ```bash
+python3 -m src.router
+```
 
 ## Development
     
