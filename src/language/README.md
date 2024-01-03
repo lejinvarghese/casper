@@ -2,49 +2,40 @@
 
 ## Get Started
 
-###  Default 
+### Step 1: Set up environment
+
 ```bash
-python3.10 -m venv .venv
-source .venv/bin/activate
-pip3 install -r requirements.txt
+source src/language/setup.sh
 ```
 
-### Llama CPP
+### Step 2: Index Documents
+
 ```bash
-CMAKE_ARGS="-DLLAMA_CUBLAS=on" pip install llama-cpp-python==0.2.25
-
-# optional: if errors that cant find GLIBCXX_3.4.30
-SRC_PATH=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30
-DST_PATH=/home/xx/anaconda3/bin/../lib
-rm ${DST_PATH}/libstdc++.so.6
-cp ${SRC_PATH} ${DST_PATH}
-ln -s ${SRC_PATH} ${DST_PATH}/libstdc++.so.6
-
-# download huggingface model, instructions: https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-GGUF
-MODEL_DIR = "data/.models"
-MODEL_NAME=TheBloke/Mistral-7B-Instruct-v0.2-GGUF
-QUANT_VERSION=mistral-7b-instruct-v0.2.Q3_K_S.gguf #largest that can fit in a 6GB GPU
-huggingface-cli download ${MODEL_NAME} ${QUANT_VERSION} --local-dir ./${MODEL_DIR}/ --local-dir-use-symlinks False
-```
-
-### Optional: Jupyter
-```bash
-python -m ipykernel install --user --name=.venv --display-name="mistral_u"
-```
-
-## Run
-```bash
-
-cd ../.. #make sure you are in the root directory
-
-## 1. preprocess
 python3 -m src.language.indexer
+```
 
-## 2. run tests
+### Step 3: Compare  LLM Completions with the RAG Completions
+
+```bash
+python3 -m src.language.completion
+```
+
+### Step 4: Chat with the model
+
+```bash
+python3 -m src.language.chat
+```
+
+## Development
+    
+### Run Tests
+
+```bash
 pytest .
 ```
+## Samples
 
-## RAG
+### RAG
 
 ```md
 Query: "Does emergence in LLMs really happen and when?"
@@ -52,7 +43,7 @@ Query: "Does emergence in LLMs really happen and when?"
 
 ![x](../../assets/rag.png)
 
-## Roast Battle
+### Roast Battle
 
 [INST] Imagine: A roast battle between comedians Andrew Schulz, Kevin Hart and Whitney Cummings. Be true to each character and their causes. Be short, impactful and crisp. [/INST]
 
