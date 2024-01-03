@@ -26,6 +26,13 @@ python3 -m src.language.completion
 python3 -m src.language.chat
 ```
 
+## Bot
+
+### Step 1: Set up environment
+Add environment variables to `.env` file. This requires an environment variable with your Telegram bot token `TELEGRAM_TOKEN`.
+
+```bash
+
 ## Development
     
 ### Run Tests
