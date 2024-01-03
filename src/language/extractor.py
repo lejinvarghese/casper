@@ -47,10 +47,7 @@ class CustomTitleExtractor(BaseExtractor):
         )
 
     async def aextract(self, nodes: Sequence[BaseNode]) -> List[Dict]:
-        jobs = [
-            self.llm.apredict(self.prompt, context_str=node.text)
-            for node in nodes
-        ]
+        jobs = [self.llm.apredict(self.prompt, context_str=node.text) for node in nodes]
         tasks = await run_jobs(jobs, show_progress=self.show_progress)
         return [{"node_title": t.strip(' \t\n\r"')} for t in tasks]
 
@@ -81,9 +78,7 @@ class Pipeline:
                 device="cuda",
                 num_workers=self.num_workers,
             ),
-            KeywordExtractor(
-                keywords=keywords, llm=llm, num_workers=self.num_workers
-            ),
+            KeywordExtractor(keywords=keywords, llm=llm, num_workers=self.num_workers),
             CustomTitleExtractor(
                 llm=llm,
                 prompt=prompt,
@@ -107,15 +102,11 @@ class Pipeline:
     async def _extract_metadata(
         self, documents: List[Document], verbose: bool = True
     ) -> List[TextNode]:
-        return await self.pipeline.arun(
-            documents=documents, show_progress=verbose
-        )
+        return await self.pipeline.arun(documents=documents, show_progress=verbose)
 
     def _extract_embeddings(self, nodes: List[TextNode]) -> List[TextNode]:
         for node in nodes:
-            node.metadata["entities"] = ", ".join(
-                node.metadata.get("entities", [])
-            )
+            node.metadata["entities"] = ", ".join(node.metadata.get("entities", []))
             node.embedding = self.embed_model.get_text_embedding(
                 node.get_content(metadata_mode="all")
             )

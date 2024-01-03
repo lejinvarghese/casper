@@ -24,8 +24,7 @@ class PDFLoader:
         random_seed: int = 42,
     ):
         documents = [
-            self._loader.load_data(os.path.join(self._source_path, i))
-            for i in self._files
+            self._loader.load_data(os.path.join(self._source_path, i)) for i in self._files
         ]
         documents = [c for d in documents for c in d]
         if randomize:

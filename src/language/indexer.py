@@ -26,5 +26,6 @@ async def main():
     nodes = await p.run(documents=documents)
     st.create_vector_index(nodes=nodes)
 
+
 if __name__ == "__main__":
     asyncio.run(main())

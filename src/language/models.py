@@ -41,13 +41,9 @@ class InstuctModel:
 
     def generate(self, prompt: str, streaming: bool = False, **kwargs) -> str:
         if streaming:
-            return self.model.stream_complete(
-                prompt, context_str=kwargs.get("context_str", "")
-            )
+            return self.model.stream_complete(prompt, context_str=kwargs.get("context_str", ""))
         else:
-            return self.model.complete(
-                prompt, context_str=kwargs.get("context_str", "")
-            )
+            return self.model.complete(prompt, context_str=kwargs.get("context_str", ""))
 
 
 class EmbeddingModel:

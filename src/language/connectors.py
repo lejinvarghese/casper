@@ -39,9 +39,7 @@ class ArxivConnector(Connector):
     def destination(self) -> str:
         return self._destination
 
-    def get_articles_by_ids(
-        self, ids=Union[List[str], str], download: bool = True
-    ) -> List[Result]:
+    def get_articles_by_ids(self, ids=Union[List[str], str], download: bool = True) -> List[Result]:
         if not isinstance(ids, List):
             ids = [ids]
         search = Search(id_list=ids)
@@ -83,13 +81,12 @@ class WebConnector(Connector):
     """
     A connector to text on the web.
     """
-    def __init__(
-        self
-    ):
+
+    def __init__(self):
         self._source = "web"
         self._destination = "db"
         self.web_reader = download_loader("BeautifulSoupWebReader")()
-        
+
     @property
     def source(self) -> str:
         return self._source
@@ -97,8 +94,10 @@ class WebConnector(Connector):
     @property
     def destination(self) -> str:
         return self._destination
-    
-    def get_articles_by_urls(self, urls: Union[List[str], str], custom_hostname: str = None) -> List[Document]:
+
+    def get_articles_by_urls(
+        self, urls: Union[List[str], str], custom_hostname: str = None
+    ) -> List[Document]:
         if not isinstance(urls, List):
             urls = [urls]
         return self.web_reader.load_data(urls=urls, custom_hostname=custom_hostname)

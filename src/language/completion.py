@@ -10,21 +10,23 @@ emb = EmbeddingModel()
 index = Storage(llm=llm.model, embed_model=emb.model).load_vector_index()
 query_engine = index.as_query_engine(streaming=True)
 
+
 def main():
-        while True:
-            streaming_logger.debug("Enter your query: \n")
-            user_query = input()
-            response = llm.generate(user_query, streaming=True)
-            base_logger.debug("Raw response:")
-            for r in response:
-                streaming_logger.debug(r.delta)
-            streaming_logger.flush()
-            
-            response = query_engine.query(user_query)
-            base_logger.info("Contextual response:")
-            for r in response.response_gen:
-                streaming_logger.info(r)
-            streaming_logger.flush()
-            
+    while True:
+        streaming_logger.debug("Enter your query: \n")
+        user_query = input()
+        response = llm.generate(user_query, streaming=True)
+        base_logger.debug("Raw response:")
+        for r in response:
+            streaming_logger.debug(r.delta)
+        streaming_logger.flush()
+
+        response = query_engine.query(user_query)
+        base_logger.info("Contextual response:")
+        for r in response.response_gen:
+            streaming_logger.info(r)
+        streaming_logger.flush()
+
+
 if __name__ == "__main__":
     main()
