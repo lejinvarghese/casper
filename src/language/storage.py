@@ -31,9 +31,7 @@ class Storage:
         self.chroma_collection = self.chroma_client.get_or_create_collection(
             collection_name
         )
-        self.vector_store = ChromaVectorStore(
-            chroma_collection=self.chroma_collection
-        )
+        self.vector_store = ChromaVectorStore(chroma_collection=self.chroma_collection)
         self.storage_context = StorageContext.from_defaults(
             vector_store=self.vector_store,
             docstore=self.docstore,

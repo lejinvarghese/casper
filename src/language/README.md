@@ -8,6 +8,11 @@
 source src/language/setup.sh
 ```
 
+temporary:
+```bash
+pip3 install "git+https://github.com/huggingface/transformers.git#egg=transformers[agents]"
+```
+
 ### Step 2: Index Documents
 
 ```bash

@@ -1,5 +1,13 @@
-from logging import (CRITICAL, DEBUG, ERROR, INFO, WARNING, Formatter, Logger,
-                     StreamHandler)
+from logging import (
+    CRITICAL,
+    DEBUG,
+    ERROR,
+    INFO,
+    WARNING,
+    Formatter,
+    Logger,
+    StreamHandler,
+)
 from sys import stdout
 
 

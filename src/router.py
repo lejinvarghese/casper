@@ -19,6 +19,7 @@ TELEGRAM_TOKEN = get_secret("TELEGRAM_TOKEN")
 logger = BaseLogger(__name__)
 query = range(2)
 
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Starts the conversation and asks the user about their gender."""
 
@@ -29,8 +30,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
     return query
 
+
 async def query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    """Receives a query and answers a question """
+    """Receives a query and answers a question"""
     user = update.message.from_user
     user_query = update.message.text
     logger.info(f"User {user.first_name}: {user_query}")
@@ -42,6 +44,7 @@ async def query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
 
     return query
 
+
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancels and ends the conversation."""
     user = update.message.from_user
@@ -51,6 +54,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     )
 
     return ConversationHandler.END
+
 
 def main() -> None:
     """Run the bot."""
@@ -69,5 +73,6 @@ def main() -> None:
 
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

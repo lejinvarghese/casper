@@ -103,6 +103,4 @@ class WebConnector(Connector):
     ) -> List[Document]:
         if not isinstance(urls, List):
             urls = [urls]
-        return self.web_reader.load_data(
-            urls=urls, custom_hostname=custom_hostname
-        )
+        return self.web_reader.load_data(urls=urls, custom_hostname=custom_hostname)

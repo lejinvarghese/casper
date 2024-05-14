@@ -1,4 +1,4 @@
-transformers==4.40.2
+transformers[agents]==4.40.2
 huggingface==0.0.1
 torch==2.1.2
 bitsandbytes==0.41.3.post2
@@ -17,3 +17,5 @@ pytest==7.4.3
 pytest-xdist==3.5.0
 pytest-cov==4.1.0
 py==1.11.0
+faiss-gpu==1.7.2
+langchain==0.1.20
