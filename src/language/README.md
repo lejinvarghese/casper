@@ -11,19 +11,19 @@ source src/language/setup.sh
 ### Step 2: Index Documents
 
 ```bash
-python3 -m src.language.indexer
+python3.10 -m src.language.indexer
 ```
 
 ### Step 3: Compare  LLM Completions with the RAG Completions
 
 ```bash
-python3 -m src.language.completion
+python3.10 -m src.language.completion
 ```
 
 ### Step 4: Chat with the model
 
 ```bash
-python3 -m src.language.chat
+python3.10 -m src.language.chat
 ```
 
 ## Bot
@@ -32,7 +32,7 @@ python3 -m src.language.chat
 Add environment variables to `.env` file. This requires an environment variable with your Telegram bot token `TELEGRAM_TOKEN`.
 
 ```bash
-python3 -m src.router
+python3.10 -m src.router
 ```
 
 ## Development
