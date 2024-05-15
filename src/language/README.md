@@ -45,7 +45,7 @@ python3.10 -m src.router
 ### Run Tests
 
 ```bash
-pytest .
+python3.10 -m pytest .
 ```
 ## Samples
 
