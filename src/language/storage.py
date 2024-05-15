@@ -67,6 +67,7 @@ class FaissVectorStore:
         self.embed_model = HuggingFaceEmbeddings(
             model_name=EMBEDDING_MODEL, model_kwargs={"trust_remote_code": True}
         )
+        self.db, self.sources = self.create()
 
     def __preprocess(self):
         source_docs = [

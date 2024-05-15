@@ -9,8 +9,8 @@ from src.language.models import AgentModel
 filterwarnings("ignore")
 logger = BaseLogger(__name__)
 llm = AgentModel()
-db, sources = FaissVectorStore().create()
-agent = ReactJsonAgent(tools=[RetrieverTool(db, sources)], llm_engine=llm.model)
+vs = FaissVectorStore()
+agent = ReactJsonAgent(tools=[RetrieverTool(vs.db, vs.sources)], llm_engine=llm.model)
 
 agent_output = agent.run("Show me a finetuning script for embeddings.")
 logger.info(f"Final output: {agent_output}")
