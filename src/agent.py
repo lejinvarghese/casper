@@ -1,9 +1,9 @@
 from transformers.agents import ReactJsonAgent
 from warnings import filterwarnings
-from src.language.utils.logger import BaseLogger
-from src.language.utils.tools import RetrieverTool
-from src.language.storage import FaissVectorStore
-from src.language.models import AgentModel
+from src.utils.logger import BaseLogger
+from src.utils.tools import RetrieverTool
+from src.storage import FaissVectorStore
+from src.models import AgentModel
 
 
 filterwarnings("ignore")

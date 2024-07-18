@@ -1,7 +1,7 @@
 
 #!/bin/bash
 
-ROOT_DIR=$(pwd)/src/language
+ROOT_DIR=$(pwd)/src
 ENVIRONMENT_NAME=".venv"
 
 # step 1: create virtual environment

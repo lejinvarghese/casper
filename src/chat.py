@@ -1,6 +1,6 @@
-from src.language.models import EmbeddingModel, InstuctModel
-from src.language.storage import Storage
-from src.language.utils.logger import StreamingLogger
+from src.models import EmbeddingModel, InstuctModel
+from src.storage import Storage
+from src.utils.logger import StreamingLogger
 
 logger = StreamingLogger(__name__)
 llm = InstuctModel()

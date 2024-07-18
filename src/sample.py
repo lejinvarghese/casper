@@ -1,6 +1,6 @@
 import torch
 from llama_cpp import Llama
-from src.language.constants import MODEL_DIR, QUANT_VERSION
+from src.constants import MODEL_DIR, QUANT_VERSION
 
 MODEL_PATH = f"./{MODEL_DIR}/{QUANT_VERSION}"
 

@@ -1,10 +1,10 @@
 import asyncio
 
-from src.language.extractor import Pipeline
-from src.language.loaders import PDFLoader
-from src.language.models import EmbeddingModel, InstuctModel
-from src.language.storage import Storage
-from src.language.utils.logger import BaseLogger
+from src.extractor import Pipeline
+from src.loaders import PDFLoader
+from src.models import EmbeddingModel, InstuctModel
+from src.storage import Storage
+from src.utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
 

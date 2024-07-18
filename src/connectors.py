@@ -4,8 +4,8 @@ from typing import List, Union
 from arxiv import Client, Result, Search, SortCriterion
 from llama_index import download_loader
 from llama_index.schema import Document
-from src.language.core import Connector
-from src.language.utils.logger import BaseLogger
+from src.core import Connector
+from src.utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
 
@@ -40,9 +40,7 @@ class ArxivConnector(Connector):
     def destination(self) -> str:
         return self._destination
 
-    def get_articles_by_ids(
-        self, ids=Union[List[str], str], download: bool = True
-    ) -> List[Result]:
+    def get_articles_by_ids(self, ids=Union[List[str], str], download: bool = True) -> List[Result]:
         if not isinstance(ids, List):
             ids = [ids]
         search = Search(id_list=ids)
@@ -98,9 +96,7 @@ class WebConnector(Connector):
     def destination(self) -> str:
         return self._destination
 
-    def get_articles_by_urls(
-        self, urls: Union[List[str], str], custom_hostname: str = None
-    ) -> List[Document]:
+    def get_articles_by_urls(self, urls: Union[List[str], str], custom_hostname: str = None) -> List[Document]:
         if not isinstance(urls, List):
             urls = [urls]
         return self.web_reader.load_data(urls=urls, custom_hostname=custom_hostname)

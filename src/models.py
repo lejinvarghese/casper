@@ -2,8 +2,8 @@ from llama_index.embeddings import HuggingFaceEmbedding
 from llama_index.llms import LlamaCPP
 from llama_index.llms.llama_utils import completion_to_prompt, messages_to_prompt
 from transformers.agents import HfEngine
-from src.language.constants import EMBEDDING_MODEL, INSTRUCTION_MODEL, AGENT_MODEL
-from src.language.utils.logger import BaseLogger
+from src.constants import EMBEDDING_MODEL, INSTRUCTION_MODEL, AGENT_MODEL
+from src.utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
 
@@ -36,13 +36,9 @@ class InstuctModel:
 
     def generate(self, prompt: str, streaming: bool = False, **kwargs) -> str:
         if streaming:
-            return self.model.stream_complete(
-                prompt, context_str=kwargs.get("context_str", "")
-            )
+            return self.model.stream_complete(prompt, context_str=kwargs.get("context_str", ""))
         else:
-            return self.model.complete(
-                prompt, context_str=kwargs.get("context_str", "")
-            )
+            return self.model.complete(prompt, context_str=kwargs.get("context_str", ""))
 
 
 class EmbeddingModel:
@@ -56,9 +52,7 @@ class EmbeddingModel:
         batch_size: int = 10,
         device="cuda",
     ):
-        self.model = HuggingFaceEmbedding(
-            model_name=model_name, device=device, embed_batch_size=batch_size
-        )
+        self.model = HuggingFaceEmbedding(model_name=model_name, device=device, embed_batch_size=batch_size)
 
 
 class AgentModel:

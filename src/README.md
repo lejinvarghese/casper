@@ -5,7 +5,7 @@
 ### Step 1: Set up environment
 
 ```bash
-source src/language/setup.sh
+source src/setup.sh
 ```
 
 temporary:
@@ -16,19 +16,19 @@ pip3 install "git+https://github.com/huggingface/transformers.git#egg=transforme
 ### Step 2: Index Documents
 
 ```bash
-python3.10 -m src.language.indexer
+python3.10 -m src.indexer
 ```
 
 ### Step 3: Compare  LLM Completions with the RAG Completions
 
 ```bash
-python3.10 -m src.language.completion
+python3.10 -m src.completion
 ```
 
 ### Step 4: Chat with the model
 
 ```bash
-python3.10 -m src.language.chat
+python3.10 -m src.chat
 ```
 
 ## Bot
