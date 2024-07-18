@@ -55,7 +55,7 @@ python3.10 -m pytest .
 Query: "Does emergence in LLMs really happen and when?"
 ```
 
-![x](../../assets/rag.png)
+![x](../assets/rag.png)
 
 ### Roast Battle
 

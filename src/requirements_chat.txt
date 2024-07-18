@@ -1,6 +1,6 @@
 transformers[agents]==4.40.2
 huggingface==0.0.1
-torch==2.1.2
+torch==2.3.1
 bitsandbytes==0.41.3.post2
 accelerate==0.25.0
 scipy==1.10.1
