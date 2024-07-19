@@ -17,7 +17,7 @@ def get_recently_updated_files(directory):
 
 
 # Example usage:
-directory_path = "src/language/data/.pdfs/"
+directory_path = "src/data/.pdfs/"
 recent_files = get_recently_updated_files(directory_path)
 for file, modification_time in recent_files:
     print(f"File: {file}, Last Modified: {modification_time}")

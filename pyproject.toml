@@ -10,7 +10,7 @@ addopts = [
 ]
 pythonpath = [
     '.',
-    'src/language',
+    'src',
     
 ]
 testpaths = ['tests']
