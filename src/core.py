@@ -1,6 +1,7 @@
 """
 Core abstract functionalities.
 """
+
 from abc import ABC, abstractmethod, abstractproperty
 
 

@@ -26,17 +26,23 @@ class Storage:
     ):
         self.persist_directory = persist_directory
         try:
-            self.docstore = SimpleDocumentStore.from_persist_dir(persist_dir=self.persist_directory)
+            self.docstore = SimpleDocumentStore.from_persist_dir(
+                persist_dir=self.persist_directory
+            )
         except FileNotFoundError:
             self.docstore = SimpleDocumentStore()
         self.chroma_client = PersistentClient(path=self.persist_directory)
-        self.chroma_collection = self.chroma_client.get_or_create_collection(collection_name)
+        self.chroma_collection = self.chroma_client.get_or_create_collection(
+            collection_name
+        )
         self.vector_store = ChromaVectorStore(chroma_collection=self.chroma_collection)
         self.storage_context = StorageContext.from_defaults(
             vector_store=self.vector_store,
             docstore=self.docstore,
         )
-        self.service_context = ServiceContext.from_defaults(llm=llm, embed_model=embed_model)
+        self.service_context = ServiceContext.from_defaults(
+            llm=llm, embed_model=embed_model
+        )
 
     def create_vector_index(self, nodes: List[TextNode]) -> None:
         index = VectorStoreIndex(
@@ -47,7 +53,9 @@ class Storage:
         index.storage_context.persist(persist_dir=self.persist_directory)
 
     def load_vector_index(self) -> VectorStoreIndex:
-        return VectorStoreIndex.from_vector_store(self.vector_store, self.service_context)
+        return VectorStoreIndex.from_vector_store(
+            self.vector_store, self.service_context
+        )
 
 
 class FaissVectorStore:
@@ -56,7 +64,9 @@ class FaissVectorStore:
         dataset_name: str = "m-ric/huggingface_doc",
     ):
         self.dataset = load_dataset(dataset_name, split="train")
-        self.embed_model = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL, model_kwargs={"trust_remote_code": True})
+        self.embed_model = HuggingFaceEmbeddings(
+            model_name=EMBEDDING_MODEL, model_kwargs={"trust_remote_code": True}
+        )
         self.db, self.sources = self.create()
 
     def __preprocess(self):
@@ -67,7 +77,9 @@ class FaissVectorStore:
             )
             for doc in self.dataset
         ]
-        docs = RecursiveCharacterTextSplitter(chunk_size=500).split_documents(source_docs)[:1000]
+        docs = RecursiveCharacterTextSplitter(chunk_size=500).split_documents(
+            source_docs
+        )[:1000]
         return docs
 
     def create(self):

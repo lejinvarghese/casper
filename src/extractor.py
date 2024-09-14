@@ -89,17 +89,23 @@ class Pipeline:
         logger.info(f"Ingested {len(nodes)} nodes")
         return nodes
 
-    async def _extract_metadata(self, documents: List[Document], verbose: bool = True) -> List[TextNode]:
+    async def _extract_metadata(
+        self, documents: List[Document], verbose: bool = True
+    ) -> List[TextNode]:
         return await self.pipeline.arun(documents=documents, show_progress=verbose)
 
     def _extract_embeddings(self, nodes: List[TextNode]) -> List[TextNode]:
         for node in nodes:
             node.metadata["entities"] = ", ".join(node.metadata.get("entities", []))
-            node.embedding = self.embed_model.get_text_embedding(node.get_content(metadata_mode="all"))
+            node.embedding = self.embed_model.get_text_embedding(
+                node.get_content(metadata_mode="all")
+            )
         return nodes
 
     def __setup_pipeline(self) -> None:
-        self.pipeline = IngestionPipeline(transformations=self.transformations, docstore=self.storage.docstore)
+        self.pipeline = IngestionPipeline(
+            transformations=self.transformations, docstore=self.storage.docstore
+        )
         try:
             self.pipeline.load(PERSIST_DIR)
         except FileNotFoundError:

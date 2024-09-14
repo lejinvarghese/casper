@@ -10,6 +10,8 @@ from logging import (
 )
 from sys import stdout
 
+mutated_colors = {"red_salmon": (250, 128, 114), "green_lawn": (124, 252, 0)}
+
 
 class BaseFormatter(Formatter):
     grey = "\x1b[38;20m"
