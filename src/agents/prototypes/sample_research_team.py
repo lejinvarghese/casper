@@ -8,7 +8,7 @@ os.environ["OPENAI_API_KEY"] = get_secret("OPENAI_API_KEY")
 
 
 @click.command()
-@click.option("--model_name", default="gpt-3.5-turbo", help="Model name")
+@click.option("--model_name", default="gpt-4o-mini", help="Model name")
 @click.option("--temperature", default=0.7, help="Temperature")
 def main(model_name, temperature):
     click.secho("Welcome to the crew!", fg="blue")

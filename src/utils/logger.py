@@ -10,7 +10,17 @@ from logging import (
 )
 from sys import stdout
 
-mutated_colors = {"red_salmon": (250, 128, 114), "green_lawn": (124, 252, 0)}
+m_colors = {
+    "red": (255, 69, 0),
+    "green": (0, 250, 154),
+    "yellow": (252, 255, 156),
+    "warning": (255, 165, 0),
+    "aqua": (127, 255, 212),
+    "blue": (100, 149, 237),
+    "pink": (255, 105, 180),
+    "white": (255, 240, 245),
+    "ghost": (240, 255, 240),
+}
 
 
 class BaseFormatter(Formatter):
