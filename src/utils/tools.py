@@ -1,4 +1,6 @@
 import json
+from PIL import Image
+from io import BytesIO
 from langchain_core.vectorstores import VectorStore
 from transformers.agents import Tool
 
