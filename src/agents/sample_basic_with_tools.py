@@ -13,6 +13,9 @@ from langchain_core.messages.ai import AIMessage
 
 from langchain_community.tools import DuckDuckGoSearchResults
 from langgraph.prebuilt import ToolNode, tools_condition
+from langgraph.checkpoint.memory import MemorySaver
+
+
 from src.utils.secrets import get_secret
 from src.utils.logger import m_colors
 from src.utils.plot import draw_langgraph
@@ -82,6 +85,7 @@ def main(model_name, temperature):
         return {"messages": [llm.invoke(state.get("messages", []))]}
 
     tool_nodes = ToolNode(tools=tools)
+    memory = MemorySaver()
 
     graph_builder = StateGraph(State)
     graph_builder.add_node("chatbot", chatbot)
@@ -89,7 +93,7 @@ def main(model_name, temperature):
     graph_builder.add_node("tools", tool_nodes)
     graph_builder.add_conditional_edges("chatbot", tools_condition)
     graph_builder.add_edge("tools", "chatbot")
-    graph = graph_builder.compile()
+    graph = graph_builder.compile(checkpointer=memory)
     draw_langgraph(graph)
 
     while True:
@@ -100,7 +104,11 @@ def main(model_name, temperature):
                 fg=m_colors.get("yellow"),
             )
             break
-        for event in graph.stream({"messages": ("user", user_input)}):
+        events = graph.stream(
+            {"messages": ("user", user_input)},
+            config={"configurable": {"thread_id": "main"}},
+        )
+        for event in events:
             for value in event.values():
                 message = value.get("messages")[-1]
                 text = message.content
