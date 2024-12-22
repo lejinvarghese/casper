@@ -23,7 +23,7 @@ from src.utils.plot import draw_langgraph
 os.environ["OPENAI_API_KEY"] = get_secret("OPENAI_API_KEY")
 
 ROOT_DIR = os.getcwd()
-STORAGE_PATH = f"{ROOT_DIR}/src/agents/storage/agent_store.db"
+STORAGE_PATH = f"{ROOT_DIR}/src/agents/.db/agent_store.db"
 
 
 class State(TypedDict):
