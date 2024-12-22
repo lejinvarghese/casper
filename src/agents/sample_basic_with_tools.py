@@ -18,7 +18,6 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 
 from src.utils.secrets import get_secret
 from src.utils.logger import m_colors
-from src.utils.plot import draw_langgraph
 
 os.environ["OPENAI_API_KEY"] = get_secret("OPENAI_API_KEY")
 
@@ -105,7 +104,6 @@ def main(model_name, temperature, thread_id):
 
     with memory as context:
         app = graph_builder.compile(checkpointer=context)
-        # draw_langgraph(graph)
 
         while True:
             user_input = click.prompt(click.style("User", fg=m_colors.get("pink")))

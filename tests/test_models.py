@@ -1,7 +1,7 @@
 import pytest
 from typing import List
 
-from models import InstuctModel, EmbeddingModel
+from models import InstructModel, EmbeddingModel
 from utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
@@ -18,7 +18,7 @@ def sample_query():
 
 @pytest.fixture
 def sample_llm():
-    return InstuctModel()
+    return InstructModel()
 
 
 def test_embedding(sample_query):

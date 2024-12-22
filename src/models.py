@@ -8,7 +8,7 @@ from src.utils.logger import BaseLogger
 logger = BaseLogger(__name__)
 
 
-class InstuctModel:
+class InstructModel:
     """
     An instruct model that accepts instructions and generates completions.
     """

@@ -1,9 +1,9 @@
-from src.models import EmbeddingModel, InstuctModel
+from src.models import EmbeddingModel, InstructModel
 from src.storage import Storage
 from src.utils.logger import StreamingLogger
 
 logger = StreamingLogger(__name__)
-llm = InstuctModel()
+llm = InstructModel()
 emb = EmbeddingModel()
 index = Storage(llm=llm.model, embed_model=emb.model).load_vector_index()
 chat_engine = index.as_chat_engine(chat_mode="condense_plus_context", verbose=False)
