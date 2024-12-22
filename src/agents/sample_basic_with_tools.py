@@ -13,7 +13,7 @@ from langchain_core.messages.ai import AIMessage
 
 from langchain_community.tools import DuckDuckGoSearchResults
 from langgraph.prebuilt import ToolNode, tools_condition
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 
 
 from src.utils.secrets import get_secret
@@ -21,6 +21,9 @@ from src.utils.logger import m_colors
 from src.utils.plot import draw_langgraph
 
 os.environ["OPENAI_API_KEY"] = get_secret("OPENAI_API_KEY")
+
+ROOT_DIR = os.getcwd()
+STORAGE_PATH = f"{ROOT_DIR}/src/agents/storage/agent_store.db"
 
 
 class State(TypedDict):
@@ -72,8 +75,14 @@ def route_tools(
 @click.command()
 @click.option("--model_name", default="gpt-4o-mini", help="Model name")
 @click.option("--temperature", default=0.7, help="Temperature")
-def main(model_name, temperature):
+@click.option("--thread_id", default=None, help="Thread ID to continue a conversation")
+def main(model_name, temperature, thread_id):
     click.secho("Welcome to the bot garden >>", fg=m_colors.get("yellow"))
+    if thread_id is None:
+        from datetime import datetime
+
+        thread_id = datetime.now().strftime("%Y%m%d%H%M%S")
+    click.secho(f"Current thread ID: {thread_id}", fg=m_colors.get("yellow"))
 
     search = DuckDuckGoSearchResults(max_results=1, verbose=False)
     tools = [search]
@@ -85,7 +94,7 @@ def main(model_name, temperature):
         return {"messages": [llm.invoke(state.get("messages", []))]}
 
     tool_nodes = ToolNode(tools=tools)
-    memory = MemorySaver()
+    memory = SqliteSaver.from_conn_string(STORAGE_PATH)
 
     graph_builder = StateGraph(State)
     graph_builder.add_node("chatbot", chatbot)
@@ -93,27 +102,29 @@ def main(model_name, temperature):
     graph_builder.add_node("tools", tool_nodes)
     graph_builder.add_conditional_edges("chatbot", tools_condition)
     graph_builder.add_edge("tools", "chatbot")
-    graph = graph_builder.compile(checkpointer=memory)
-    draw_langgraph(graph)
 
-    while True:
-        user_input = click.prompt(click.style("User", fg=m_colors.get("pink")))
-        if user_input.lower() in ["quit", "exit", "q"]:
-            click.secho(
-                ">> You're now leaving the bot garden, toodaloo!",
-                fg=m_colors.get("yellow"),
+    with memory as context:
+        app = graph_builder.compile(checkpointer=context)
+        # draw_langgraph(graph)
+
+        while True:
+            user_input = click.prompt(click.style("User", fg=m_colors.get("pink")))
+            if user_input.lower() in ["quit", "exit", "q"]:
+                click.secho(
+                    "Assistant:\nYou're now leaving the bot garden, have a nice day, soldier!",
+                    fg=m_colors.get("yellow"),
+                )
+                break
+            events = app.stream(
+                {"messages": ("user", user_input)},
+                config={"configurable": {"thread_id": thread_id}},
             )
-            break
-        events = graph.stream(
-            {"messages": ("user", user_input)},
-            config={"configurable": {"thread_id": "main"}},
-        )
-        for event in events:
-            for value in event.values():
-                message = value.get("messages")[-1]
-                text = message.content
-                if isinstance(message, AIMessage) and text != "":
-                    click.secho(f"Assistant: {text}", fg=m_colors.get("aqua"))
+            for event in events:
+                for value in event.values():
+                    message = value.get("messages")[-1]
+                    text = message.content
+                    if isinstance(message, AIMessage) and text != "":
+                        click.secho(f"Assistant:\n{text}", fg=m_colors.get("aqua"))
 
 
 if __name__ == "__main__":
