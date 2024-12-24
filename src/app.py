@@ -17,18 +17,18 @@ from src.chat import chat_engine
 
 TELEGRAM_TOKEN = get_secret("TELEGRAM_TOKEN")
 logger = BaseLogger(__name__)
-query = range(2)
+options = range(2)
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Starts the conversation and asks the user about their gender."""
 
     await update.message.reply_text(
-        "Hi! I'm Casper. Please ask me a question and I'll try to answer it.",
+        "Hi! I'm Casper. How may I help you?",
         reply_markup=ReplyKeyboardRemove(),
     )
 
-    return query
+    return options
 
 
 async def query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -42,7 +42,7 @@ async def query_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
         reply_markup=ReplyKeyboardRemove(),
     )
 
-    return query
+    return options
 
 
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -64,13 +64,12 @@ def main() -> None:
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={
-            query: [MessageHandler(filters.TEXT, query_handler)],
+            options: [MessageHandler(filters.TEXT, query_handler)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
-
     application.add_handler(conv_handler)
-
+    logger.info("Casper here, at your service. 🐣")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 
