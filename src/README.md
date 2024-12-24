@@ -22,7 +22,7 @@ python3.10 -m src.indexer
 ### Step 3: Compare  LLM Completions with the RAG Completions
 
 ```bash
-python3.10 -m src.completion
+python3.10 -m src.incubator.rag_completion
 ```
 
 ### Step 4: Chat with the model

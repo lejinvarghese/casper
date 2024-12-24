@@ -10,12 +10,9 @@ click.secho(f"Using device: {device}", fg="cyan")
 
 
 model = Llama(
-    model_path=MODEL_PATH,
-    n_ctx=10_000,
-    n_threads=8,
-    n_gpu_layers=50,
-    verbose=False
+    model_path=MODEL_PATH, n_ctx=10_000, n_threads=8, n_gpu_layers=50, verbose=False
 )
+
 
 @click.command()
 @click.option("--n_rounds", type=int, default=5)
