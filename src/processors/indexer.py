@@ -1,14 +1,14 @@
 import asyncio
 
-from src.extractor import Pipeline
-from src.loaders import PDFLoader
-from src.models import EmbeddingModel, InstuctModel
+from src.processors.extractor import Pipeline
+from src.processors.loaders import PDFLoader
+from src.models import EmbeddingModel, InstructModel
 from src.storage import Storage
 from src.utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
 
-llm = InstuctModel()
+llm = InstructModel()
 emb = EmbeddingModel(batch_size=32, device="cpu")
 st = Storage(llm=llm.model, embed_model=emb.model)
 p = Pipeline(llm=llm.model, embed_model=emb.model, storage=st)

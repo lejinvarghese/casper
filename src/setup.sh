@@ -9,8 +9,11 @@ python3.10 -m venv ${ROOT_DIR}/${ENVIRONMENT_NAME}
 source "${ROOT_DIR}/${ENVIRONMENT_NAME}/bin/activate"
 
 # step 2: install default requirements
-pip3 install -r ${ROOT_DIR}/requirements.txt
-pip3 install -r ${ROOT_DIR}/requirements_chat.txt
+pip3 install -r ${ROOT_DIR}/requirements/requirements.txt
+
+export CMAKE_ARGS="-DLLAMA_CUBLAS=on"
+export FORCE_CMAKE=1
+pip3 install -r ${ROOT_DIR}/requirements/requirements_chat.txt
 
 # optional: step 2b: if errors that cant find GLIBCXX_3.4.30
 SRC_PATH=/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30

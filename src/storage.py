@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List
 
 from chromadb import PersistentClient
 from llama_index import ServiceContext, VectorStoreIndex
@@ -13,7 +13,7 @@ from llama_index.storage.docstore import SimpleDocumentStore
 from datasets import load_dataset
 from llama_index.storage.storage_context import StorageContext
 from llama_index.vector_stores import ChromaVectorStore
-from src.constants import COLLECTION_NAME, PERSIST_DIR, EMBEDDING_MODEL
+from src.constants import COLLECTION_NAME, PERSIST_DIR, EMBEDDING_MODEL_NAME
 
 
 class Storage:
@@ -65,7 +65,7 @@ class FaissVectorStore:
     ):
         self.dataset = load_dataset(dataset_name, split="train")
         self.embed_model = HuggingFaceEmbeddings(
-            model_name=EMBEDDING_MODEL, model_kwargs={"trust_remote_code": True}
+            model_name=EMBEDDING_MODEL_NAME, model_kwargs={"trust_remote_code": True}
         )
         self.db, self.sources = self.create()
 

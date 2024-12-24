@@ -1,4 +1,4 @@
-transformers[agents]==4.40.2
+transformers==4.40.2
 huggingface==0.0.1
 torch==2.3.1
 bitsandbytes==0.41.3.post2
@@ -6,7 +6,7 @@ accelerate==0.25.0
 scipy==1.10.1
 huggingface-hub==0.23.0
 llama-index==0.9.21
-llama-cpp-python==0.2.25 --install-option="-- -DLLAMA_CUBLAS=on"
+llama-cpp-python==0.2.25
 pypdf==3.17.4
 span-marker==1.5.0
 matplotlib==3.7.4

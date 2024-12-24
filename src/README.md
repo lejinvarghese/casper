@@ -22,7 +22,7 @@ python3.10 -m src.indexer
 ### Step 3: Compare  LLM Completions with the RAG Completions
 
 ```bash
-python3.10 -m src.completion
+python3.10 -m src.incubator.rag_completion
 ```
 
 ### Step 4: Chat with the model
@@ -40,12 +40,32 @@ Add environment variables to `.env` file. This requires an environment variable 
 python3.10 -m src.router
 ```
 
+## Agents
+
+```bash
+pip install -r requirements/requirements_agents.txt
+```
+
+## Sample Agent
+
+```bash
+python3.10 -m src.incubator.research_team
+```
+
+## Sample Agent with Tools
+
+```bash
+python3.10 -m src.incubator.langgraph.tools_with_persistence --thread_id 20241221190010
+```
+
+
 ## Development
     
 ### Run Tests
 
 ```bash
 python3.10 -m pytest .
+python3.10 -m pytest . -v -n0 ##run sequentially for cursor
 ```
 ## Samples
 

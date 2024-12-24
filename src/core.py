@@ -2,7 +2,7 @@
 Core abstract functionalities.
 """
 
-from abc import ABC, abstractmethod, property
+from abc import ABC, abstractmethod
 
 
 class Agent(ABC):
