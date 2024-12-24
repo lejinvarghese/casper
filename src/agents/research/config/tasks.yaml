@@ -1,0 +1,50 @@
+# src/agents/research/config/tasks.yml
+research:
+  description: >
+  Conduct comprehensive technical research on {topic}. Focus on:
+    1. Latest scientific/technical developments
+    2. Key methodologies and approaches
+    3. Technical challenges and solutions
+    4. Current state-of-the-art implementations
+    5. Emerging research directions
+    Prioritize peer-reviewed sources and technical documentation where available.
+  expected_output: >
+    A structured analysis containing:
+    - Key technical findings and breakthroughs
+    - Current technical limitations and challenges
+    - Emerging methodologies and solutions
+    - Potential future developments
+    - Citations to the sources you used in the format of [source_name](source_url) when available.
+    Format as bullet points with brief technical explanations.
+  agent: researcher
+
+write:
+  description: >
+    Synthesize the research findings about {topic} into a clear, structured technical summary.
+    Focus on:
+    1. Accurate representation of key technical concepts
+    2. Logical organization of findings
+    3. Clear presentation of technical details
+    4. Factual and precise language
+    5. Proper technical context where needed
+  expected_output: >
+    A structured technical summary with clear sections covering key findings.
+    Each section should present information in a precise, factual manner.
+    Formatted as markdown without '```'
+    Ensure you leave no trace of the editor's critique or artifacts in the final output aimed at a professional audience. Stay focused on the technical content and avoid any editorial comments or artifacts.
+  agent: writer
+
+edit:
+  description: >
+    Review the technical summary of {topic} for:
+    1. Technical accuracy and completeness
+    2. Proper representation of research findings
+    3. Logical flow and structure
+    4. Citation accuracy and completeness
+    5. Clarity of technical concepts
+    Provide specific recommendations for improvements while maintaining technical precision.
+  expected_output: >
+    A detailed technical review with specific recommendations for improving accuracy, 
+    clarity, and completeness of the content aimed for a professional audience. Ensure there is absolutely no trace of your critique or editorial comments or artifacts in the final output.
+  agent: editor
+

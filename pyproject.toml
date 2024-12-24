@@ -1,3 +1,34 @@
+[project]
+name = "casper"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = [
+    "langchain>0.2",
+    "llama-index>=0.9.21",
+    "crewai[tools]>=0.86.0",
+    "arxiv>=2.1.0",
+    "pytest==8.2.0",
+    "pytest-xdist==3.5.0",
+    "pytest-cov==4.1.0",
+    "py==1.11.0",
+    "python-telegram-bot[job-queue]>=20.7",
+    "google-cloud-secret-manager==2.17.0",
+    "python-dotenv==1.0.0",
+    "llama-index-embeddings-huggingface>=0.4.0",
+    "torch==2.1.0",
+    "llama-index-llms-llama-cpp>=0.3.0",
+    "datasets>=3.2.0",
+    "llama-index-vector-stores-chroma>=0.4.1",
+    "black>=24.10.0",
+    "isort>=5.13.2",
+    "langgraph>=0.2.60",
+    "langgraph-checkpoint-sqlite>=2.0.1",
+    "duckduckgo-search>=7.0.2",
+]
+
 [tool.pytest.ini_options]
 addopts = [
     '--cov=src',
@@ -10,7 +41,6 @@ addopts = [
 ]
 pythonpath = [
     '.',
-    'src',
-    
+    'src'
 ]
 testpaths = ['tests']

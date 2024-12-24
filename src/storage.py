@@ -1,18 +1,22 @@
 from typing import List
+from datasets import load_dataset
 
 from chromadb import PersistentClient
-from llama_index import ServiceContext, VectorStoreIndex
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.docstore.document import Document
+from langchain_community.docstore.document import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS as faiss
-from llama_index.llm_predictor.base import LLMPredictorType
-from llama_index.schema import TextNode
-from llama_index.storage.docstore import SimpleDocumentStore
-from datasets import load_dataset
-from llama_index.storage.storage_context import StorageContext
-from llama_index.vector_stores import ChromaVectorStore
+
+from llama_index.core import Settings
+from llama_index.core.indices.vector_store import VectorStoreIndex
+from llama_index.core.llms import LLM
+from llama_index.core.schema import TextNode
+from llama_index.core.storage.docstore import SimpleDocumentStore
+from llama_index.core.storage.storage_context import StorageContext
+from llama_index.vector_stores.chroma import ChromaVectorStore
+
+
 from src.constants import COLLECTION_NAME, PERSIST_DIR, EMBEDDING_MODEL_NAME
 
 
@@ -21,7 +25,7 @@ class Storage:
         self,
         persist_directory: str = PERSIST_DIR,
         collection_name: str = COLLECTION_NAME,
-        llm: LLMPredictorType = None,
+        llm: LLM = None,
         embed_model: HuggingFaceEmbedding = None,
     ):
         self.persist_directory = persist_directory
@@ -40,22 +44,18 @@ class Storage:
             vector_store=self.vector_store,
             docstore=self.docstore,
         )
-        self.service_context = ServiceContext.from_defaults(
-            llm=llm, embed_model=embed_model
-        )
+        Settings.llm = llm
+        Settings.embed_model = embed_model
 
     def create_vector_index(self, nodes: List[TextNode]) -> None:
         index = VectorStoreIndex(
             nodes,
             storage_context=self.storage_context,
-            service_context=self.service_context,
         )
         index.storage_context.persist(persist_dir=self.persist_directory)
 
     def load_vector_index(self) -> VectorStoreIndex:
-        return VectorStoreIndex.from_vector_store(
-            self.vector_store, self.service_context
-        )
+        return VectorStoreIndex.from_vector_store(self.vector_store)
 
 
 class FaissVectorStore:
