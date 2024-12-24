@@ -132,6 +132,8 @@ deprecated==1.2.15
     #   opentelemetry-semantic-conventions
 deprecation==2.1.0
     # via lancedb
+diffusers==0.32.0
+    # via casper (pyproject.toml)
 dill==0.3.8
     # via
     #   datasets
@@ -178,6 +180,7 @@ feedparser==6.0.11
 filelock==3.16.1
     # via
     #   datasets
+    #   diffusers
     #   huggingface-hub
     #   torch
     #   transformers
@@ -296,6 +299,7 @@ httpx-sse==0.4.0
 huggingface-hub==0.27.0
     # via
     #   datasets
+    #   diffusers
     #   llama-index-embeddings-huggingface
     #   sentence-transformers
     #   tokenizers
@@ -313,6 +317,7 @@ idna==3.10
     #   yarl
 importlib-metadata==8.4.0
     # via
+    #   diffusers
     #   litellm
     #   opentelemetry-api
 importlib-resources==6.4.5
@@ -522,6 +527,7 @@ numpy==1.26.4
     #   chroma-hnswlib
     #   chromadb
     #   datasets
+    #   diffusers
     #   gptcache
     #   langchain
     #   langchain-community
@@ -678,6 +684,7 @@ pexpect==4.9.0
     # via ipython
 pillow==11.0.0
     # via
+    #   diffusers
     #   llama-index-core
     #   pdfplumber
     #   sentence-transformers
@@ -847,6 +854,7 @@ referencing==0.35.1
 regex==2024.11.6
     # via
     #   crewai
+    #   diffusers
     #   nltk
     #   tiktoken
     #   transformers
@@ -857,6 +865,7 @@ requests==2.32.3
     #   cohere
     #   crewai-tools
     #   datasets
+    #   diffusers
     #   docker
     #   google-api-core
     #   google-cloud-bigquery
@@ -892,7 +901,9 @@ rpds-py==0.22.3
 rsa==4.9
     # via google-auth
 safetensors==0.4.5
-    # via transformers
+    # via
+    #   diffusers
+    #   transformers
 schema==0.7.7
     # via embedchain
 scikit-learn==1.6.0

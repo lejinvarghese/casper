@@ -53,34 +53,34 @@ python3.10 -m src.indexer
 
 ## Features
 
-### A: Compare  LLM Completions with the RAG Completions
-
-```bash
-python3.10 -m src.incubator.rag_completion
-```
-
-### B: Chat with the model
+### A: Chat with the model
 
 ```bash
 python3.10 -m src.chat
 ```
 
-### C: Chat with a telegram app
+### B: Chat with a telegram app
 
 ```bash
 python3.10 -m src.app
 ```
 
-### D: Deploy a research team
+### C: Deploy a research team
 
 ```bash
 python3.10 -m src.agents.research.team --temperature 0.98
 ```
 
-### E: Chat with a model with memory
+### D: Chat with a model with memory
 
 ```bash
 python3.10 -m src.incubator.langgraph.tools_with_persistence --thread_id 20241221190010
+```
+
+### E: Compare  LLM Completions with the RAG Completions
+
+```bash
+python3.10 -m src.incubator.rag_completion
 ```
 
 ## Development

@@ -18,7 +18,7 @@ dependencies = [
     "google-cloud-secret-manager==2.17.0",
     "python-dotenv==1.0.0",
     "llama-index-embeddings-huggingface>=0.4.0",
-    "torch==2.1.0",
+    "torch==2.3.1",
     "llama-index-llms-llama-cpp>=0.3.0",
     "datasets>=3.2.0",
     "llama-index-vector-stores-chroma>=0.4.1",
@@ -27,6 +27,7 @@ dependencies = [
     "langgraph>=0.2.60",
     "langgraph-checkpoint-sqlite>=2.0.1",
     "duckduckgo-search>=7.0.2",
+    "diffusers>=0.32.0",
 ]
 
 [tool.pytest.ini_options]
