@@ -1,6 +1,7 @@
 import os
 import json
 import click
+from datetime import datetime
 
 from typing import Annotated
 from typing_extensions import TypedDict
@@ -78,12 +79,11 @@ def route_tools(
 def main(model_name, temperature, thread_id):
     click.secho("Welcome to the bot garden >>", fg=m_colors.get("yellow"))
     if thread_id is None:
-        from datetime import datetime
 
         thread_id = datetime.now().strftime("%Y%m%d%H%M%S")
     click.secho(f"Current thread ID: {thread_id}", fg=m_colors.get("yellow"))
 
-    search = DuckDuckGoSearchResults(max_results=1, verbose=False)
+    search = DuckDuckGoSearchResults(max_results=2, verbose=False)
     tools = [search]
 
     llm = ChatOpenAI(model_name=model_name, temperature=temperature)
@@ -109,7 +109,7 @@ def main(model_name, temperature, thread_id):
             user_input = click.prompt(click.style("User", fg=m_colors.get("pink")))
             if user_input.lower() in ["quit", "exit", "q"]:
                 click.secho(
-                    "Assistant:\nYou're now leaving the bot garden, have a nice day, soldier!",
+                    "Assistant: You're now leaving the bot garden, have a nice day, soldier!",
                     fg=m_colors.get("yellow"),
                 )
                 break
@@ -122,7 +122,7 @@ def main(model_name, temperature, thread_id):
                     message = value.get("messages")[-1]
                     text = message.content
                     if isinstance(message, AIMessage) and text != "":
-                        click.secho(f"Assistant:\n{text}", fg=m_colors.get("aqua"))
+                        click.secho(f"Assistant: {text}", fg=m_colors.get("aqua"))
 
 
 if __name__ == "__main__":
