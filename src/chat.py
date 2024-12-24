@@ -6,12 +6,12 @@ logger = StreamingLogger(__name__)
 llm = InstructModel()
 emb = EmbeddingModel()
 index = Storage(llm=llm.model, embed_model=emb.model).load_vector_index()
-chat_engine = index.as_chat_engine(chat_mode="condense_plus_context", verbose=False)
+chat_engine = index.as_chat_engine(chat_mode="simple", verbose=True)
 
 
 def main():
     while True:
-        logger.debug("Enter your query: \n")
+        logger.debug("Enter your query:\n")
         user_query = input()
 
         response = chat_engine.stream_chat(user_query)

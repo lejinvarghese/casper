@@ -9,7 +9,7 @@ INSTRUCTION_MODEL_NAME = f"./{MODEL_DIR}/{QUANT_VERSION}"
 EMBEDDING_MODEL_NAME = "BAAI/bge-small-en"
 AGENT_MODEL_NAME = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 
-SUMMARIZATION_PROMPT = """<s> [INST] Context: {context_str}. Given this context, generate a highly concise title that summarizes \
+SUMMARIZATION_PROMPT = """[INST] Context: {context_str}. Given this context, generate a highly concise title that summarizes \
         the unique themes found in the context, in no more than 20 words. \
         Dont include descriptions of what you are doing, such as this document summarizes. Be as concise as possible. </s>\
 

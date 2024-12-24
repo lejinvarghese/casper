@@ -1,6 +1,9 @@
-from llama_index.embeddings import HuggingFaceEmbedding
-from llama_index.llms import LlamaCPP
-from llama_index.llms.llama_utils import completion_to_prompt, messages_to_prompt
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.llms.llama_cpp import LlamaCPP
+from llama_index.llms.llama_cpp.llama_utils import (
+    completion_to_prompt,
+    messages_to_prompt,
+)
 from src.constants import EMBEDDING_MODEL_NAME, INSTRUCTION_MODEL_NAME
 from src.utils.logger import BaseLogger
 

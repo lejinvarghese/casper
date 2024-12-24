@@ -37,7 +37,7 @@ python3.10 -m src.chat
 Add environment variables to `.env` file. This requires an environment variable with your Telegram bot token `TELEGRAM_TOKEN`.
 
 ```bash
-python3.10 -m src.router
+python3.10 -m src.app
 ```
 
 ## Agents
@@ -46,10 +46,10 @@ python3.10 -m src.router
 pip install -r requirements/requirements_agents.txt
 ```
 
-## Sample Agent
+## Sample Team
 
 ```bash
-python3.10 -m src.incubator.research_team
+python3.10 -m src.agents.research.team --temperature 0.98
 ```
 
 ## Sample Agent with Tools

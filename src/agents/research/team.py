@@ -100,7 +100,6 @@ class ResearchTeam:
             f"Team kicked off to analyze research on: {inputs['topic']} at {now}.",
             fg=m_colors.get("aqua"),
         )
-        click.secho(f"Agents: {self.agents_config}", fg="green")
         return inputs
 
     @after_kickoff
