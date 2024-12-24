@@ -40,6 +40,25 @@ Add environment variables to `.env` file. This requires an environment variable 
 python3.10 -m src.router
 ```
 
+## Agents
+
+```bash
+pip install -r requirements/requirements_agents.txt
+```
+
+## Sample Agent
+
+```bash
+python3.10 -m src.incubator.research_team
+```
+
+## Sample Agent with Tools
+
+```bash
+python3.10 -m src.incubator.langgraph.tools_with_persistence --thread_id 20241221190010
+```
+
+
 ## Development
     
 ### Run Tests

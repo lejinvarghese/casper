@@ -1,7 +1,6 @@
 from llama_index.embeddings import HuggingFaceEmbedding
 from llama_index.llms import LlamaCPP
 from llama_index.llms.llama_utils import completion_to_prompt, messages_to_prompt
-from transformers.agents import HfEngine
 from src.constants import EMBEDDING_MODEL, INSTRUCTION_MODEL, AGENT_MODEL
 from src.utils.logger import BaseLogger
 
@@ -58,15 +57,4 @@ class EmbeddingModel:
     ):
         self.model = HuggingFaceEmbedding(
             model_name=model_name, device=device, embed_batch_size=batch_size
-        )
-
-
-class AgentModel:
-    """
-    An agent model that accepts text and generates completions.
-    """
-
-    def __init__(self, model_name: str = AGENT_MODEL):
-        self.model = HfEngine(
-            model=model_name,
         )
