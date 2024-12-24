@@ -22,6 +22,11 @@ dependencies = [
     "llama-index-llms-llama-cpp>=0.3.0",
     "datasets>=3.2.0",
     "llama-index-vector-stores-chroma>=0.4.1",
+    "black>=24.10.0",
+    "isort>=5.13.2",
+    "langgraph>=0.2.60",
+    "langgraph-checkpoint-sqlite>=2.0.1",
+    "duckduckgo-search>=7.0.2",
 ]
 
 [tool.pytest.ini_options]

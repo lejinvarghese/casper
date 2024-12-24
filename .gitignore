@@ -132,3 +132,4 @@ dmypy.json
 *.pdfs/
 *.storage/
 *.db/
+uv.lock

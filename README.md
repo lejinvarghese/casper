@@ -10,17 +10,19 @@ Casper, the destiny of beautiful souls.
 ## Setup
 
 ```bash
+
+## step 1: create a virtual environment
 uv init
 source .venv/bin/activate
 
-#lock dependencies
+## step 2: lock dependencies [migrate to uv.lock when necessary]
 uv pip compile pyproject.toml -o requirements.txt
 
-#install dependencies
+## step 3: install dependencies
 uv pip install -r requirements.txt
 
-# add new dependencies
+## step 4: add new dependencies
 uv add <package-name>
 
-
+### rerun step 2 after adding new dependencies
 ```
