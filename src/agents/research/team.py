@@ -70,7 +70,7 @@ def main(model_name, temperature):
     crew = Crew(
         agents=[researcher, writer, critic],
         tasks=[task1, task2, task3],
-        verbose=2,  # You can set it to 1 or 2 to different logging levels
+        verbose=True,
         process=Process.sequential,
     )
 
