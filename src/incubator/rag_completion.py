@@ -21,8 +21,13 @@ def main():
 
         response = query_engine.query(user_query)
         logger.info("Augmented response:")
-        for r in response.response_gen:
-            logger.info(r)
+        try:
+            for r in response.response_gen:
+                logger.info(r)
+        except Exception as e:
+            logger.error(
+                f"Error: Could not find an appropriate answer for your query: {e}"
+            )
         logger.flush()
 
 

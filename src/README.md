@@ -65,6 +65,7 @@ python3.10 -m src.incubator.langgraph.tools_with_persistence --thread_id 2024122
 
 ```bash
 python3.10 -m pytest .
+python3.10 -m pytest . -v -n0 ##run sequentially for cursor
 ```
 ## Samples
 

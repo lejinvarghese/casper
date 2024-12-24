@@ -1,7 +1,7 @@
 from llama_index.embeddings import HuggingFaceEmbedding
 from llama_index.llms import LlamaCPP
 from llama_index.llms.llama_utils import completion_to_prompt, messages_to_prompt
-from src.constants import EMBEDDING_MODEL, INSTRUCTION_MODEL, AGENT_MODEL
+from src.constants import EMBEDDING_MODEL_NAME, INSTRUCTION_MODEL_NAME
 from src.utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
@@ -14,7 +14,7 @@ class InstructModel:
 
     def __init__(
         self,
-        model_path: str = INSTRUCTION_MODEL,
+        model_path: str = INSTRUCTION_MODEL_NAME,
         temperature: float = 0.0,
         max_new_tokens: int = 1024,
         context_window: int = 3000,
@@ -51,7 +51,7 @@ class EmbeddingModel:
 
     def __init__(
         self,
-        model_name: str = EMBEDDING_MODEL,
+        model_name: str = EMBEDDING_MODEL_NAME,
         batch_size: int = 10,
         device="cuda",
     ):
