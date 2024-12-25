@@ -61,6 +61,8 @@ beautifulsoup4==4.12.3
     #   crewai-tools
     #   embedchain
     #   llama-index-readers-file
+bitsandbytes==0.45.0
+    # via casper (pyproject.toml)
 black==24.10.0
     # via casper (pyproject.toml)
 build==1.2.2.post1
@@ -528,6 +530,7 @@ nodeenv==1.9.1
 numpy==1.26.4
     # via
     #   accelerate
+    #   bitsandbytes
     #   chroma-hnswlib
     #   chromadb
     #   datasets
@@ -925,6 +928,8 @@ selenium==4.27.1
     # via crewai-tools
 sentence-transformers==3.3.1
     # via llama-index-embeddings-huggingface
+sentencepiece==0.2.0
+    # via casper (pyproject.toml)
 setuptools==75.6.0
     # via
     #   grpcio-tools
@@ -1006,6 +1011,7 @@ torch==2.3.1
     # via
     #   casper (pyproject.toml)
     #   accelerate
+    #   bitsandbytes
     #   sentence-transformers
 tqdm==4.67.1
     # via
@@ -1044,6 +1050,7 @@ typing-extensions==4.12.2
     #   alembic
     #   anyio
     #   asgiref
+    #   bitsandbytes
     #   black
     #   chromadb
     #   cohere

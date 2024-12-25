@@ -29,6 +29,8 @@ dependencies = [
     "duckduckgo-search>=7.0.2",
     "diffusers>=0.32.0",
     "accelerate>=1.2.1",
+    "bitsandbytes>=0.45.0",
+    "sentencepiece>=0.2.0",
 ]
 
 [tool.pytest.ini_options]
