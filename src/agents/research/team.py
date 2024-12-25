@@ -25,68 +25,31 @@ class ResearchTeam:
 
     @agent
     def researcher(self) -> Agent:
-        return Agent(
-            config=self.agents_config.get("researcher"),
-            verbose=self.verbose,
-            llm=self.llm,
-            tools=self.tools,
-            max_iter=self.agents_config.get("researcher", {}).get("max_iter", 25),
-            max_rpm=self.agents_config.get("researcher", {}).get("max_rpm", 10),
-            allow_delegation=self.agents_config.get("researcher", {}).get(
-                "allow_delegation", True
-            ),
-        )
+        return self._create_agent("researcher")
 
     @agent
     def writer(self) -> Agent:
-        return Agent(
-            config=self.agents_config.get("writer"),
-            verbose=self.verbose,
-            llm=self.llm,
-            max_iter=self.agents_config.get("writer", {}).get("max_iter", 25),
-            max_rpm=self.agents_config.get("writer", {}).get("max_rpm", 10),
-            allow_delegation=self.agents_config.get("writer", {}).get(
-                "allow_delegation", True
-            ),
-        )
+        return self._create_agent("writer")
 
     @agent
     def editor(self) -> Agent:
-        return Agent(
-            config=self.agents_config.get("editor"),
-            verbose=self.verbose,
-            llm=self.llm,
-            max_iter=self.agents_config.get("editor", {}).get("max_iter", 25),
-            max_rpm=self.agents_config.get("editor", {}).get("max_rpm", 10),
-            allow_delegation=self.agents_config.get("editor", {}).get(
-                "allow_delegation", False
-            ),
-        )
+        return self._create_agent("editor")
 
     @task
     def research(self) -> Task:
-        return Task(
-            config=self.tasks_config["research"],
-            agent=self.researcher(),
-        )
+        return self._create_task("research")
 
     @task
     def write(self) -> Task:
-        return Task(
-            config=self.tasks_config["write"],
-            agent=self.writer(),
-        )
+        return self._create_task("write")
 
     @task
     def edit(self) -> Task:
-        return Task(
-            config=self.tasks_config["edit"],
-            agent=self.editor(),
-        )
+        return self._create_task("edit")
 
     @crew
     def crew(self) -> Crew:
-        """Creates the LatestAiDevelopment crew"""
+        """Creates the team"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
@@ -111,6 +74,22 @@ class ResearchTeam:
         click.secho("-" * 100, fg=m_colors.get("ghost"))
         click.secho(result, fg=m_colors.get("green"))
         return result
+
+    def _create_agent(self, agent_name):
+        return Agent(
+            config=self.agents_config.get(agent_name),
+            verbose=self.verbose,
+            llm=self.llm,
+            tools=self.tools,
+            max_iter=self.agents_config.get(agent_name, {}).get("max_iter", 25),
+            max_rpm=self.agents_config.get(agent_name, {}).get("max_rpm", 10),
+            allow_delegation=self.agents_config.get(agent_name, {}).get(
+                "allow_delegation", True
+            ),
+        )
+
+    def _create_task(self, task_name):
+        return Task(config=self.tasks_config[task_name])
 
 
 @click.command()
