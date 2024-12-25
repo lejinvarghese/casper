@@ -28,6 +28,7 @@ dependencies = [
     "langgraph-checkpoint-sqlite>=2.0.1",
     "duckduckgo-search>=7.0.2",
     "diffusers>=0.32.0",
+    "accelerate>=1.2.1",
 ]
 
 [tool.pytest.ini_options]
