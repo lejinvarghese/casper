@@ -1,7 +1,7 @@
 # /src/agents/research/config/agents.yml
 researcher:
   role: >
-    Senior Research Analyst
+    Research Scientist
   goal: >
     Uncover cutting-edge developments in {topic}
   backstory: >

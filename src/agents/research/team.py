@@ -66,6 +66,7 @@ class ResearchTeam:
             tasks=self.tasks,
             process=Process.sequential,
             verbose=self.verbose,
+            planning=True,
         )
 
     @before_kickoff
