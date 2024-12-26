@@ -10,6 +10,10 @@ from src.utils.secrets import get_secret
 from src.utils.logger import m_colors
 from src.utils.tools import search
 
+DEFAULT_MODEL_NAME = "gpt-4o-mini"
+DEFAULT_TEMPERATURE = 0.0
+DEFAULT_VERBOSITY = False
+
 os.environ["OPENAI_API_KEY"] = get_secret("OPENAI_API_KEY")
 now = datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -18,7 +22,12 @@ now = datetime.now().strftime("%Y%m%d%H%M%S")
 class ResearchTeam:
     """Research team"""
 
-    def __init__(self, model_name, temperature, verbose):
+    def __init__(
+        self,
+        model_name=DEFAULT_MODEL_NAME,
+        temperature=DEFAULT_TEMPERATURE,
+        verbose=DEFAULT_VERBOSITY,
+    ):
         self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
         self.verbose = verbose
         self.tools = [search]
@@ -93,16 +102,24 @@ class ResearchTeam:
 
 
 @click.command()
-@click.option("--model_name", default="gpt-4o-mini", type=str, help="Model name")
-@click.option("--temperature", default=0.7, type=float, help="Temperature")
+@click.option("--model_name", default=DEFAULT_MODEL_NAME, type=str, help="Model name")
+@click.option(
+    "--temperature", default=DEFAULT_TEMPERATURE, type=float, help="Temperature"
+)
+@click.option(
+    "--verbose", default=DEFAULT_VERBOSITY, type=bool, is_flag=True, help="Verbosity"
+)
 @click.option("--topic", default="complexity science", type=str, help="Topic")
-@click.option("--verbose", default=False, type=bool, is_flag=True, help="Verbosity")
-def main(model_name, temperature, topic, verbose):
-    ResearchTeam(
-        model_name=model_name,
-        temperature=temperature,
-        verbose=verbose,
-    ).crew().kickoff(inputs={"topic": topic})
+def main(model_name, temperature, verbose, topic):
+    return (
+        ResearchTeam(
+            model_name=model_name,
+            temperature=temperature,
+            verbose=verbose,
+        )
+        .crew()
+        .kickoff(inputs={"topic": topic})
+    )
 
 
 if __name__ == "__main__":

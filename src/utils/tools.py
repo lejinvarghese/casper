@@ -10,6 +10,7 @@ def search(question: str) -> str:
         verbose=False,
         response_format="content_and_artifact",
         output_format="list",
+        num_results=10,
     )
     try:
         results = search_engine.run(question)
