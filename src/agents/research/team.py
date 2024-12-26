@@ -10,6 +10,10 @@ from src.utils.secrets import get_secret
 from src.utils.logger import m_colors
 from src.utils.tools import search
 
+DEFAULT_MODEL_NAME = "gpt-4o-mini"
+DEFAULT_TEMPERATURE = 0.0
+DEFAULT_VERBOSITY = False
+
 os.environ["OPENAI_API_KEY"] = get_secret("OPENAI_API_KEY")
 now = datetime.now().strftime("%Y%m%d%H%M%S")
 
@@ -18,75 +22,43 @@ now = datetime.now().strftime("%Y%m%d%H%M%S")
 class ResearchTeam:
     """Research team"""
 
-    def __init__(self, model_name, temperature, verbose):
+    def __init__(
+        self,
+        model_name=DEFAULT_MODEL_NAME,
+        temperature=DEFAULT_TEMPERATURE,
+        verbose=DEFAULT_VERBOSITY,
+    ):
         self.llm = ChatOpenAI(model_name=model_name, temperature=temperature)
         self.verbose = verbose
         self.tools = [search]
 
     @agent
     def researcher(self) -> Agent:
-        return Agent(
-            config=self.agents_config.get("researcher"),
-            verbose=self.verbose,
-            llm=self.llm,
-            tools=self.tools,
-            max_iter=self.agents_config.get("researcher", {}).get("max_iter", 25),
-            max_rpm=self.agents_config.get("researcher", {}).get("max_rpm", 10),
-            allow_delegation=self.agents_config.get("researcher", {}).get(
-                "allow_delegation", True
-            ),
-        )
+        return self._create_agent("researcher")
 
     @agent
     def writer(self) -> Agent:
-        return Agent(
-            config=self.agents_config.get("writer"),
-            verbose=self.verbose,
-            llm=self.llm,
-            max_iter=self.agents_config.get("writer", {}).get("max_iter", 25),
-            max_rpm=self.agents_config.get("writer", {}).get("max_rpm", 10),
-            allow_delegation=self.agents_config.get("writer", {}).get(
-                "allow_delegation", True
-            ),
-        )
+        return self._create_agent("writer")
 
     @agent
     def editor(self) -> Agent:
-        return Agent(
-            config=self.agents_config.get("editor"),
-            verbose=self.verbose,
-            llm=self.llm,
-            max_iter=self.agents_config.get("editor", {}).get("max_iter", 25),
-            max_rpm=self.agents_config.get("editor", {}).get("max_rpm", 10),
-            allow_delegation=self.agents_config.get("editor", {}).get(
-                "allow_delegation", False
-            ),
-        )
+        return self._create_agent("editor")
 
     @task
     def research(self) -> Task:
-        return Task(
-            config=self.tasks_config["research"],
-            agent=self.researcher(),
-        )
+        return self._create_task("research")
 
     @task
     def write(self) -> Task:
-        return Task(
-            config=self.tasks_config["write"],
-            agent=self.writer(),
-        )
+        return self._create_task("write")
 
     @task
     def edit(self) -> Task:
-        return Task(
-            config=self.tasks_config["edit"],
-            agent=self.editor(),
-        )
+        return self._create_task("edit")
 
     @crew
     def crew(self) -> Crew:
-        """Creates the LatestAiDevelopment crew"""
+        """Creates the team"""
         return Crew(
             agents=self.agents,
             tasks=self.tasks,
@@ -112,18 +84,42 @@ class ResearchTeam:
         click.secho(result, fg=m_colors.get("green"))
         return result
 
+    def _create_agent(self, agent_name):
+        return Agent(
+            config=self.agents_config.get(agent_name),
+            verbose=self.verbose,
+            llm=self.llm,
+            tools=self.tools,
+            max_iter=self.agents_config.get(agent_name, {}).get("max_iter", 25),
+            max_rpm=self.agents_config.get(agent_name, {}).get("max_rpm", 10),
+            allow_delegation=self.agents_config.get(agent_name, {}).get(
+                "allow_delegation", True
+            ),
+        )
+
+    def _create_task(self, task_name):
+        return Task(config=self.tasks_config[task_name])
+
 
 @click.command()
-@click.option("--model_name", default="gpt-4o-mini", type=str, help="Model name")
-@click.option("--temperature", default=0.7, type=float, help="Temperature")
+@click.option("--model_name", default=DEFAULT_MODEL_NAME, type=str, help="Model name")
+@click.option(
+    "--temperature", default=DEFAULT_TEMPERATURE, type=float, help="Temperature"
+)
+@click.option(
+    "--verbose", default=DEFAULT_VERBOSITY, type=bool, is_flag=True, help="Verbosity"
+)
 @click.option("--topic", default="complexity science", type=str, help="Topic")
-@click.option("--verbose", default=False, type=bool, is_flag=True, help="Verbosity")
-def main(model_name, temperature, topic, verbose):
-    ResearchTeam(
-        model_name=model_name,
-        temperature=temperature,
-        verbose=verbose,
-    ).crew().kickoff(inputs={"topic": topic})
+def main(model_name, temperature, verbose, topic):
+    return (
+        ResearchTeam(
+            model_name=model_name,
+            temperature=temperature,
+            verbose=verbose,
+        )
+        .crew()
+        .kickoff(inputs={"topic": topic})
+    )
 
 
 if __name__ == "__main__":
