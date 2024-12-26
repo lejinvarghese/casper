@@ -3,8 +3,8 @@ from click import secho
 from crewai.tools import tool
 
 
-@tool("Search")
-def search(question: str) -> str:
+@tool("Search Engine")
+def search_engine(question: str) -> str:
     """Search the internet for information"""
     search_engine = DuckDuckGoSearchResults(
         verbose=False,
