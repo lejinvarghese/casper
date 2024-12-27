@@ -31,6 +31,7 @@ dependencies = [
     "accelerate>=1.2.1",
     "bitsandbytes>=0.45.0",
     "sentencepiece>=0.2.0",
+    "llama-hub>=0.0.79.post1",
 ]
 
 [tool.pytest.ini_options]

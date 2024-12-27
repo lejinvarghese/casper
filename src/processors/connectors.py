@@ -2,8 +2,8 @@ import os
 from typing import List, Union
 
 from arxiv import Client, Result, Search, SortCriterion
-from llama_index import download_loader
-from llama_index.schema import Document
+from llama_index.core import download_loader
+from llama_index.core import Document
 from src.core import Connector
 from src.utils.logger import BaseLogger
 

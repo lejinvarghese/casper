@@ -68,7 +68,7 @@ python3.10 -m src.app
 ### C: Deploy a research team
 
 ```bash
-python3.10 -m src.agents.research.team --temperature 0.98
+python3.10 -m src.agents.research.team --temperature 0.0
 ```
 
 ### D: Chat with a model with memory

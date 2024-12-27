@@ -1,9 +1,9 @@
 import pytest
 from typing import List
 from arxiv import Result
-from llama_index.schema import Document
+from llama_index.core import Document
 
-from connectors import ArxivConnector, WebConnector
+from processors.connectors import ArxivConnector, WebConnector
 from utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
