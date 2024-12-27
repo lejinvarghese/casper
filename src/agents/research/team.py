@@ -10,13 +10,14 @@ from langchain_openai import ChatOpenAI
 from src.utils.secrets import get_secret
 from src.utils.logger import m_colors
 from src.utils.tools import search_engine
+from src.constants import RESEARCH_DIR
 
 DEFAULT_MODEL_NAME = "gpt-4o-mini"
 DEFAULT_TEMPERATURE = 0.0
 DEFAULT_VERBOSITY = False
 
 os.environ["OPENAI_API_KEY"] = get_secret("OPENAI_API_KEY")
-now = datetime.now().strftime("%Y%m%d%H%M%S")
+current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 web_search = WebsiteSearchTool()
 
 
@@ -55,7 +56,7 @@ class ResearchTeam:
 
     @task
     def edit(self) -> Task:
-        file_path = f"src/data/.research/research_{now}.md"
+        file_path = f"{RESEARCH_DIR}/research_{current_timestamp}.md"
         return self._create_task("edit", output_file=file_path)
 
     @crew

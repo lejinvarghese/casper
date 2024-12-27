@@ -18,9 +18,9 @@ default_chat_engine = index.as_chat_engine(
 class ChatEngine:
     def __init__(
         self,
-        index_name="research",
-        chat_mode="simple",
-        verbose=False,
+        index_name: str = "research",
+        chat_mode: str = "simple",
+        verbose: bool = False,
         **kwargs,
     ):
         if index_name == "research":
@@ -37,7 +37,7 @@ class ChatEngine:
             system_prompt=kwargs.get("persona", personas.get("casper")),
         )
 
-    def chat(self, user_query):
+    def chat(self, user_query: str) -> str:
         return self.engine.chat(user_query)
 
 
