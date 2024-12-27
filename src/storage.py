@@ -46,7 +46,7 @@ class Storage:
             logger.warning("Creating new document store")
             self.docstore = SimpleDocumentStore()
         self.research_docs = SimpleDirectoryReader(
-            input_dir=research_directory, exclude_hidden=False, recursive=Trueq
+            input_dir=research_directory, exclude_hidden=False, recursive=True
         ).load_data()
         self.chroma_client = PersistentClient(path=self.persist_directory)
         self.chroma_collection = self.chroma_client.get_or_create_collection(
