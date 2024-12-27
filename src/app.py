@@ -43,6 +43,7 @@ async def chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     if user_query == options_keyboard[0][0]:
         response = """I'm here, what's on your mind?"""
     else:
+        chat_engine = context.user_data.get("chat_engine")
         response = str(chat_engine.chat(user_query))
     await update.message.reply_text(
         response,
@@ -91,9 +92,24 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 
+async def agent(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Switch chat engine character based on user input."""
+    message = update.message.text
+    persona = message.split(maxsplit=1)[-1] if len(message.split()) > 1 else None
+
+    if persona:
+        chat_engine = context.user_data.get("chat_engine")
+        chat_engine = chat_engine.update_engine(persona=str.lower(persona))
+        context.user_data["chat_engine"] = chat_engine
+        await update.message.reply_text(f"Switched to persona: {persona}")
+    else:
+        await update.message.reply_text("Please specify a persona name after /agent.")
+
+
 def reset_state(context: ContextTypes.DEFAULT_TYPE) -> None:
     """Resets the user state for a new session"""
     context.user_data["has_research_topic"] = False
+    context.user_data["chat_engine"] = ChatEngine(chat_mode="condense_plus_context")
 
 
 async def send_message_in_chunks(
@@ -111,6 +127,7 @@ def main() -> None:
         Application.builder().token(TELEGRAM_TOKEN).persistence(persistence).build()
     )
 
+    application.add_handler(CommandHandler("agent", agent))
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={

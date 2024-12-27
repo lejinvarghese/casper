@@ -23,22 +23,42 @@ class ChatEngine:
         verbose: bool = False,
         **kwargs,
     ):
+        self.index = self._load_index(index_name)
+        self.chat_mode = chat_mode
+        self.persona = kwargs.get("persona", "casper")
+        self.verbose = verbose
+        self.engine = self._get_engine()
+
+    def _load_index(self, index_name: str):
+        """Load the appropriate index based on the index_name."""
+        storage = Storage(llm=llm.model, embed_model=emb.model)
         if index_name == "research":
-            self.index = Storage(
-                llm=llm.model, embed_model=emb.model
-            ).load_research_index()
-        else:
-            self.index = Storage(
-                llm=llm.model, embed_model=emb.model
-            ).load_vector_index()
-        self.engine = self.index.as_chat_engine(
-            chat_mode=chat_mode,
-            verbose=verbose,
-            system_prompt=kwargs.get("persona", personas.get("casper", "")),
+            return storage.load_research_index()
+        return storage.load_vector_index()
+
+    def _get_engine(self):
+        """Initialize the chat engine."""
+        return self.index.as_chat_engine(
+            chat_mode=self.chat_mode,
+            verbose=self.verbose,
+            system_prompt=personas.get(self.persona),
         )
 
     def chat(self, user_query: str) -> str:
         return self.engine.chat(user_query)
+
+    def update_engine(self, chat_mode: str = None, persona: str = None):
+        """Update configuration dynamically."""
+        if chat_mode:
+            self.chat_mode = chat_mode
+        if persona:
+            if persona in personas:
+                self.persona = persona
+            else:
+                logger.warning(f"Persona {persona} not found. Using default persona.")
+                self.persona = "casper"
+        self.engine = self._get_engine()
+        return self
 
 
 def main():
