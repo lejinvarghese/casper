@@ -34,7 +34,7 @@ class ChatEngine:
         self.engine = self.index.as_chat_engine(
             chat_mode=chat_mode,
             verbose=verbose,
-            system_prompt=kwargs.get("persona", personas.get("casper")),
+            system_prompt=kwargs.get("persona", personas.get("casper", "")),
         )
 
     def chat(self, user_query: str) -> str:
