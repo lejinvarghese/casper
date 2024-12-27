@@ -23,7 +23,6 @@ from src.constants import (
     PERSIST_DIR,
     RESEARCH_DIR,
     EMBEDDING_MODEL_NAME,
-    NUM_WORKERS
 )
 
 logger = BaseLogger(__name__)
@@ -47,7 +46,7 @@ class Storage:
             logger.warning("Creating new document store")
             self.docstore = SimpleDocumentStore()
         self.research_docs = SimpleDirectoryReader(
-            input_dir=research_directory, exclude_hidden=False, recursive=True
+            input_dir=research_directory, exclude_hidden=False, recursive=Trueq
         ).load_data()
         self.chroma_client = PersistentClient(path=self.persist_directory)
         self.chroma_collection = self.chroma_client.get_or_create_collection(
@@ -60,6 +59,8 @@ class Storage:
         )
         Settings.llm = llm
         Settings.embed_model = embed_model
+        Settings.chunk_size = 512
+        Settings.chunk_overlap = 20
 
     def create_vector_index(self, nodes: List[TextNode]) -> None:
         index = VectorStoreIndex(
@@ -72,7 +73,9 @@ class Storage:
         return VectorStoreIndex.from_vector_store(self.vector_store)
 
     def load_research_index(self) -> VectorStoreIndex:
-        return VectorStoreIndex.from_documents(self.research_docs)
+        return VectorStoreIndex.from_documents(
+            self.research_docs, storage_context=self.storage_context
+        )
 
 
 class FaissVectorStore:

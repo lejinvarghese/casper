@@ -1,6 +1,7 @@
 PDF_DIR = "src/data/.pdfs"
 MODEL_DIR = "src/data/.models"
 PERSIST_DIR = "src/data/.storage"
+RESEARCH_DIR = "src/data/.research"
 
 COLLECTION_NAME = "research"
 
@@ -15,4 +16,4 @@ SUMMARIZATION_PROMPT = """<s>[INST] Context: {context_str}. Given this context, 
 
         Title: [/INST]
 """
-NUM_WORKERS = 15
+NUM_WORKERS = 12

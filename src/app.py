@@ -11,7 +11,7 @@ from telegram.ext import (
 )
 from src.utils.logger import BaseLogger
 from src.utils.secrets import get_secret
-from src.chat import chat_engine
+from src.chat import ChatEngine
 from src.agents.research.team import ResearchTeam
 
 TELEGRAM_TOKEN = get_secret("TELEGRAM_TOKEN")
@@ -19,6 +19,7 @@ logger = BaseLogger(__name__)
 options, chat, research = range(3)
 options_keyboard = [["Chat", "Research"]]
 options_markup = ReplyKeyboardMarkup(options_keyboard, one_time_keyboard=True)
+chat_engine = ChatEngine(chat_mode="condense_plus_context")
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:

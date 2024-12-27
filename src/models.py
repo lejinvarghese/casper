@@ -22,7 +22,7 @@ class InstructModel:
         max_new_tokens: int = 1024,
         context_window: int = 3000,
         generate_kwargs: dict = {},
-        model_kwargs: dict = {"n_gpu_layers": 50},
+        model_kwargs: dict = {"n_gpu_layers": 60},
     ):
         self.model = LlamaCPP(
             model_path=model_path,

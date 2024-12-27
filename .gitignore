@@ -134,3 +134,4 @@ dmypy.json
 *.db/
 uv.lock
 *db/
+*prompts/
