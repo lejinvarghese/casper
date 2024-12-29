@@ -1,18 +1,13 @@
-from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.memory import ChatSummaryMemoryBuffer
+from llama_index.core.storage.chat_store import SimpleChatStore
+
 from src.models import EmbeddingModel, InstructModel
 from src.storage import Storage
 from src.utils.logger import StreamingLogger
 from src.prompts import personas
+from src.constants import PERSIST_DIR
 
 logger = StreamingLogger(__name__)
-llm = InstructModel()
-emb = EmbeddingModel()
-index = Storage(llm=llm.model, embed_model=emb.model).load_vector_index()
-memory = ChatMemoryBuffer.from_defaults(token_limit=7200)
-
-default_chat_engine = index.as_chat_engine(
-    chat_mode="simple", memory=memory, verbose=True
-)
 
 
 class ChatEngine:
@@ -27,11 +22,25 @@ class ChatEngine:
         self.chat_mode = chat_mode
         self.persona = kwargs.get("persona", "casper")
         self.verbose = verbose
+        try:
+            self.chat_store = SimpleChatStore.from_persist_path(
+                persist_path=f"{PERSIST_DIR}/chat_store.json"
+            )
+        except Exception as e:
+            logger.warning(f"Error loading chat store: {e}")
+            self.chat_store = SimpleChatStore()
+        self.buffer = ChatSummaryMemoryBuffer.from_defaults(
+            token_limit=2048,
+            chat_store_key=kwargs.get("user_id", ""),
+            chat_store=self.chat_store,
+        )
         self.engine = self._get_engine()
 
     def _load_index(self, index_name: str):
         """Load the appropriate index based on the index_name."""
-        storage = Storage(llm=llm.model, embed_model=emb.model)
+        llm = InstructModel().model
+        emb = EmbeddingModel().model
+        storage = Storage(llm=llm, embed_model=emb)
         if index_name == "research":
             return storage.load_research_index()
         return storage.load_vector_index()
@@ -42,10 +51,13 @@ class ChatEngine:
             chat_mode=self.chat_mode,
             verbose=self.verbose,
             system_prompt=personas.get(self.persona),
+            memory=self.buffer,
         )
 
     def chat(self, user_query: str) -> str:
-        return self.engine.chat(user_query)
+        response = self.engine.chat(user_query)
+        self.chat_store.persist(persist_path=f"{PERSIST_DIR}/chat_store.json")
+        return str(response)
 
     def update_engine(self, chat_mode: str = None, persona: str = None):
         """Update configuration dynamically."""
@@ -62,11 +74,17 @@ class ChatEngine:
 
 
 def main():
+    llm = InstructModel()
+    emb = EmbeddingModel()
+    index = Storage(llm=llm.model, embed_model=emb.model).load_vector_index()
+    buffer = ChatSummaryMemoryBuffer.from_defaults(token_limit=2048)
+
+    chat_engine = index.as_chat_engine(chat_mode="simple", memory=buffer, verbose=True)
     while True:
         logger.debug("Enter your query:\n")
         user_query = input()
 
-        response = default_chat_engine.stream_chat(user_query)
+        response = chat_engine.stream_chat(user_query)
         for r in response.response_gen:
             logger.info(r)
         logger.flush()
