@@ -9,7 +9,7 @@ from langchain_openai import ChatOpenAI
 
 from src.utils.secrets import get_secret
 from src.utils.logger import m_colors
-from src.utils.tools import search_engine
+from src.tools.search import search_engine
 from src.constants import RESEARCH_DIR
 
 DEFAULT_MODEL_NAME = "gpt-4o-mini"
