@@ -13,6 +13,7 @@ from src.utils.logger import BaseLogger
 from src.utils.secrets import get_secret
 from src.chat import ChatEngine
 from src.agents.research.team import ResearchTeam
+from src.tools.image import generate_image
 
 TELEGRAM_TOKEN = get_secret("TELEGRAM_TOKEN")
 logger = BaseLogger(__name__)
@@ -20,6 +21,20 @@ options, chat, research = range(3)
 options_keyboard = [["Chat", "Research"]]
 options_markup = ReplyKeyboardMarkup(options_keyboard, one_time_keyboard=True)
 chat_engine = ChatEngine(chat_mode="condense_plus_context")
+
+
+def reset_state(context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Resets the user state for a new session"""
+    context.user_data["has_research_topic"] = False
+    context.user_data["chat_engine"] = ChatEngine(chat_mode="condense_plus_context")
+
+
+async def send_message_in_chunks(
+    update: Update, message: str, chunk_size: int = 4096
+) -> None:
+    """Send a large message in chunks."""
+    for i in range(0, len(message), chunk_size):
+        await update.message.reply_text(message[i : i + chunk_size])
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -92,7 +107,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 
-async def agent(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def agent_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Switch chat engine character based on user input."""
     message = update.message.text
     persona = message.split(maxsplit=1)[-1] if len(message.split()) > 1 else None
@@ -106,18 +121,12 @@ async def agent(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await update.message.reply_text("Please specify a persona name after /agent.")
 
 
-def reset_state(context: ContextTypes.DEFAULT_TYPE) -> None:
-    """Resets the user state for a new session"""
-    context.user_data["has_research_topic"] = False
-    context.user_data["chat_engine"] = ChatEngine(chat_mode="condense_plus_context")
+async def image_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Switch chat engine character based on user input."""
+    prompt = update.message.text.replace("/image", "").strip()
 
-
-async def send_message_in_chunks(
-    update: Update, message: str, chunk_size: int = 4096
-) -> None:
-    """Send a large message in chunks."""
-    for i in range(0, len(message), chunk_size):
-        await update.message.reply_text(message[i : i + chunk_size])
+    response = await generate_image(prompt=prompt, add_lora=True)
+    await update.message.reply_text(f"{response[0].imageURL}")
 
 
 def main() -> None:
@@ -127,7 +136,8 @@ def main() -> None:
         Application.builder().token(TELEGRAM_TOKEN).persistence(persistence).build()
     )
 
-    application.add_handler(CommandHandler("agent", agent))
+    application.add_handler(CommandHandler("agent", agent_handler))
+    application.add_handler(CommandHandler("image", image_handler))
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
         states={

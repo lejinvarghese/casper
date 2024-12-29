@@ -105,5 +105,9 @@ python3.10 -m pytest . -v -n0 ##run sequentially for cursor
 Query: "Does emergence in LLMs really happen and when?"
 ```
 
-![rag](../assets/rag.png)
-read more[here](https://www.analyticsvidhya.com/blog/2023/10/rag-pipeline-with-the-llama-index/)
+![rag](assets/rag.png)
+
+#### Casper Art
+
+- first image
+![x](https://im.runware.ai/image/ii/00a4384e-275c-4eae-8e4c-c4e4d363f9c6.JPG)
