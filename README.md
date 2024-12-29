@@ -83,6 +83,12 @@ python3.10 -m src.incubator.langgraph.tools_with_persistence --thread_id 2024122
 python3.10 -m src.incubator.rag_completion
 ```
 
+### F: Generate an image
+
+```bash
+python3.10 -m src.tools.image --n_results 1
+```
+
 ## Development
     
 ### Run Tests
