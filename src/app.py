@@ -14,6 +14,7 @@ from src.utils.secrets import get_secret
 from src.chat import ChatEngine
 from src.agents.research.team import ResearchTeam
 from src.tools.image import generate_image
+from src.constants import PERSIST_DIR
 
 TELEGRAM_TOKEN = get_secret("TELEGRAM_TOKEN")
 logger = BaseLogger(__name__)
@@ -23,10 +24,13 @@ options_markup = ReplyKeyboardMarkup(options_keyboard, one_time_keyboard=True)
 chat_engine = ChatEngine(chat_mode="condense_plus_context")
 
 
-def reset_state(context: ContextTypes.DEFAULT_TYPE) -> None:
+def reset_state(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Resets the user state for a new session"""
     context.user_data["has_research_topic"] = False
-    context.user_data["chat_engine"] = ChatEngine(chat_mode="condense_plus_context")
+    user_id = update.message.from_user.name
+    context.user_data["chat_engine"] = ChatEngine(
+        chat_mode="condense_plus_context", user_id=user_id
+    )
 
 
 async def send_message_in_chunks(
@@ -44,7 +48,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         "Hi! I'm Casper. How may I help you?",
         reply_markup=options_markup,
     )
-    reset_state(context)
+    reset_state(update, context)
 
     return options
 
@@ -59,7 +63,8 @@ async def chat_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
         response = """I'm here, what's on your mind?"""
     else:
         chat_engine = context.user_data.get("chat_engine")
-        response = str(chat_engine.chat(user_query))
+        response = chat_engine.chat(user_query)
+
     await update.message.reply_text(
         response,
         reply_markup=ReplyKeyboardRemove(),
@@ -131,7 +136,7 @@ async def image_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 def main() -> None:
     """Run the bot."""
-    persistence = PicklePersistence(filepath="src/data/.conversations")
+    persistence = PicklePersistence(filepath=f"{PERSIST_DIR}/.conversations")
     application = (
         Application.builder().token(TELEGRAM_TOKEN).persistence(persistence).build()
     )
