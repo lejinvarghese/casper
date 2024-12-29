@@ -73,7 +73,7 @@ class ResearchTeam:
     @before_kickoff
     def before_kickoff_function(self, inputs):
         click.secho(
-            f"Team kicked off to analyze research on: {inputs['topic']} at {now}.",
+            f"Team kicked off to analyze research on: {inputs['topic']} at {current_timestamp}.",
             fg=m_colors.get("aqua"),
         )
         return inputs
