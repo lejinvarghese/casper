@@ -1,7 +1,7 @@
 import pytest
-from typing import List
 
-from models import InstructModel, EmbeddingModel
+from models.completion import MistralModelAdapter
+from models.embeddings import EmbeddingModelAdapter
 from utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
@@ -18,15 +18,15 @@ def sample_query():
 
 @pytest.fixture
 def sample_llm():
-    return InstructModel()
+    return MistralModelAdapter()
 
 
 def test_embedding(sample_query):
-    emb = EmbeddingModel(device="cpu")
+    emb = EmbeddingModelAdapter(device="cpu")
     response = emb.model.get_text_embedding(sample_query)
     assert response is not None
     assert len(response) == EMBEDDING_SIZE
-    assert isinstance(response, List)
+    assert isinstance(response, list)
     assert isinstance(response[0], float)
 
 

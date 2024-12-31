@@ -2,16 +2,17 @@ import asyncio
 
 from src.processors.extractor import Pipeline
 from src.processors.loaders import PDFLoader
-from src.models import EmbeddingModel, InstructModel
+from src.models.completion import MistralModelAdapter
+from src.models.embeddings import EmbeddingModelAdapter
 from src.storage import Storage
 from src.utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
 
-llm = InstructModel()
-emb = EmbeddingModel(batch_size=32, device="cpu")
-st = Storage(llm=llm.model, embed_model=emb.model)
-p = Pipeline(llm=llm.model, embed_model=emb.model, storage=st)
+llm = MistralModelAdapter().model
+emb = EmbeddingModelAdapter(batch_size=32, device="cpu").model
+st = Storage(llm=llm, embed_model=emb)
+p = Pipeline(llm=llm, embed_model=emb, storage=st)
 
 
 def load_documents(sample_size=None, randomize=False):

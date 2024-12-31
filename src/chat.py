@@ -1,7 +1,8 @@
 from llama_index.core.memory import ChatSummaryMemoryBuffer
 from llama_index.core.storage.chat_store import SimpleChatStore
 
-from src.models import EmbeddingModel, InstructModel
+from src.models.completion import MistralModelAdapter
+from src.models.embeddings import EmbeddingModelAdapter
 from src.storage import Storage
 from src.utils.logger import StreamingLogger
 from src.prompts import personas
@@ -38,8 +39,8 @@ class ChatEngine:
 
     def _load_index(self, index_name: str):
         """Load the appropriate index based on the index_name."""
-        llm = InstructModel().model
-        emb = EmbeddingModel().model
+        llm = MistralModelAdapter().model
+        emb = EmbeddingModelAdapter().model
         storage = Storage(llm=llm, embed_model=emb)
         if index_name == "research":
             return storage.load_research_index()
@@ -74,9 +75,9 @@ class ChatEngine:
 
 
 def main():
-    llm = InstructModel()
-    emb = EmbeddingModel()
-    index = Storage(llm=llm.model, embed_model=emb.model).load_vector_index()
+    llm = MistralModelAdapter().model
+    emb = EmbeddingModelAdapter().model
+    index = Storage(llm=llm, embed_model=emb).load_vector_index()
     buffer = ChatSummaryMemoryBuffer.from_defaults(token_limit=2048)
 
     chat_engine = index.as_chat_engine(chat_mode="simple", memory=buffer, verbose=True)

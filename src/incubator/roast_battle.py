@@ -1,16 +1,19 @@
 import torch
 import click
 from llama_cpp import Llama
-from src.constants import MODEL_DIR, QUANT_VERSION
+from src.constants import MISTRAL_MODEL_PATH
 
-MODEL_PATH = f"./{MODEL_DIR}/{QUANT_VERSION}"
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 click.secho(f"Using device: {device}", fg="cyan")
 
 
 model = Llama(
-    model_path=MODEL_PATH, n_ctx=10_000, n_threads=8, n_gpu_layers=50, verbose=False
+    model_path=MISTRAL_MODEL_PATH,
+    n_ctx=10_000,
+    n_threads=8,
+    n_gpu_layers=50,
+    verbose=False,
 )
 
 

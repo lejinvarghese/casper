@@ -30,8 +30,8 @@ from concordia.utils import plotting
 from warnings import filterwarnings
 from concordia.language_model import gpt_model
 
-from src.constants import EMBEDDING_MODEL_NAME
-from src.models import EmbeddingModel, SimulationModel
+from src.models.completion import SimulationModelAdapter
+from src.models.embeddings import EmbeddingModelAdapter
 
 from src.utils.logger import BaseLogger
 from src.utils.secrets import get_secret
@@ -39,14 +39,17 @@ from src.utils.secrets import get_secret
 filterwarnings("ignore")
 logger = BaseLogger(__name__)
 
-# model = SimulationModel()
-# emb = EmbeddingModel().model
+model = SimulationModelAdapter(model_kwargs={"n_gpu_layers": 2})
+# emb = EmbeddingModelAdapter().model
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 OPENAI_MODEL = "gpt-4o-mini"
 # os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-model = gpt_model.GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
-st_model = SentenceTransformer(EMBEDDING_MODEL_NAME)
-embedder = lambda x: st_model.encode(x, show_progress_bar=False)
+# model = gpt_model.GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
+st_model = EmbeddingModelAdapter().model
+embedder = lambda x: st_model._embed(x)
+
+text_response = model.sample_text("What is the meaning of life?", max_tokens=40)
+logger.info(f"Text response: {text_response}")
 
 # make the clock
 time_step = datetime.timedelta(minutes=20)
@@ -96,7 +99,7 @@ formative_memory_factory = formative_memories.FormativeMemoryFactory(
 )
 
 # Creating character backgrounds, goals and traits. Modify to explore how it influences the outcomes
-NUM_PLAYERS = 2
+NUM_PLAYERS = 4
 
 scenario_premise = [
     (
@@ -296,18 +299,22 @@ players = []
 memories = {}
 
 logger.info(f"Players: {player_names}")
+for config in player_configs[:NUM_PLAYERS]:
+    agent, mem = build_agent(config, player_names, measurements)
+    players.append(agent)
+    memories[agent.name] = mem
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_PLAYERS) as pool:
-    for agent, mem in pool.map(
-        build_agent,
-        player_configs[:NUM_PLAYERS],
-        # All players get the same `player_names`.
-        [player_names] * NUM_PLAYERS,
-        # All players get the same `measurements` object.
-        [measurements] * NUM_PLAYERS,
-    ):
-        players.append(agent)
-        memories[agent.name] = mem
+# with concurrent.futures.ThreadPoolExecutor(max_workers=NUM_PLAYERS) as pool:
+#     for agent, mem in pool.map(
+#         build_agent,
+#         player_configs[:NUM_PLAYERS],
+#         # All players get the same `player_names`.
+#         [player_names] * NUM_PLAYERS,
+#         # All players get the same `measurements` object.
+#         [measurements] * NUM_PLAYERS,
+#     ):
+#         players.append(agent)
+#         memories[agent.name] = mem
 
 game_master_memory = associative_memory.AssociativeMemory(
     sentence_embedder=embedder,
