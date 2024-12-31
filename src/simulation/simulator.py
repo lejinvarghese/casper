@@ -30,7 +30,7 @@ from concordia.utils import plotting
 from warnings import filterwarnings
 from concordia.language_model import gpt_model
 
-from src.models.completion import SimulationModelAdapter
+
 from src.models.embeddings import EmbeddingModelAdapter
 
 from src.utils.logger import BaseLogger
@@ -39,12 +39,12 @@ from src.utils.secrets import get_secret
 filterwarnings("ignore")
 logger = BaseLogger(__name__)
 
-model = SimulationModelAdapter(model_kwargs={"n_gpu_layers": 2})
-# emb = EmbeddingModelAdapter().model
+# model = SimulationModelAdapter(n_gpu_layers=100)
+
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 OPENAI_MODEL = "gpt-4o-mini"
 # os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-# model = gpt_model.GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
+model = gpt_model.GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
 st_model = EmbeddingModelAdapter().model
 embedder = lambda x: st_model._embed(x)
 
@@ -99,7 +99,7 @@ formative_memory_factory = formative_memories.FormativeMemoryFactory(
 )
 
 # Creating character backgrounds, goals and traits. Modify to explore how it influences the outcomes
-NUM_PLAYERS = 4
+NUM_PLAYERS = 2
 
 scenario_premise = [
     (
@@ -397,8 +397,6 @@ for premise in scenario_premise:
 logger.info(f"Starting the simulation at {clock.now()}\n")
 episode_length = 1
 env.run_episode(max_steps=episode_length)
-# for _ in range(episode_length):
-#   env.step()
 
 # plot the results
 player_logs = []
@@ -421,10 +419,15 @@ for player in players:
     player_html = html_lib.PythonObjectToHTMLConverter(all_player_mem).convert()
     player_logs.append(player_html)
     player_log_names.append(f"{name}")
-
-for name, player_log in zip(player_log_names, player_logs):
-    file_name = f"log_{name}.html"
+    data = (
+        memories[player.name]
+        .get_data_frame()
+        .drop(columns=["embedding"])
+        .sort_values(["time", "importance"], ascending=True)
+    )
+    file_name = f"./src/data/.simulation/logs_{str.lower(name)}.csv"
+    data.to_csv(file_name)
+    file_name = file_name.replace(".csv", ".html")
     with open(file_name, "w", encoding="utf-8") as file:
-        file.write(player_log)
-
+        file.write(player_html)
     logger.warning(f"HTML file saved as {file_name}")
