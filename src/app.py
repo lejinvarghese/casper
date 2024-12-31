@@ -9,6 +9,7 @@ from telegram.ext import (
     PicklePersistence,
     filters,
 )
+from warnings import filterwarnings
 from src.utils.logger import BaseLogger
 from src.utils.secrets import get_secret
 from src.chat import ChatEngine
@@ -17,6 +18,7 @@ from src.tools.image import generate_image
 from src.constants import PERSIST_DIR
 
 TELEGRAM_TOKEN = get_secret("TELEGRAM_TOKEN")
+filterwarnings("ignore")
 logger = BaseLogger(__name__)
 options, chat, research = range(3)
 options_keyboard = [["Chat", "Research"]]

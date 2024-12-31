@@ -33,6 +33,7 @@ dependencies = [
     "sentencepiece>=0.2.0",
     "llama-hub>=0.0.79.post1",
     "runware>=0.3.9",
+    "gdm-concordia>=1.1.1",
 ]
 
 [tool.pytest.ini_options]

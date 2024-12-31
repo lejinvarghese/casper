@@ -10,9 +10,19 @@ from llama_index.llm_predictor.base import LLMPredictorType
 from llama_index.prompts import PromptTemplate
 from llama_index.schema import BaseNode, Document, TextNode
 from llama_index.text_splitter import SentenceSplitter
-from src.constants import NUM_WORKERS, PERSIST_DIR, SUMMARIZATION_PROMPT
+from src.constants import PERSIST_DIR
 from src.storage import Storage
 from src.utils.logger import BaseLogger
+
+
+SUMMARIZATION_PROMPT = """<s>[INST] Context: {context_str}.
+Given this context, generate a highly concise title that summarizes \
+the unique themes found in the context, in no more than 20 words. \
+Dont include descriptions of what you are doing, such as this document summarizes. Be as concise as possible. </s>\
+
+Title: [/INST]
+"""
+NUM_WORKERS = 12
 
 logger = BaseLogger(__name__)
 os.environ["TOKENIZERS_PARALLELISM"] = "true"
