@@ -31,7 +31,7 @@ class ChatEngine:
             logger.warning(f"Error loading chat store: {e}")
             self.chat_store = SimpleChatStore()
         self.buffer = ChatSummaryMemoryBuffer.from_defaults(
-            token_limit=2048,
+            token_limit=1024,
             chat_store_key=kwargs.get("user_id", ""),
             chat_store=self.chat_store,
         )
