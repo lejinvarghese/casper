@@ -1,24 +1,15 @@
 # @title Imports
 
-
-import collections
-from tqdm import tqdm
-import concurrent.futures
 import datetime
 
-import matplotlib.pyplot as plt
-import numpy as np
-from sentence_transformers import SentenceTransformer
-
 from concordia.agents import basic_agent
-
-# from concordia.components.agent import to_be_deprecated as components
 from concordia import components as generic_components
 from concordia.associative_memory import associative_memory
 from concordia.associative_memory import blank_memories
 from concordia.associative_memory import formative_memories
 from concordia.associative_memory import importance_function
-from concordia.clocks import game_clock
+
+# from concordia.clocks import game_clock
 from concordia.components import game_master as gm_components
 from concordia.environment import game_master
 from concordia.metrics import goal_achievement
@@ -26,7 +17,6 @@ from concordia.metrics import common_sense_morality
 from concordia.metrics import opinion_of_others
 from concordia.utils import html as html_lib
 from concordia.utils import measurements as measurements_lib
-from concordia.utils import plotting
 from warnings import filterwarnings
 from concordia.language_model import gpt_model
 
@@ -39,11 +29,9 @@ from src.utils.secrets import get_secret
 filterwarnings("ignore")
 logger = BaseLogger(__name__)
 
-# model = SimulationModelAdapter(n_gpu_layers=100)
-
 OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
 OPENAI_MODEL = "gpt-4o-mini"
-# os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
 model = gpt_model.GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
 st_model = EmbeddingModelAdapter().model
 embedder = lambda x: st_model._embed(x)
@@ -51,14 +39,14 @@ embedder = lambda x: st_model._embed(x)
 text_response = model.sample_text("What is the meaning of life?", max_tokens=40)
 logger.info(f"Text response: {text_response}")
 
-# make the clock
-time_step = datetime.timedelta(minutes=20)
-SETUP_TIME = datetime.datetime(hour=20, year=2024, month=10, day=1)
+# # make the clock
+# time_step = datetime.timedelta(minutes=20)
+# SETUP_TIME = datetime.datetime(hour=20, year=2024, month=10, day=1)
 
-START_TIME = datetime.datetime(hour=19, year=2024, month=10, day=2)
-clock = game_clock.MultiIntervalClock(
-    start=SETUP_TIME, step_sizes=[time_step, datetime.timedelta(minutes=10)]
-)
+# START_TIME = datetime.datetime(hour=19, year=2024, month=10, day=2)
+# clock = game_clock.MultiIntervalClock(
+#     start=SETUP_TIME, step_sizes=[time_step, datetime.timedelta(minutes=10)]
+# )
 
 # Importance models
 importance_model = importance_function.AgentImportanceModel(model)
