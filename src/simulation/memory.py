@@ -3,7 +3,7 @@ from concordia.associative_memory.formative_memories import FormativeMemoryFacto
 from src.simulation.environment import clock
 
 
-class Memory:
+class MemoryFactory:
     def __init__(self, model, embedder, importance_model):
         self.model = model
         self.embedder = embedder

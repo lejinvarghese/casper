@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+from concurrent.futures import ThreadPoolExecutor
 from concordia.agents import basic_agent
 from concordia.typing.component import Component
 
@@ -28,7 +28,7 @@ from src.models.embeddings import EmbeddingModelAdapter
 from src.utils.logger import BaseLogger
 from src.utils.secrets import get_secret
 from src.simulation.environment import clock, agent_step_size
-
+from src.simulation.memory import MemoryFactory
 
 filterwarnings("ignore")
 logger = BaseLogger(__name__)
@@ -42,6 +42,8 @@ embedder = lambda x: st_model._embed(x)
 
 importance_model = importance_function.AgentImportanceModel(model)
 importance_model_gm = importance_function.ConstantImportanceModel()
+
+memory_factory = MemoryFactory(model, embedder, importance_model)
 
 player_configs = [
     AgentConfig(
@@ -77,29 +79,74 @@ player_configs = [
     ),
 ]
 
-NUM_PLAYERS = 2
-player_configs = player_configs[:NUM_PLAYERS]
-player_names = [player.name for player in player_configs][:NUM_PLAYERS]
-measurements = Measurements()
 
-players = []
-memories = {}
+class AgentFactory:
+    def __init__(
+        self,
+        agent_configs: list[AgentConfig],
+        memory_factory: MemoryFactory,
+        max_agents: int = 2,
+    ):
+        self.agent_configs = agent_configs
+        self.memory_factory = memory_factory
+        self.formative_memory_factory = self.memory_factory.formative_memory_factory
+        self.measurements = Measurements()
+        if max_agents > len(self.agent_configs):
+            self.max_agents = len(self.agent_configs)
+            logger.warning(
+                f"The maximum number of players possible is {self.max_agents}"
+            )
+        else:
+            self.max_agents = max_agents
+        self.agent_configs = self.agent_configs[: self.max_agents]
+        self.agent_names = [a.name for a in self.agent_configs]
+        logger.info(f"Agents: {self.agent_names}")
 
-logger.info(f"Players: {player_names}")
-for config in player_configs[:NUM_PLAYERS]:
-    agent, mem = build_agent(config, player_names, measurements)
-    players.append(agent)
-    memories[agent.name] = mem
+    def build_agents(self):
+        """Builds agents."""
+        agents = []
+        memories = {}
+        with ThreadPoolExecutor(max_workers=self.max_agents) as pool:
+            for agent, memory in pool.map(
+                self.build_single_agent,
+                self.agent_configs,
+                [self.agent_names] * self.max_agents,
+                [self.measurements] * self.max_agents,
+            ):
+                agents.append(agent)
+                memories[agent.name] = memory
+        return agents, memories
 
+    def build_single_agent(self, config):
+        """Builds an agent."""
+        memory = self.formative_memory_factory.make_memories(config)
+        components = self._get_components(config, memory=memory)
+        agent = basic_agent.BasicAgent(
+            model,
+            memory=memory,
+            agent_name=config.name,
+            clock=clock,
+            verbose=False,
+            components=components,
+            update_interval=agent_step_size,
+        )
+        reputation_metric = OpinionOfOthersMetric(
+            model=model,
+            player_name=config.name,
+            player_names=self.player_names,
+            context_fn=agent.state,
+            clock=clock,
+            name="Opinion",
+            verbose=False,
+            measurements=measurements,
+            channel="opinion_of_others",
+            question="What is {opining_player}'s opinion of {of_player}?",
+        )
+        agent.add_component(reputation_metric)
+        return agent, memory
 
-class AgentBuilder:
-    def __init__(self, player_names: list[str]):
-        self.player_names = player_names
-
-    def build_agent(self):
-        pass
-
-    def get_components(self, config):
+    def _get_components(self, config, memory) -> list[Component]:
+        """Gets the components for the agent."""
         instructions = ConstantComponent(
             state=f"""
                         The instructions for how to play the role of {config.name} are as follows:
@@ -114,8 +161,8 @@ class AgentBuilder:
             name="role playing instructions\n",
         )
         observations = self._get_observations(config)
-        persona = self._get_persona(config, observations=observations)
-        metrics = self._get_metrics(config, observations)
+        persona = self._get_persona(config, memory=memory, observations=observations)
+        metrics = self._get_metrics(config)
         time = ReportFunction(
             name="Current time",
             function=clock.current_time_interval_str,
@@ -129,9 +176,10 @@ class AgentBuilder:
             time,
         ]
 
-    def _get_persona(self, config, observations: dict[str, Component]) -> Sequential:
+    def _get_persona(
+        self, config, memory, observations: dict[str, Component]
+    ) -> Sequential:
         """Gets the persona for the agent."""
-        memory = self.memory_factory.make_memories(config)
         self_perception = SelfPerception(
             name=f"answer to what kind of person is {config.name}",
             model=model,
@@ -158,7 +206,7 @@ class AgentBuilder:
             verbose=False,
         )
 
-        initial_goal_component = ConstantComponent(state=config.goal)
+        initial_goal = ConstantComponent(state=config.goal)
 
         persona = Sequential(
             name="persona",
@@ -166,7 +214,7 @@ class AgentBuilder:
                 self_perception,
                 situation_perception,
                 person_by_situation,
-                initial_goal_component,
+                initial_goal,
             ],
         )
         return persona
@@ -205,7 +253,7 @@ class AgentBuilder:
             player_goal=config.goal,
             clock=clock,
             name="Goal Achievement",
-            measurements=measurements,
+            measurements=self.measurements,
             channel="goal_achievement",
             verbose=False,
         )
@@ -215,7 +263,7 @@ class AgentBuilder:
             clock=clock,
             name="Morality",
             verbose=False,
-            measurements=measurements,
+            measurements=self.measurements,
             channel="common_sense_morality",
         )
         return metrics
