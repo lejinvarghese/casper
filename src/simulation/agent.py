@@ -1,9 +1,10 @@
 from datetime import timedelta
+from yaml import safe_load
 from concurrent.futures import ThreadPoolExecutor
-from concordia.agents import basic_agent
+from concordia.agents.basic_agent import BasicAgent
 from concordia.typing.component import Component
 
-from concordia.associative_memory import importance_function
+
 from concordia.associative_memory.formative_memories import AgentConfig
 
 from concordia.components.agent.self_perception import SelfPerception
@@ -38,58 +39,22 @@ OPENAI_MODEL = "gpt-4o-mini"
 model = GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
 st_model = EmbeddingModelAdapter().model
 embedder = lambda x: st_model._embed(x)
-
-
-importance_model = importance_function.AgentImportanceModel(model)
-importance_model_gm = importance_function.ConstantImportanceModel()
-
-memory_factory = MemoryFactory(model, embedder, importance_model)
-
-player_configs = [
-    AgentConfig(
-        name="Alice",
-        gender="female",
-        goal="Alice wants Bob to accept his car is trashed and back off.",
-        context=shared_context,
-        traits="responsibility: low; aggression: high, empathy: medium",
-    ),
-    AgentConfig(
-        name="Bob",
-        gender="male",
-        goal="Bob wants Alice to pay for his car.",
-        context=shared_context,
-        traits="responsibility: high; aggression: low",
-    ),
-    AgentConfig(
-        name="Charlie",
-        gender="male",
-        goal="Charlie wants Alice to apologise.",
-        context=shared_context,
-        traits="responsibility: low; aggression: high",
-    ),
-    AgentConfig(
-        name="Dorothy",
-        gender="female",
-        goal=(
-            "Dorothy wants to create a conflict between Bob and Alice, because"
-            " it is funny."
-        ),
-        context=shared_context,
-        traits="responsibility: medium; aggression: high",
-    ),
-]
+memory_factory = MemoryFactory(model, embedder)
 
 
 class AgentFactory:
     def __init__(
         self,
-        agent_configs: list[AgentConfig],
         memory_factory: MemoryFactory,
+        config_path: str = "src/data/.simulation/agents.yaml",
         max_agents: int = 2,
     ):
-        self.agent_configs = agent_configs
         self.memory_factory = memory_factory
+        self.shared_context = self.memory_factory.shared_context
         self.formative_memory_factory = self.memory_factory.formative_memory_factory
+
+        self.config_path = config_path
+        self.agent_configs = self.__get_agent_configs()
         self.measurements = Measurements()
         if max_agents > len(self.agent_configs):
             self.max_agents = len(self.agent_configs)
@@ -121,7 +86,7 @@ class AgentFactory:
         """Builds an agent."""
         memory = self.formative_memory_factory.make_memories(config)
         components = self._get_components(config, memory=memory)
-        agent = basic_agent.BasicAgent(
+        agent = BasicAgent(
             model,
             memory=memory,
             agent_name=config.name,
@@ -138,7 +103,7 @@ class AgentFactory:
             clock=clock,
             name="Opinion",
             verbose=False,
-            measurements=measurements,
+            measurements=self.measurements,
             channel="opinion_of_others",
             question="What is {opining_player}'s opinion of {of_player}?",
         )
@@ -160,7 +125,7 @@ class AgentFactory:
                         """,
             name="role playing instructions\n",
         )
-        observations = self._get_observations(config)
+        observations = self._get_observations(config, memory=memory)
         persona = self._get_persona(config, memory=memory, observations=observations)
         metrics = self._get_metrics(config)
         time = ReportFunction(
@@ -220,14 +185,14 @@ class AgentFactory:
         return persona
 
     def _get_observations(
-        self, config, summary_intervals: tuple = (4, 1)
+        self, config, memory, summary_intervals: tuple = (4, 1)
     ) -> dict[str, Component]:
         """Gets the observations for the agent."""
         observations = {}
         observations["current"] = Observation(
             agent_name=config.name,
             clock_now=clock.now,
-            memory=mem,
+            memory=memory,
             timeframe=clock.get_step_size(),
             component_name="current observations",
         )
@@ -236,7 +201,7 @@ class AgentFactory:
             agent_name=config.name,
             model=model,
             clock_now=clock.now,
-            memory=mem,
+            memory=memory,
             components=[observations.get("current")],
             timeframe_delta_from=timedelta(hours=summary_intervals[0]),
             timeframe_delta_until=timedelta(hours=summary_intervals[1]),
@@ -267,3 +232,21 @@ class AgentFactory:
             channel="common_sense_morality",
         )
         return metrics
+
+    def __get_agent_configs(
+        self,
+    ) -> list[AgentConfig]:
+        """Gets agent configurations."""
+        with open(self.config_path, "r") as file:
+            data = safe_load(file)
+        configs = [
+            AgentConfig(
+                name=agent["name"],
+                gender=agent["gender"],
+                goal=agent["goal"],
+                context=self.shared_context,
+                traits=agent["traits"],
+            )
+            for agent in data.get("agents", [])
+        ]
+        return configs

@@ -1,13 +1,14 @@
 from concordia.associative_memory.blank_memories import MemoryFactory
 from concordia.associative_memory.formative_memories import FormativeMemoryFactory
+from concordia.associative_memory.importance_function import AgentImportanceModel
 from src.simulation.environment import clock
 
 
 class MemoryFactory:
-    def __init__(self, model, embedder, importance_model):
+    def __init__(self, model, embedder):
         self.model = model
         self.embedder = embedder
-        self.importance_model = importance_model
+        self.importance_model = AgentImportanceModel(self.model)
 
         @property
         def shared_memories(self):
