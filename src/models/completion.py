@@ -72,7 +72,7 @@ class LLamaModelAdapter:
             n_gpu_layers=n_gpu_layers,
             chat_format=chat_format,
             verbose=verbose,
-            n_ctx=10_000,
+            n_ctx=8192,
             **kwargs,
         )
 
