@@ -89,6 +89,12 @@ python3.10 -m src.incubator.rag_completion
 python3.10 -m src.tools.image --n_results 1
 ```
 
+### G: Run  a simulation
+
+```bash
+python3.10 -m src.simulation.main
+```
+
 ## Development
     
 ### Run Tests
