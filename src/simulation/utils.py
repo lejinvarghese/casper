@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from concordia.clocks.game_clock import MultiIntervalClock
 from src.utils.logger import BaseLogger
+
 logger = BaseLogger(__name__)
 
 interval = 10

@@ -9,16 +9,19 @@ from src.simulation.utils import clock
 
 
 class MemoryFactory:
-    def __init__(self, model, embedder):
+    def __init__(self, model, embedder, topic):
         self.model = model
         self.embedder = embedder
+        self.topic = topic
 
     @property
     def shared_memories(self):
         return [
-            "There is a pub called The Sundrop Saloon.",
-            "Alice stole Bob's car and crashed it.",
-            "Alice, Bob, Charlie and Dorothy always spend their evenings at the Sundrop Saloon.",
+            "There is a research facility on a remote island called Quarks, dedicated to groundbreaking experimental interdisciplinary research across scientific fields.",
+            "Quarks is not just a state of the art research facility with advanced laboratories, it has beautiful galleries, bars, theatres, gardens with flora and fauna from across the world, and a library with rare manuscripts.",
+            "The facility is designed to foster creativity, with endless avenues for both intellectual exploration and leisure, offering scenic views and quiet spaces for reflection.",
+            "Quarks is a place where the research team thrives, not just in their scientific endeavors but in the freedom to think, debate, and dream outside the confines of traditional boundaries.",
+            "The team often gathers in the Reflection Gardens after breakthroughs, discussing new theories, or simply unwinding under the stars, where ideas evolve as naturally as the landscape around them.",
         ]
 
     @property

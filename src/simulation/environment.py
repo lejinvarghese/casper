@@ -17,22 +17,24 @@ logger = BaseLogger(__name__)
 
 
 class Environment:
-    def __init__(self, max_agents: int = 3, episode_length: int = 5):
+    def __init__(self, max_agents: int = 5, episode_length: int = 2, topic: str = "biologically inspired transformer architectures for neural networks"):
         self.max_agents = max_agents
         self.episode_length = episode_length
+        self.topic = topic
         self.llm = GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
         self.memory_factory = self.__get_memory_factory()
 
         self.agent_factory = AgentFactory(memory_factory=self.memory_factory, model=self.llm, max_agents=self.max_agents)
         self.agents, self.agent_memories = self.agent_factory.build()
 
-        self.game_master_factory = GameMasterFactory(memory_factory=self.memory_factory, agents=self.agents, model=self.llm)
+        self.game_master_factory = GameMasterFactory(memory_factory=self.memory_factory, agents=self.agents, model=self.llm, topic=self.topic)
         self.game_master, self.game_master_memories = self.game_master_factory.build()
 
         self.initial_states = [
-            "Alice, Bob, Charlie and Dorothy are at the Sundrop Saloon. There is a snow storm and they have to wait it out inside.",
-            "There's live music at the saloon tonight, and a local band playing.",
-            "The saloon is a popular spot for the locals.",
+            "The research team has just gathered in the serene Reflection Gardens at Quarks.",
+            "The setting is calm, with soft winds rustling through the trees and distant views of the ocean, allowing the team to reflect deeply on the challenges ahead.",
+            f"The team is tasked with the discovery of solutions for {self.topic}. Each member brings a unique perspective, blending interdisciplinary expertise with a drive to push boundaries.",
+            "This team must intensely focus on tangible avenues to pursue that would have the most significant impact on the field.",
         ]
 
     def run(self):
@@ -45,7 +47,7 @@ class Environment:
                 agent.observe(state)
 
         for _ in range(self.episode_length):
-            logger.info(f"\nEpisode: {_} {clock.now()}:\n")
+            logger.debug(f"Episode: {_} {clock.now()}:")
             self.game_master.step()
 
         self.log()
@@ -53,7 +55,7 @@ class Environment:
     def __get_memory_factory(self):
         emb_model = EmbeddingModelAdapter().model
         embedder = lambda x: emb_model._embed(x)
-        return MemoryFactory(model=self.llm, embedder=embedder)
+        return MemoryFactory(model=self.llm, embedder=embedder, topic=self.topic)
 
     def log(self):
         memory = self.game_master._memory

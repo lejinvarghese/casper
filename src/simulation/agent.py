@@ -98,15 +98,24 @@ class AgentFactory:
         instructions = ConstantComponent(
             state=f"""
                         The instructions for how to play the role of {config.name} are as follows:
-                        This is a social science experiment studying how well you play the role of a character named {config.name}. 
-                        The experiment is structured as a tabletop roleplaying game (like Dungeons and Dragons). However, in this case, 
-                        it is a serious social science experiment and simulation. The goal is to be realistic.
-                        It is important to play the role of a person like {config.name} as accurately as possible, i.e., by responding 
-                        in ways that you think it is likely a person like {config.name} would respond, and taking into account all 
-                        information about {config.name} that you have. 
-                        Always use a third-person limited perspective.
+                        This is a scientific research simulation between world's leading minds and you're the character named {config.name}.
+                        Your goal is to contribute to groundbreaking research by exploring innovative ideas, testing hypotheses, and collaborating with other scientists in a dynamic and interdisciplinary environment.
+                        
+                        Each member of the team brings unique expertise, and it is essential that you contribute to the teams success by being true to the scientific background and characteristics of {config.name}. 
+                        Your interactions with other agents should reflect the personality traits and goals of your character, which have been defined in detail. Consider their personality, priorities, ethical considerations, and ways of approaching complex scientific problems.
+                        
+                        Focus on collaborative exploration, respecting diverse perspectives, and generating new, creative, and innovative solutions. While working with other team members, ensure you:
+                        - Contribute your knowledge and expertise.
+                        - Respect the values of collaboration and innovation.
+                        - Balance your character's goals with the group's collective objectives.
+                        - Avoid excessive conflict unless it furthers the pursuit of new ideas.
+                        
+                        Always respond in a way that reflects {config.name}'s personality and goals, using their knowledge and traits to guide decisions. Consider their experiences and inspirations as they approach scientific challenges, and explore interdisciplinary solutions to pressing problems.
+
+                        Think of this as a real-life scientific inquiry, where your role is pivotal in shaping the trajectory of this groundbreaking exploration.
+                        Always use a third-person limited perspective in your responses, reflecting how {config.name} would think, act, and contribute to the group.
                         """,
-            name="role playing instructions\n",
+            name="scientific collaboration instructions\n",
         )
         observations = self._get_observations(config, memory=memory)
         persona = self._get_persona(config, memory=memory, observations=observations)
@@ -127,7 +136,7 @@ class AgentFactory:
     def _get_persona(self, config, memory, observations: dict[str, Component]) -> Sequential:
         """Gets the persona for the agent."""
         self_perception = SelfPerception(
-            name=f"answer to what kind of person is {config.name}",
+            name=f"answer to what kind of scientist is {config.name}",
             model=self.model,
             memory=memory,
             agent_name=config.name,
@@ -143,7 +152,7 @@ class AgentFactory:
         )
         perceptions = [self_perception, situation_perception]
         person_by_situation = PersonBySituation(
-            name=f"""answer to what would a person like {config.name} do in a situation like this""",
+            name=f"""answer to what would a scientist like {config.name} do in a situation like this""",
             model=self.model,
             memory=memory,
             agent_name=config.name,
@@ -223,7 +232,7 @@ class AgentFactory:
                 name=agent["name"],
                 gender=agent["gender"],
                 goal=agent["goal"],
-                context=self.memory_factory.shared_context,
+                context=f"{self.memory_factory.shared_context}. {agent['name']} is {agent['inspiration']}.",
                 traits=agent["traits"],
             )
             for agent in data.get("agents", [])
