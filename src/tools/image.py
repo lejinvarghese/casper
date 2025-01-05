@@ -86,11 +86,7 @@ async def generate_image(
 @click.option("--enhance", default=False, is_flag=True, help="Enhance prompt")
 @click.option("--add_lora", default=True, is_flag=True, help="Add Lora adapters")
 def main(model_id, prompt, n_results, dimension, enhance, add_lora):
-    images = asyncio.run(
-        generate_image(
-            model_id, prompt, n_results, dimension, enhance, add_lora=add_lora
-        )
-    )
+    images = asyncio.run(generate_image(model_id, prompt, n_results, dimension, enhance, add_lora=add_lora))
     for image in images:
         click.secho(f"Image URL: {image.imageURL}", fg="blue")
     return images

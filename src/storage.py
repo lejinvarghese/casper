@@ -27,19 +27,13 @@ class Storage:
     ):
         self.persist_directory = persist_directory
         try:
-            self.docstore = SimpleDocumentStore.from_persist_dir(
-                persist_dir=self.persist_directory
-            )
+            self.docstore = SimpleDocumentStore.from_persist_dir(persist_dir=self.persist_directory)
         except FileNotFoundError:
             logger.warning("Creating new document store")
             self.docstore = SimpleDocumentStore()
-        self.research_docs = SimpleDirectoryReader(
-            input_dir=research_directory, exclude_hidden=False, recursive=True
-        ).load_data()
+        self.research_docs = SimpleDirectoryReader(input_dir=research_directory, exclude_hidden=False, recursive=True).load_data()
         self.chroma_client = PersistentClient(path=self.persist_directory)
-        self.chroma_collection = self.chroma_client.get_or_create_collection(
-            collection_name
-        )
+        self.chroma_collection = self.chroma_client.get_or_create_collection(collection_name)
         self.vector_store = ChromaVectorStore(chroma_collection=self.chroma_collection)
         self.storage_context = StorageContext.from_defaults(
             vector_store=self.vector_store,
@@ -61,6 +55,4 @@ class Storage:
         return VectorStoreIndex.from_vector_store(self.vector_store)
 
     def load_research_index(self) -> VectorStoreIndex:
-        return VectorStoreIndex.from_documents(
-            self.research_docs, storage_context=self.storage_context
-        )
+        return VectorStoreIndex.from_documents(self.research_docs, storage_context=self.storage_context)

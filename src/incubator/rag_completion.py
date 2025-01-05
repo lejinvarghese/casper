@@ -26,9 +26,7 @@ def main():
             for r in response.response_gen:
                 logger.info(r)
         except Exception as e:
-            logger.error(
-                f"Error: Could not find an appropriate answer for your query: {e}"
-            )
+            logger.error(f"Error: Could not find an appropriate answer for your query: {e}")
         logger.flush()
 
 
