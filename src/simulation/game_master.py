@@ -55,7 +55,7 @@ class GameMasterFactory:
             player_names=[a.name for a in self.agents],
         )
         current_state = ConstantComponent(
-            state="It is impossible to leave the Sundrop Saloon, since it is snowed in.",
+            state="The research facility on Quarks Island is now in a period of intense focus on scientific pursuits.",
             name="Fact",
         )
         shared_memories = ConstantComponent(state=" ".join(self.memory_factory.shared_memories), name="Background")
