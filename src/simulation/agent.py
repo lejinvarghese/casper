@@ -1,73 +1,58 @@
 from datetime import timedelta
+from warnings import filterwarnings
 from yaml import safe_load
 from concurrent.futures import ThreadPoolExecutor
-from concordia.agents.basic_agent import BasicAgent
+
 from concordia.typing.component import Component
+from concordia.components.constant import ConstantComponent
 
-
+from concordia.agents.basic_agent import BasicAgent
 from concordia.associative_memory.formative_memories import AgentConfig
-
 from concordia.components.agent.self_perception import SelfPerception
 from concordia.components.agent.situation_perception import SituationPerception
 from concordia.components.agent.person_by_situation import PersonBySituation
 
-from concordia.components.constant import ConstantComponent
 from concordia.components.sequential import Sequential
 from concordia.components.agent.observation import Observation, ObservationSummary
 from concordia.components.report_function import ReportFunction
-
 from concordia.metrics.goal_achievement import GoalAchievementMetric
 from concordia.metrics.common_sense_morality import CommonSenseMoralityMetric
 from concordia.metrics.opinion_of_others import OpinionOfOthersMetric
 from concordia.utils.measurements import Measurements
-from concordia.language_model.gpt_model import GptLanguageModel
+from concordia.language_model.language_model import LanguageModel
 
-
-from warnings import filterwarnings
-from src.models.embeddings import EmbeddingModelAdapter
-
-from src.utils.logger import BaseLogger
-from src.utils.secrets import get_secret
-from src.simulation.environment import clock, agent_step_size
+from src.simulation.utils import clock, agent_step_size
 from src.simulation.memory import MemoryFactory
+from src.utils.logger import BaseLogger
 
 filterwarnings("ignore")
 logger = BaseLogger(__name__)
-
-OPENAI_API_KEY = get_secret("OPENAI_API_KEY")
-OPENAI_MODEL = "gpt-4o-mini"
-model = GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
-st_model = EmbeddingModelAdapter().model
-embedder = lambda x: st_model._embed(x)
-memory_factory = MemoryFactory(model, embedder)
 
 
 class AgentFactory:
     def __init__(
         self,
         memory_factory: MemoryFactory,
-        config_path: str = "src/data/.simulation/agents.yaml",
+        model: LanguageModel,
         max_agents: int = 2,
+        config_path: str = "src/data/.simulation/agents.yaml",
     ):
         self.memory_factory = memory_factory
-        self.shared_context = self.memory_factory.shared_context
         self.formative_memory_factory = self.memory_factory.formative_memory_factory
-
+        self.model = model
         self.config_path = config_path
-        self.agent_configs = self.__get_agent_configs()
+        self.agent_configs = self._get_agent_configs()
         self.measurements = Measurements()
         if max_agents > len(self.agent_configs):
             self.max_agents = len(self.agent_configs)
-            logger.warning(
-                f"The maximum number of players possible is {self.max_agents}"
-            )
+            logger.warning(f"The maximum number of agents possible is {self.max_agents}")
         else:
             self.max_agents = max_agents
         self.agent_configs = self.agent_configs[: self.max_agents]
         self.agent_names = [a.name for a in self.agent_configs]
         logger.info(f"Agents: {self.agent_names}")
 
-    def build_agents(self):
+    def build(self) -> tuple[list[BasicAgent], dict[str, dict]]:
         """Builds agents."""
         agents = []
         memories = {}
@@ -75,8 +60,6 @@ class AgentFactory:
             for agent, memory in pool.map(
                 self.build_single_agent,
                 self.agent_configs,
-                [self.agent_names] * self.max_agents,
-                [self.measurements] * self.max_agents,
             ):
                 agents.append(agent)
                 memories[agent.name] = memory
@@ -87,7 +70,7 @@ class AgentFactory:
         memory = self.formative_memory_factory.make_memories(config)
         components = self._get_components(config, memory=memory)
         agent = BasicAgent(
-            model,
+            self.model,
             memory=memory,
             agent_name=config.name,
             clock=clock,
@@ -96,9 +79,9 @@ class AgentFactory:
             update_interval=agent_step_size,
         )
         reputation_metric = OpinionOfOthersMetric(
-            model=model,
+            model=self.model,
             player_name=config.name,
-            player_names=self.player_names,
+            player_names=self.agent_names,
             context_fn=agent.state,
             clock=clock,
             name="Opinion",
@@ -141,20 +124,18 @@ class AgentFactory:
             time,
         ]
 
-    def _get_persona(
-        self, config, memory, observations: dict[str, Component]
-    ) -> Sequential:
+    def _get_persona(self, config, memory, observations: dict[str, Component]) -> Sequential:
         """Gets the persona for the agent."""
         self_perception = SelfPerception(
             name=f"answer to what kind of person is {config.name}",
-            model=model,
+            model=self.model,
             memory=memory,
             agent_name=config.name,
             clock_now=clock.now,
         )
         situation_perception = SituationPerception(
             name=f"""answer to what kind of situation is {config.name} in right now""",
-            model=model,
+            model=self.model,
             memory=memory,
             agent_name=config.name,
             components=[observations.get("current"), observations.get("summary")],
@@ -163,7 +144,7 @@ class AgentFactory:
         perceptions = [self_perception, situation_perception]
         person_by_situation = PersonBySituation(
             name=f"""answer to what would a person like {config.name} do in a situation like this""",
-            model=model,
+            model=self.model,
             memory=memory,
             agent_name=config.name,
             clock_now=clock.now,
@@ -184,9 +165,7 @@ class AgentFactory:
         )
         return persona
 
-    def _get_observations(
-        self, config, memory, summary_intervals: tuple = (4, 1)
-    ) -> dict[str, Component]:
+    def _get_observations(self, config, memory, summary_intervals: tuple = (4, 1)) -> dict[str, Component]:
         """Gets the observations for the agent."""
         observations = {}
         observations["current"] = Observation(
@@ -199,7 +178,7 @@ class AgentFactory:
 
         observations["summary"] = ObservationSummary(
             agent_name=config.name,
-            model=model,
+            model=self.model,
             clock_now=clock.now,
             memory=memory,
             components=[observations.get("current")],
@@ -213,7 +192,7 @@ class AgentFactory:
         """Gets the metrics for the agent."""
         metrics = {}
         metrics["goal"] = GoalAchievementMetric(
-            model=model,
+            model=self.model,
             player_name=config.name,
             player_goal=config.goal,
             clock=clock,
@@ -223,7 +202,7 @@ class AgentFactory:
             verbose=False,
         )
         metrics["morality"] = CommonSenseMoralityMetric(
-            model=model,
+            model=self.model,
             player_name=config.name,
             clock=clock,
             name="Morality",
@@ -233,7 +212,7 @@ class AgentFactory:
         )
         return metrics
 
-    def __get_agent_configs(
+    def _get_agent_configs(
         self,
     ) -> list[AgentConfig]:
         """Gets agent configurations."""
@@ -244,7 +223,7 @@ class AgentFactory:
                 name=agent["name"],
                 gender=agent["gender"],
                 goal=agent["goal"],
-                context=self.shared_context,
+                context=self.memory_factory.shared_context,
                 traits=agent["traits"],
             )
             for agent in data.get("agents", [])
