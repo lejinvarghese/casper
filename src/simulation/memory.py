@@ -22,7 +22,7 @@ class MemoryFactory:
             "The facility is designed to foster creativity, with endless avenues for both intellectual exploration and leisure, offering scenic views and quiet spaces for reflection.",
             "Quarks is a place where the research team thrives, not just in their scientific endeavors but in the freedom to think, debate, and dream outside the confines of traditional boundaries.",
             "The team often gathers in the Reflection Gardens after breakthroughs, discussing new theories, or simply unwinding under the stars, where ideas evolve as naturally as the landscape around them.",
-    ]
+        ]
 
     @property
     def shared_context(self):

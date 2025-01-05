@@ -24,11 +24,13 @@ class GameMasterFactory:
         memory_factory: MemoryFactory,
         agents: list[BasicAgent],
         model: LanguageModel,
+        topic: str,
     ):
         self.memory_factory = memory_factory
         self.associative_memory_factory = self.memory_factory.associative_memory_factory
         self.agents = agents
         self.model = model
+        self.topic = topic
 
     def build(self):
         components = self._get_components()
@@ -55,7 +57,7 @@ class GameMasterFactory:
             player_names=[a.name for a in self.agents],
         )
         current_state = ConstantComponent(
-            state="The research facility on Quarks Island is now in a period of intense focus on scientific pursuits.",
+            state=f"The research facility on Quarks Island is now in a period of intense focus on the scientific pursuit of {self.topic}.",
             name="Fact",
         )
         shared_memories = ConstantComponent(state=" ".join(self.memory_factory.shared_memories), name="Background")
@@ -67,7 +69,7 @@ class GameMasterFactory:
             clock=clock,
             burner_memory_factory=self.memory_factory.blank_memory_factory,
             components=[agent_status, current_state],
-            cap_nonplayer_characters=3,
+            cap_nonplayer_characters=len(self.agents) // 2,
             shared_context=self.memory_factory.shared_context,
             verbose=False,
         )
