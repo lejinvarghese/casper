@@ -30,14 +30,10 @@ def reset_state(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Resets the user state for a new session"""
     context.user_data["has_research_topic"] = False
     user_id = update.message.from_user.name
-    context.user_data["chat_engine"] = ChatEngine(
-        chat_mode="condense_plus_context", user_id=user_id
-    )
+    context.user_data["chat_engine"] = ChatEngine(chat_mode="condense_plus_context", user_id=user_id)
 
 
-async def send_message_in_chunks(
-    update: Update, message: str, chunk_size: int = 4096
-) -> None:
+async def send_message_in_chunks(update: Update, message: str, chunk_size: int = 4096) -> None:
     """Send a large message in chunks."""
     for i in range(0, len(message), chunk_size):
         await update.message.reply_text(message[i : i + chunk_size])
@@ -107,9 +103,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancels and ends the conversation."""
     user = update.message.from_user
     logger.info(f"User {user.first_name} canceled the conversation.")
-    await update.message.reply_text(
-        "Bye! I hope we can talk again some day.", reply_markup=ReplyKeyboardRemove()
-    )
+    await update.message.reply_text("Bye! I hope we can talk again some day.", reply_markup=ReplyKeyboardRemove())
 
     return ConversationHandler.END
 
@@ -139,9 +133,7 @@ async def image_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 def main() -> None:
     """Run the bot."""
     persistence = PicklePersistence(filepath=f"{PERSIST_DIR}/.conversations")
-    application = (
-        Application.builder().token(TELEGRAM_TOKEN).persistence(persistence).build()
-    )
+    application = Application.builder().token(TELEGRAM_TOKEN).persistence(persistence).build()
 
     application.add_handler(CommandHandler("agent", agent_handler))
     application.add_handler(CommandHandler("image", image_handler))
@@ -149,19 +141,13 @@ def main() -> None:
         entry_points=[CommandHandler("start", start)],
         states={
             options: [
-                MessageHandler(
-                    filters.Regex(f"^({options_keyboard[0][0]})$"), chat_handler
-                ),
-                MessageHandler(
-                    filters.Regex(f"^({options_keyboard[0][1]})$"), research_handler
-                ),
+                MessageHandler(filters.Regex(f"^({options_keyboard[0][0]})$"), chat_handler),
+                MessageHandler(filters.Regex(f"^({options_keyboard[0][1]})$"), research_handler),
             ],
             chat: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, chat_handler),
             ],
-            research: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, research_handler)
-            ],
+            research: [MessageHandler(filters.TEXT & ~filters.COMMAND, research_handler)],
         },
         fallbacks=[
             CommandHandler("cancel", cancel),

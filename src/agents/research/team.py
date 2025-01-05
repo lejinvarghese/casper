@@ -95,9 +95,7 @@ class ResearchTeam:
             llm=self.llm,
             max_iter=self.agents_config.get(agent_name, {}).get("max_iter", 25),
             max_rpm=self.agents_config.get(agent_name, {}).get("max_rpm", 10),
-            allow_delegation=self.agents_config.get(agent_name, {}).get(
-                "allow_delegation", True
-            ),
+            allow_delegation=self.agents_config.get(agent_name, {}).get("allow_delegation", True),
             **kwargs,
         )
 
@@ -107,12 +105,8 @@ class ResearchTeam:
 
 @click.command()
 @click.option("--model_name", default=DEFAULT_MODEL_NAME, type=str, help="Model name")
-@click.option(
-    "--temperature", default=DEFAULT_TEMPERATURE, type=float, help="Temperature"
-)
-@click.option(
-    "--verbose", default=DEFAULT_VERBOSITY, type=bool, is_flag=True, help="Verbosity"
-)
+@click.option("--temperature", default=DEFAULT_TEMPERATURE, type=float, help="Temperature")
+@click.option("--verbose", default=DEFAULT_VERBOSITY, type=bool, is_flag=True, help="Verbosity")
 @click.option("--topic", default="complexity science", type=str, help="Topic")
 def main(model_name, temperature, verbose, topic):
     return (
