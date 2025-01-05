@@ -17,9 +17,10 @@ logger = BaseLogger(__name__)
 
 
 class Environment:
-    def __init__(self, max_agents: int = 3, episode_length: int = 5):
+    def __init__(self, max_agents: int = 3, episode_length: int = 5, topic: str = "network science"):
         self.max_agents = max_agents
         self.episode_length = episode_length
+        self.topic = topic
         self.llm = GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
         self.memory_factory = self.__get_memory_factory()
 
@@ -30,9 +31,11 @@ class Environment:
         self.game_master, self.game_master_memories = self.game_master_factory.build()
 
         self.initial_states = [
-            "Alice, Bob, Charlie and Dorothy are at the Sundrop Saloon. There is a snow storm and they have to wait it out inside.",
-            "There's live music at the saloon tonight, and a local band playing.",
-            "The saloon is a popular spot for the locals.",
+            f"The research team has just gathered in the serene Reflection Gardens at Quarks, a place where past breakthroughs and new ideas often come to life.",
+            "Today, they are tasked with the creation of sustainable solutions for {self.topic}. Each member brings a unique perspective, blending interdisciplinary expertise with a drive to push boundaries.",
+            "The setting is calm, with soft winds rustling through the trees and distant views of the ocean, allowing the team to reflect deeply on the challenges ahead.",
+            "While their minds are focused on the task at hand, moments of disagreement and different approaches to problem-solving are already emerging, signaling the need for delicate coordination.",
+            f"As the team takes a moment to breathe, they know that in these gardens, their creativity can flourish, and the seeds of the next big scientific breakthrough in {self.topic} are ready to be planted."
         ]
 
     def run(self):
@@ -53,7 +56,7 @@ class Environment:
     def __get_memory_factory(self):
         emb_model = EmbeddingModelAdapter().model
         embedder = lambda x: emb_model._embed(x)
-        return MemoryFactory(model=self.llm, embedder=embedder)
+        return MemoryFactory(model=self.llm, embedder=embedder, topic = self.topic)
 
     def log(self):
         memory = self.game_master._memory
