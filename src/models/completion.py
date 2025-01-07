@@ -47,13 +47,9 @@ class MistralModelAdapter:
 
     def generate(self, prompt: str, streaming: bool = False, **kwargs) -> str:
         if streaming:
-            return self.model.stream_complete(
-                prompt, context_str=kwargs.get("context_str", "")
-            )
+            return self.model.stream_complete(prompt, context_str=kwargs.get("context_str", ""))
         else:
-            return str(
-                self.model.complete(prompt, context_str=kwargs.get("context_str", ""))
-            )
+            return str(self.model.complete(prompt, context_str=kwargs.get("context_str", "")))
 
 
 class LLamaModelAdapter:
@@ -122,23 +118,14 @@ class SimulationModelAdapter(LanguageModel):
         **kwargs,
     ) -> str:
         messages = [{"role": "user", "content": prompt}]
-        response = self.model.generate(
-            messages=messages, temperature=temperature, max_tokens=max_tokens
-        )
+        response = self.model.generate(messages=messages, temperature=temperature, max_tokens=max_tokens)
         return response
 
-    def sample_choice(
-        self, prompt: str, responses: list[str], max_attempts: int = 10
-    ) -> tuple[int, str, dict[str, float]]:
+    def sample_choice(self, prompt: str, responses: list[str], max_attempts: int = 10) -> tuple[int, str, dict[str, float]]:
         max_characters = len(max(responses, key=len))
 
         attempts = 1
-        prompt = (
-            prompt
-            + "\nRespond EXACTLY with one of the following options:\n"
-            + "\n".join(responses)
-            + "."
-        )
+        prompt = prompt + "\nRespond EXACTLY with one of the following options:\n" + "\n".join(responses) + "."
 
         for _ in range(max_attempts):
             temperature = 0.0

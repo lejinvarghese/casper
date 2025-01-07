@@ -24,9 +24,7 @@ class ChatEngine:
         self.persona = kwargs.get("persona", "casper")
         self.verbose = verbose
         try:
-            self.chat_store = SimpleChatStore.from_persist_path(
-                persist_path=f"{PERSIST_DIR}/chat_store.json"
-            )
+            self.chat_store = SimpleChatStore.from_persist_path(persist_path=f"{PERSIST_DIR}/chat_store.json")
         except Exception as e:
             logger.warning(f"Error loading chat store: {e}")
             self.chat_store = SimpleChatStore()
