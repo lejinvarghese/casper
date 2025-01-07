@@ -1,6 +1,7 @@
 import re
 from llama_cpp import Llama
 from llama_index.llms.llama_cpp import LlamaCPP
+from llama_index.llms.openai import OpenAI
 from llama_index.llms.llama_cpp.llama_utils import (
     completion_to_prompt,
     messages_to_prompt,
@@ -8,6 +9,10 @@ from llama_index.llms.llama_cpp.llama_utils import (
 from concordia.language_model.language_model import LanguageModel, InvalidResponseError
 from src.constants import MISTRAL_MODEL_PATH
 from src.utils.logger import BaseLogger
+from src.utils.secrets import get_secret
+
+LOCAL_HOST = get_secret("LOCAL_HOST")
+LOCAL_API_KEY = get_secret("LOCAL_API_KEY")
 
 
 logger = BaseLogger(__name__)
@@ -27,19 +32,30 @@ class MistralModelAdapter:
         generate_kwargs: dict = {},
         model_kwargs: dict = {"n_gpu_layers": 60},
         system_prompt: str = "",
+        server: bool = True,
     ):
-        self._model = LlamaCPP(
-            model_path=model_path,
-            temperature=temperature,
-            max_new_tokens=max_new_tokens,
-            context_window=context_window,
-            generate_kwargs=generate_kwargs,
-            model_kwargs=model_kwargs,
-            messages_to_prompt=messages_to_prompt,
-            completion_to_prompt=completion_to_prompt,
-            verbose=False,
-            system_prompt=system_prompt,
-        )
+        if server:
+            self._model = OpenAI(
+                api_base=LOCAL_HOST,
+                api_key=LOCAL_API_KEY,
+                temperature=temperature,
+                messages_to_prompt=messages_to_prompt,
+                completion_to_prompt=completion_to_prompt,
+                system_prompt=system_prompt,
+            )
+        else:
+            self._model = LlamaCPP(
+                model_path=model_path,
+                temperature=temperature,
+                max_new_tokens=max_new_tokens,
+                context_window=context_window,
+                generate_kwargs=generate_kwargs,
+                model_kwargs=model_kwargs,
+                messages_to_prompt=messages_to_prompt,
+                completion_to_prompt=completion_to_prompt,
+                verbose=False,
+                system_prompt=system_prompt,
+            )
 
     @property
     def model(self):
