@@ -96,6 +96,12 @@ python3.10 -m src.simulation.main
 ```
 
 ## Development
+
+```Run server
+MODEL_NAME=mistral-7b-instruct-v0.2.Q3_K_S.gguf
+MODEL_NAME=Qwen2-VL-2B-Instruct-Q8_0.gguf
+llama-server -m ./models/$MODEL_NAME --port 8888 --n-gpu-layers 99
+```
     
 ### Run Tests
 
