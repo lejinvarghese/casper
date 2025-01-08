@@ -15,6 +15,7 @@ Casper, the destiny of beautiful souls.
 
 ## step 1: create a virtual environment
 uv init
+uv venv --python 3.11
 source .venv/bin/activate
 
 ## step 2: lock dependencies [migrate to uv.lock when necessary]
@@ -97,10 +98,19 @@ python3.10 -m src.simulation.main
 
 ## Development
 
-```Run server
+#### Run server
+```bash
 MODEL_NAME=mistral-7b-instruct-v0.2.Q3_K_S.gguf
 MODEL_NAME=Qwen2-VL-2B-Instruct-Q8_0.gguf
+MODEL_NAME=llava-llama-3-8b-v1_1-int4.gguf
 llama-server -m ./models/$MODEL_NAME --port 8888 --n-gpu-layers 99
+```
+
+```bash
+REPO_ID=second-state/Llava-v1.5-7B-GGUF
+FILE_NAME=llava-v1.5-7b-Q2_K.gguf
+
+huggingface-cli download $REPO_ID  $FILE_NAME--local-dir-use-symlinks False --local-dir $FILE_NAME
 ```
     
 ### Run Tests
