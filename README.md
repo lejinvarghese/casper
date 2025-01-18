@@ -107,10 +107,12 @@ llama-server -m ./models/$MODEL_NAME --port 8888 --n-gpu-layers 99
 ```
 
 ```bash
-REPO_ID=second-state/Llava-v1.5-7B-GGUF
-FILE_NAME=llava-v1.5-7b-Q2_K.gguf
+MODEL_DIR=/media/starscream/wheeljack1/projects/casper/.venv/llama.cpp/models
+cd $MODEL_DIR
+REPO_ID=bartowski/deepthought-8b-llama-v0.01-alpha-GGUF
+FILE_NAME=deepthought-8b-llama-v0.01-alpha-IQ3_XS.gguf
 
-huggingface-cli download $REPO_ID  $FILE_NAME--local-dir-use-symlinks False --local-dir $FILE_NAME
+huggingface-cli download $REPO_ID  $FILE_NAME --local-dir-use-symlinks False --local-dir .
 ```
     
 ### Run Tests

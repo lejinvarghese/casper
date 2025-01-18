@@ -1,6 +1,10 @@
 from warnings import filterwarnings
 from concordia.language_model.gpt_model import GptLanguageModel
-from concordia.utils.html import PythonObjectToHTMLConverter, combine_html_pages, finalise_html
+from concordia.utils.html import (
+    PythonObjectToHTMLConverter,
+    combine_html_pages,
+    finalise_html,
+)
 
 from src.utils.secrets import get_secret
 from src.utils.logger import BaseLogger
@@ -17,17 +21,31 @@ logger = BaseLogger(__name__)
 
 
 class Environment:
-    def __init__(self, max_agents: int = 5, episode_length: int = 2, topic: str = "biologically inspired transformer architectures for neural networks"):
+    def __init__(
+        self,
+        max_agents: int = 5,
+        episode_length: int = 2,
+        topic: str = "biologically inspired transformer architectures for neural networks",
+    ):
         self.max_agents = max_agents
         self.episode_length = episode_length
         self.topic = topic
         self.llm = GptLanguageModel(api_key=OPENAI_API_KEY, model_name=OPENAI_MODEL)
         self.memory_factory = self.__get_memory_factory()
 
-        self.agent_factory = AgentFactory(memory_factory=self.memory_factory, model=self.llm, max_agents=self.max_agents)
+        self.agent_factory = AgentFactory(
+            memory_factory=self.memory_factory,
+            model=self.llm,
+            max_agents=self.max_agents,
+        )
         self.agents, self.agent_memories = self.agent_factory.build()
 
-        self.game_master_factory = GameMasterFactory(memory_factory=self.memory_factory, agents=self.agents, model=self.llm, topic=self.topic)
+        self.game_master_factory = GameMasterFactory(
+            memory_factory=self.memory_factory,
+            agents=self.agents,
+            model=self.llm,
+            topic=self.topic,
+        )
         self.game_master, self.game_master_memories = self.game_master_factory.build()
 
         self.initial_states = [

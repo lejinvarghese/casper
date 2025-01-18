@@ -1,4 +1,6 @@
-from concordia.associative_memory.blank_memories import MemoryFactory as BlankMemoryFactory
+from concordia.associative_memory.blank_memories import (
+    MemoryFactory as BlankMemoryFactory,
+)
 from concordia.associative_memory.formative_memories import FormativeMemoryFactory
 from concordia.associative_memory.associative_memory import AssociativeMemory
 from concordia.associative_memory.importance_function import (
