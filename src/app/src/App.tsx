@@ -10,6 +10,7 @@ import {
     Zap,
     RefreshCw,
 } from "lucide-react";
+import "./App.css";
 
 // Background Component
 const AnimatedBackground: React.FC = () => {
@@ -103,6 +104,48 @@ const PaperSummaryDashboard: React.FC = () => {
     const [papers, setPapers] = useState(INITIAL_MOCK_PAPERS);
     const [isLoading, setIsLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+    const [weather, setWeather] = useState<string>("Loading...");
+    const [weatherIcon, setWeatherIcon] = useState<string>("");
+    const [precipitation, setPrecipitation] = useState<number | null>(null);
+    const [uvIndex, setUvIndex] = useState<number | null>(null);
+
+    useEffect(() => {
+        const fetchWeather = async () => {
+            try {
+                // Replace with your own OpenWeatherMap API Key, preferably stored in an environment variable
+                const response = await fetch(
+                    `http://api.weatherapi.com/v1/current.json?key=61efd1207ba144a3abe190905252501&q=Toronto&aqi=no`
+                );
+
+                // Check if the response is ok (status code 200-299)
+                if (!response.ok) {
+                    throw new Error("Failed to fetch weather data");
+                }
+
+                const data = await response.json();
+                const tempCelsius = data.current.temp_c;
+                const condition = data.current.condition.text;
+                const iconUrl = `https:${data.current.condition.icon}`; // Prepend 'https:'
+                const feelsLikeCelsius = data.current.feelslike_c;
+                const precipInches = data.current.precip_in;
+                const uv = data.current.uv;
+
+                // Set states with extracted values
+                setWeather(
+                    `${tempCelsius}°C, (${feelsLikeCelsius}°C), ${condition}`
+                );
+                setWeatherIcon(iconUrl);
+                setPrecipitation(precipInches);
+                setUvIndex(uv);
+            } catch (error) {
+                console.error("Error fetching weather:", error);
+                setWeather("Weather data unavailable");
+                setWeatherIcon("");
+            }
+        };
+
+        fetchWeather();
+    }, []);
 
     // Existing useEffect for data fetching
     useEffect(() => {
@@ -175,7 +218,7 @@ const PaperSummaryDashboard: React.FC = () => {
                         transition={{ type: "spring", stiffness: 100 }}
                         className="text-4xl font-bold text-gray-800"
                     >
-                        Daily Research Intelligence
+                        Daily Intelligence
                     </motion.h1>
 
                     <div className="flex items-center space-x-4">
@@ -197,6 +240,55 @@ const PaperSummaryDashboard: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Reminders */}
+                <div className="mb-8">
+                    <Card className="bg-white shadow-lg p-4">
+                        <CardHeader>
+                            <CardTitle className="text-xl font-semibold">
+                                Today
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-gray-600">
+                                <div className="date-card">
+                                    <p>{new Date().toLocaleDateString()}</p>
+                                </div>
+                                <br></br>
+                                <div className="weather-card">
+                                    <div className="weather-header">
+                                        {<p>Weather</p>}
+                                    </div>
+                                    <div className="weather-details">
+                                        {weather !== null && (
+                                            <p>Temperature: {weather}</p>
+                                        )}
+                                        {precipitation !== null && (
+                                            <p>
+                                                Precipitation: {precipitation}{" "}
+                                                in
+                                            </p>
+                                        )}
+                                        {uvIndex !== null && (
+                                            <p>UV Index: {uvIndex}</p>
+                                        )}
+                                    </div>
+                                    {weatherIcon && (
+                                        <img
+                                            src={weatherIcon}
+                                            alt="Weather icon"
+                                            style={{
+                                                width: "64px",
+                                                height: "64px",
+                                            }} // Adjust size here
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Research Papers */}
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {papers.map((paper, index) => {
                         const DomainIcon: LucideIcon =
