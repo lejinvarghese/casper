@@ -56,28 +56,28 @@ const AnimatedBackground: React.FC = () => {
 const INITIAL_MOCK_PAPERS = [
   {
     id: 1,
-    title: "Transformative AI: Neural Networks and Cognitive Architectures",
-    summary: "A groundbreaking exploration of advanced neural network designs that mimic human cognitive processes, revealing unprecedented insights into machine learning paradigms.",
-    url: "https://arxiv.org/abs/example1",
+    title: "Titans: Learning to Memorize at Test Time",
+    summary: "The authors introduce Titans, a new neural architecture combining short-term attention and long-term neural memory to improve context modeling. Their neural memory module enables fast parallel training and inference. Experimental results show Titans outperform Transformers and linear recurrent models across multiple tasks, scaling effectively to larger context windows.",
+    url: "https://arxiv.org/pdf/2501.00663",
     publishedDate: "2024-01-15",
     domain: "Machine Learning"
   },
   {
     id: 2,
-    title: "Quantum Computing: Probabilistic Algorithms at the Intersection of Physics and Information Theory",
-    summary: "Comprehensive analysis of quantum computational models, demonstrating potential breakthrough approaches in solving complex computational problems beyond classical computing limitations.",
-    url: "https://arxiv.org/abs/example2", 
+    title: "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+    summary: "The authors introduce DeepSeek-R1, a reasoning model trained via reinforcement learning (RL). DeepSeek-R1-Zero, trained without supervised fine-tuning, shows strong reasoning but faces readability and language mixing issues. DeepSeek-R1, with multi-stage training, improves these issues and matches OpenAI-o1-1217 on reasoning tasks. Both models and six distilled versions are open-sourced.",
+    url: "https://arxiv.org/abs/2501.12948", 
     publishedDate: "2024-01-22",
     domain: "Quantum Computing"
   },
   {
     id: 3,
-    title: "Sustainable AI: Energy-Efficient Deep Learning Architectures",
-    summary: "Innovative research presenting novel architectural designs for deep learning models that significantly reduce computational energy consumption while maintaining high performance metrics.",
-    url: "https://arxiv.org/abs/example3",
+    title: "Towards Federated Multi-Armed Bandit Learning for Content Dissemination using Swarm of UAVs",
+    summary: "The paper presents a UAV-based content management system for disaster scenarios, combining stationary anchor UAVs and mobile micro-UAVs to ensure content access in isolated communities. It uses Federated Multi-Armed Bandit learning to optimize content caching based on user demand and content popularity. A Selective Caching Algorithm reduces redundancy, enhancing adaptability to diverse user preferences. The architecture's performance is verified across various network sizes and content patterns.",
+    url: "https://arxiv.org/abs/2501.09146",
     publishedDate: "2024-01-18", 
     domain: "AI Sustainability"
-  }
+    }
 ];
 
 type LucideIcon = React.ComponentType<{ 
