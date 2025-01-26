@@ -135,4 +135,5 @@ dmypy.json
 uv.lock
 *db/
 *prompts/
-node_modules/
+*node_modules/
+*secrets/
