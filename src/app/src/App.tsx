@@ -45,15 +45,14 @@ const PaperSummaryDashboard: React.FC = () => {
     const [precipitation, setPrecipitation] = useState<number | null>(null);
     const [uvIndex, setUvIndex] = useState<number | null>(null);
 
+    // Fetch weather
     useEffect(() => {
         const fetchWeather = async () => {
             try {
-                // Replace with your own OpenWeatherMap API Key, preferably stored in an environment variable
+                const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
                 const response = await fetch(
-                    `http://api.weatherapi.com/v1/current.json?key=61efd1207ba144a3abe190905252501&q=Toronto&aqi=no`
+                    `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=Toronto&aqi=no`
                 );
-
-                // Check if the response is ok (status code 200-299)
                 if (!response.ok) {
                     throw new Error("Failed to fetch weather data");
                 }
@@ -61,7 +60,7 @@ const PaperSummaryDashboard: React.FC = () => {
                 const data = await response.json();
                 const tempCelsius = data.current.temp_c;
                 const condition = data.current.condition.text;
-                const iconUrl = `https:${data.current.condition.icon}`; // Prepend 'https:'
+                const iconUrl = `https:${data.current.condition.icon}`;
                 const feelsLikeCelsius = data.current.feelslike_c;
                 const precipInches = data.current.precip_in;
                 const uv = data.current.uv;
@@ -83,7 +82,7 @@ const PaperSummaryDashboard: React.FC = () => {
         fetchWeather();
     }, []);
 
-    // Existing useEffect for data fetching
+    // Fetch data
     useEffect(() => {
         const fetchPapers = async () => {
             setIsLoading(true);

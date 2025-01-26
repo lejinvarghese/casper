@@ -14,17 +14,17 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
     uvIndex,
     weatherIcon,
 }) => (
-    <Card className="bg-white shadow-lg p-4">
+    <Card className="bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"> {/* Added hover effects here */}
         <CardHeader>
             <CardTitle className="text-xl font-semibold">Today</CardTitle>
         </CardHeader>
         <CardContent>
             <div className="text-gray-600">
-                <div className="date-card">
+                <div className="date-card hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"> {/* Added hover effects here */}
                     <p>{new Date().toLocaleDateString()}</p>
                 </div>
                 <br />
-                <div className="weather-card">
+                <div className="weather-card hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"> {/* Added hover effects here */}
                     <div className="weather-header">
                         <p>Weather</p>
                     </div>
