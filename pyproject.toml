@@ -34,6 +34,7 @@ dependencies = [
     "llama-hub>=0.0.79.post1",
     "runware>=0.3.9",
     "gdm-concordia>=1.1.1",
+    "pymupdf4llm>=0.0.17",
 ]
 
 [tool.pytest.ini_options]
