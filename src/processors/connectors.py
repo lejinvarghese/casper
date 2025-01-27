@@ -75,7 +75,7 @@ class ArxivConnector(Connector):
         return results
 
     def _download_articles(self, articles: List[Result]):
-        return [a.download_pdf(dirpath=self._destination) for a in articles]
+        return [a.download_pdf(dirpath=self.destination) for a in articles]
 
 
 class WebConnector(Connector):
