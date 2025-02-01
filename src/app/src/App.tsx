@@ -4,6 +4,7 @@ import { RefreshCw } from "lucide-react";
 import { AnimatedBackground } from "./components/AnimatedBackground";
 import { WeatherCard } from "./components/WeatherCard";
 import { PaperCard } from "./components/PaperCard";
+import RecipeCard from "./components/RecipeCard";
 import "./app.css";
 
 const INITIAL_MOCK_PAPERS = [
@@ -270,14 +271,13 @@ const App: React.FC = () => {
 
                 {activeTab === "recipes" && (
                     <div className="bg-white shadow-md rounded-lg p-6">
-                        <h2 className="text-2xl font-bold mb-4">
-                            Recipes
-                        </h2>
+                        <h2 className="text-2xl font-bold mb-4">Recipes</h2>
                         <p className="text-gray-700">
                             Discover delicious recipes tailored to your dietary
-                            preferences. More recipes will be added soon.
+                            preferences. 
                         </p>
                         {/* Replace with your recipes components or data */}
+                        <RecipeCard />
                     </div>
                 )}
             </motion.div>
