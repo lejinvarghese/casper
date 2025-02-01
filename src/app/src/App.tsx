@@ -4,7 +4,7 @@ import { RefreshCw } from "lucide-react";
 import { AnimatedBackground } from "./components/AnimatedBackground";
 import { WeatherCard } from "./components/WeatherCard";
 import { PaperCard } from "./components/PaperCard";
-import "./App.css";
+import "./app.css";
 
 const INITIAL_MOCK_PAPERS = [
     {
@@ -224,21 +224,6 @@ const App: React.FC = () => {
                             uvIndex={uvIndex}
                             weatherIcon={weatherIcon}
                         />
-                        <div className="bg-white shadow-md rounded-lg p-6">
-                            <h2 className="text-2xl font-bold mb-4">
-                                Today's Reminders
-                            </h2>
-                            <ul className="list-disc pl-6 text-gray-700">
-                                <li>9:00 AM - Team meeting</li>
-                                <li>12:00 PM - Lunch with client</li>
-                                <li>3:00 PM - Project deadline review</li>
-                                <li>Evening - Exercise or a walk</li>
-                            </ul>
-                            <p className="mt-4 text-sm text-gray-500">
-                                Check your calendar for more events and
-                                personalized recommendations.
-                            </p>
-                        </div>
                     </div>
                 )}
 
