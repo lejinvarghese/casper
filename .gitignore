@@ -137,3 +137,4 @@ uv.lock
 *prompts/
 *node_modules/
 *secrets/
+*key
