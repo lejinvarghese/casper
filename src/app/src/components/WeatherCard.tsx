@@ -60,9 +60,11 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
                             <p>Reminders</p>
                         </div>
                         <ul className="list-disc pl-5 text-gray-700">
-                            <li>9:00 AM - Team meeting</li>
-                            <li>12:00 PM - Lunch with client</li>
-                            <li>3:00 PM - Project deadline review</li>
+                            <li>👥 9:00 AM - Team meeting</li>
+                            <li>🍽️ 12:00 PM - Lunch with client</li>
+                            <li>📊 3:00 PM - Project deadline review</li>
+                            <li>🧘 6:00 PM - Pilates class</li>
+                            <li>🎸 9:00 PM - Live music at Antone's</li>
                         </ul>
                     </div>
                 </div>

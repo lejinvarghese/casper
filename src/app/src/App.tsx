@@ -218,6 +218,13 @@ const App: React.FC = () => {
                 {/* Tab Content */}
                 {activeTab === "daily" && (
                     <div className="space-y-8">
+                        <div className="w-full mb-6">
+                            <img
+                                src="/static/daily.png"
+                                alt="Weather section header"
+                                className="w-full object-contain rounded-lg shadow-md"
+                            />
+                        </div>
                         {/* Weather and daily reminders */}
                         <WeatherCard
                             weather={weather}
@@ -274,7 +281,7 @@ const App: React.FC = () => {
                         <h2 className="text-2xl font-bold mb-4">Recipes</h2>
                         <p className="text-gray-700">
                             Discover delicious recipes tailored to your dietary
-                            preferences. 
+                            preferences.
                         </p>
                         {/* Replace with your recipes components or data */}
                         <RecipeCard />
