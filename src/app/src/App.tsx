@@ -149,7 +149,7 @@ const App: React.FC = () => {
                         transition={{ type: "spring", stiffness: 100 }}
                         className="text-4xl font-bold text-gray-800"
                     >
-                        Daily Intelligence
+                        Casper Cortex
                     </motion.h1>
                     <div className="flex items-center space-x-4">
                         {lastUpdated && (
@@ -210,7 +210,7 @@ const App: React.FC = () => {
                                 : "text-gray-500 hover:text-gray-700"
                         }`}
                     >
-                        Recipes for Food
+                        Recipes
                     </button>
                 </div>
 
@@ -271,7 +271,7 @@ const App: React.FC = () => {
                 {activeTab === "recipes" && (
                     <div className="bg-white shadow-md rounded-lg p-6">
                         <h2 className="text-2xl font-bold mb-4">
-                            Recipes for Food
+                            Recipes
                         </h2>
                         <p className="text-gray-700">
                             Discover delicious recipes tailored to your dietary
