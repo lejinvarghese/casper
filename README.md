@@ -1,7 +1,7 @@
 # Casper
 
 <p align="center">
-    <img src="./assets/casper.png" alt="casper" width="600"/>
+    <img src="./assets/casperx.png" alt="casperx" width="600"/>
 </p>
 
 Casper, the destiny of beautiful souls. This is the playground where the Cortex gets built.
