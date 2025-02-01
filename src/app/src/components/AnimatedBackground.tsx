@@ -9,7 +9,7 @@ export const AnimatedBackground: React.FC = () => {
         >
             <defs>
                 <filter id="blurFilter">
-                    <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="0.1" />
                 </filter>
             </defs>
             {[...Array(50)].map((_, index) => {
