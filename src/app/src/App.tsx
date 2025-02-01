@@ -36,7 +36,8 @@ const INITIAL_MOCK_PAPERS = [
     },
 ];
 
-const PaperSummaryDashboard: React.FC = () => {
+const App: React.FC = () => {
+    // State for research papers and weather data
     const [papers, setPapers] = useState(INITIAL_MOCK_PAPERS);
     const [isLoading, setIsLoading] = useState(false);
     const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -45,7 +46,10 @@ const PaperSummaryDashboard: React.FC = () => {
     const [precipitation, setPrecipitation] = useState<number | null>(null);
     const [uvIndex, setUvIndex] = useState<number | null>(null);
 
-    // Fetch weather
+    // State for the active tab: "daily", "research", "nutrition", or "recipes"
+    const [activeTab, setActiveTab] = useState<string>("daily");
+
+    // Fetch weather data
     useEffect(() => {
         const fetchWeather = async () => {
             try {
@@ -56,7 +60,6 @@ const PaperSummaryDashboard: React.FC = () => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch weather data");
                 }
-
                 const data = await response.json();
                 const tempCelsius = data.current.temp_c;
                 const condition = data.current.condition.text;
@@ -65,9 +68,8 @@ const PaperSummaryDashboard: React.FC = () => {
                 const precipInches = data.current.precip_in;
                 const uv = data.current.uv;
 
-                // Set states with extracted values
                 setWeather(
-                    `${tempCelsius}°C, (${feelsLikeCelsius}°C), ${condition}`
+                    `${tempCelsius}°C (feels like ${feelsLikeCelsius}°C), ${condition}`
                 );
                 setWeatherIcon(iconUrl);
                 setPrecipitation(precipInches);
@@ -82,18 +84,16 @@ const PaperSummaryDashboard: React.FC = () => {
         fetchWeather();
     }, []);
 
-    // Fetch data
+    // Fetch research papers (simulate with a delay)
     useEffect(() => {
         const fetchPapers = async () => {
             setIsLoading(true);
             try {
                 await new Promise((resolve) => setTimeout(resolve, 1500));
-
                 const updatedPapers = INITIAL_MOCK_PAPERS.map((paper) => ({
                     ...paper,
                     summary: paper.summary + " [Updated]",
                 }));
-
                 setPapers(updatedPapers);
                 setLastUpdated(new Date());
             } catch (error) {
@@ -108,20 +108,18 @@ const PaperSummaryDashboard: React.FC = () => {
         return () => clearInterval(intervalId);
     }, []);
 
-    // Manual refresh handler
+    // Manual refresh for research papers
     const handleManualRefresh = () => {
         const fetchPapers = async () => {
             setIsLoading(true);
             try {
                 await new Promise((resolve) => setTimeout(resolve, 1500));
-
                 const newPapers = INITIAL_MOCK_PAPERS.map((paper) => ({
                     ...paper,
                     summary: `🆕 ${
                         paper.summary
-                    } (Manually Refreshed at ${new Date().toLocaleTimeString()})`,
+                    } (Manually refreshed at ${new Date().toLocaleTimeString()})`,
                 }));
-
                 setPapers(newPapers);
                 setLastUpdated(new Date());
             } catch (error) {
@@ -130,7 +128,6 @@ const PaperSummaryDashboard: React.FC = () => {
                 setIsLoading(false);
             }
         };
-
         fetchPapers();
     };
 
@@ -144,6 +141,7 @@ const PaperSummaryDashboard: React.FC = () => {
                 transition={{ duration: 0.5 }}
                 className="relative z-10 container mx-auto p-6 min-h-screen"
             >
+                {/* Header */}
                 <div className="flex justify-between items-center mb-12">
                     <motion.h1
                         initial={{ y: -50, opacity: 0 }}
@@ -153,7 +151,6 @@ const PaperSummaryDashboard: React.FC = () => {
                     >
                         Daily Intelligence
                     </motion.h1>
-
                     <div className="flex items-center space-x-4">
                         {lastUpdated && (
                             <span className="text-sm text-gray-600">
@@ -173,23 +170,134 @@ const PaperSummaryDashboard: React.FC = () => {
                     </div>
                 </div>
 
-                <div className="mb-8">
-                    <WeatherCard
-                        weather={weather}
-                        precipitation={precipitation}
-                        uvIndex={uvIndex}
-                        weatherIcon={weatherIcon}
-                    />
+                {/* Tab Navigation */}
+                <div className="flex space-x-4 mb-8 border-b-2">
+                    <button
+                        onClick={() => setActiveTab("daily")}
+                        className={`pb-2 transition-colors ${
+                            activeTab === "daily"
+                                ? "border-b-4 border-blue-500 text-blue-500"
+                                : "text-gray-500 hover:text-gray-700"
+                        }`}
+                    >
+                        Daily Reminders
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("research")}
+                        className={`pb-2 transition-colors ${
+                            activeTab === "research"
+                                ? "border-b-4 border-blue-500 text-blue-500"
+                                : "text-gray-500 hover:text-gray-700"
+                        }`}
+                    >
+                        Research Summary
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("nutrition")}
+                        className={`pb-2 transition-colors ${
+                            activeTab === "nutrition"
+                                ? "border-b-4 border-blue-500 text-blue-500"
+                                : "text-gray-500 hover:text-gray-700"
+                        }`}
+                    >
+                        Nutrition & Food Guide
+                    </button>
+                    <button
+                        onClick={() => setActiveTab("recipes")}
+                        className={`pb-2 transition-colors ${
+                            activeTab === "recipes"
+                                ? "border-b-4 border-blue-500 text-blue-500"
+                                : "text-gray-500 hover:text-gray-700"
+                        }`}
+                    >
+                        Recipes for Food
+                    </button>
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {papers.map((paper, index) => (
-                        <PaperCard key={paper.id} paper={paper} index={index} />
-                    ))}
-                </div>
+                {/* Tab Content */}
+                {activeTab === "daily" && (
+                    <div className="space-y-8">
+                        {/* Weather and daily reminders */}
+                        <WeatherCard
+                            weather={weather}
+                            precipitation={precipitation}
+                            uvIndex={uvIndex}
+                            weatherIcon={weatherIcon}
+                        />
+                        <div className="bg-white shadow-md rounded-lg p-6">
+                            <h2 className="text-2xl font-bold mb-4">
+                                Today's Reminders
+                            </h2>
+                            <ul className="list-disc pl-6 text-gray-700">
+                                <li>9:00 AM - Team meeting</li>
+                                <li>12:00 PM - Lunch with client</li>
+                                <li>3:00 PM - Project deadline review</li>
+                                <li>Evening - Exercise or a walk</li>
+                            </ul>
+                            <p className="mt-4 text-sm text-gray-500">
+                                Check your calendar for more events and
+                                personalized recommendations.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === "research" && (
+                    <div className="space-y-8">
+                        <div className="bg-white shadow-md rounded-lg p-6">
+                            <h2 className="text-2xl font-bold mb-4">
+                                Research Summary
+                            </h2>
+                            <p className="text-gray-700">
+                                Below are the latest research paper summaries
+                                updated automatically.
+                            </p>
+                        </div>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5 }}
+                            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
+                        >
+                            {papers.map((paper, index) => (
+                                <PaperCard
+                                    key={paper.id}
+                                    paper={paper}
+                                    index={index}
+                                />
+                            ))}
+                        </motion.div>
+                    </div>
+                )}
+
+                {activeTab === "nutrition" && (
+                    <div className="bg-white shadow-md rounded-lg p-6">
+                        <h2 className="text-2xl font-bold mb-4">
+                            Nutrition & Food Guide
+                        </h2>
+                        <p className="text-gray-700">
+                            Nutrition tips, meal planning strategies, and guides
+                            to eating healthy will appear here.
+                        </p>
+                        {/* You can add more detailed components or data later */}
+                    </div>
+                )}
+
+                {activeTab === "recipes" && (
+                    <div className="bg-white shadow-md rounded-lg p-6">
+                        <h2 className="text-2xl font-bold mb-4">
+                            Recipes for Food
+                        </h2>
+                        <p className="text-gray-700">
+                            Discover delicious recipes tailored to your dietary
+                            preferences. More recipes will be added soon.
+                        </p>
+                        {/* Replace with your recipes components or data */}
+                    </div>
+                )}
             </motion.div>
         </div>
     );
 };
 
-export default PaperSummaryDashboard;
+export default App;
