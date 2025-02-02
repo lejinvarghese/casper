@@ -4,3 +4,4 @@ PERSIST_DIR = "src/data/.storage"
 RESEARCH_DIR = "src/data/.research"
 
 MISTRAL_MODEL_PATH = f"./{MODEL_DIR}/mistral-7b-instruct-v0.2.Q3_K_S.gguf"
+R1_MODEL_PATH = f"./{MODEL_DIR}/deepseek_r1.gguf"

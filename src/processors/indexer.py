@@ -2,14 +2,14 @@ import asyncio
 
 from src.processors.extractor import Pipeline
 from src.processors.loaders import PDFLoader
-from src.models.completion import MistralModelAdapter
+from src.models.completion import LlamaCPPModelAdapter
 from src.models.embeddings import EmbeddingModelAdapter
 from src.storage import Storage
 from src.utils.logger import BaseLogger
 
 logger = BaseLogger(__name__)
 
-llm = MistralModelAdapter().model
+llm = LlamaCPPModelAdapter().model
 emb = EmbeddingModelAdapter(batch_size=32, device="cpu").model
 st = Storage(llm=llm, embed_model=emb)
 p = Pipeline(llm=llm, embed_model=emb, storage=st)

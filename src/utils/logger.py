@@ -42,7 +42,7 @@ class BaseFormatter(Formatter):
         super().__init__()
         self.message_format = message_format
         self.formats = {
-            DEBUG: self.pink + self.message_format + self.reset,
+            DEBUG: self.aqua + self.message_format + self.reset,
             INFO: self.green + self.message_format + self.reset,
             WARNING: self.yellow + self.message_format + self.reset,
             ERROR: self.red + self.message_format + self.reset,

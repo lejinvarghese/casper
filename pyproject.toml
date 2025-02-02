@@ -35,6 +35,9 @@ dependencies = [
     "runware>=0.3.9",
     "gdm-concordia>=1.1.1",
     "pymupdf4llm>=0.0.17",
+    "agentarium>=0.3.1",
+    "huggingface-hub>=0.27.0",
+    "hf-transfer>=0.1.9",
 ]
 
 [tool.pytest.ini_options]

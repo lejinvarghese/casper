@@ -18,9 +18,9 @@ LOCAL_API_KEY = get_secret("LOCAL_API_KEY")
 logger = BaseLogger(__name__)
 
 
-class MistralModelAdapter:
+class LlamaCPPModelAdapter:
     """
-    A model adapter for Mistral.
+    A model adapter for Llama CPP.
     """
 
     def __init__(
