@@ -1,14 +1,12 @@
+from dotenv import load_dotenv
 from agentarium import Agent
-from agentarium.CheckpointManager import CheckpointManager
-from src.utils.secrets import get_secret
+
 from src.utils.logger import BaseLogger
 
-
-OPEN_AI_API_KEY = get_secret("OPEN_AI_API_KEY")
+load_dotenv()
 logger = BaseLogger(__name__)
 
 if __name__ == "__main__":
-    checkpointer = CheckpointManager("demox")
 
     agent_profiles = {
         "Alice": {"occupation": "Software Engineer"},
@@ -43,5 +41,3 @@ if __name__ == "__main__":
     for name, agent in agents.items():
         logger.info(f"\n{name}'s interactions:")
         logger.info(agent.get_interactions())
-
-    checkpointer.save()
