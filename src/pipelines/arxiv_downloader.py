@@ -8,7 +8,10 @@ logger = BaseLogger(__name__)
 
 class DailyArxivDownloader:
     def __init__(
-        self, topic: str, download_dir: str = "src/data/.pdfs", manual_ids_file: str = "src/data/.inputs/arxiv.txt"
+        self,
+        topic: str,
+        download_dir: str = "src/data/.pdfs",
+        manual_ids_file: str = "src/data/.inputs/arxiv.txt",
     ):
         self.topic = topic
         self.download_dir = download_dir
@@ -56,7 +59,12 @@ class DailyArxivDownloader:
 
 if __name__ == "__main__":
     # Configure the topic you're interested in
-    topics = ["reinforcement learning", "autonomous vehicles", "complexity science", "information retrieval"]
+    topics = [
+        "reinforcement learning",
+        "autonomous vehicles",
+        "complexity science",
+        "information retrieval",
+    ]
 
     for topic in topics:
         dl = DailyArxivDownloader(topic=topic)

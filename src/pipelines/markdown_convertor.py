@@ -30,10 +30,11 @@ class MarkdownConvertor:
 
                     # Write the markdown content to the file
                     md_output_path.write_text(md_text, encoding="utf-8")
-                    
+
                     logger.info(f"Markdown file saved to {md_output_path}")
                 except Exception as e:
                     logger.error(f"Failed to convert {f.name}: {e}")
+
 
 # Example usage
 if __name__ == "__main__":
