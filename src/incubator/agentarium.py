@@ -232,7 +232,33 @@ class Agent:
             return available_receivers[0], f"Error generating response: {str(e)}"
 
 
-def main():
+def generate_initial_message(client: OpenAI, topic: str, sender: str, receiver: str, role: str) -> str:
+    """Generate an initial message about a specific topic."""
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content": f"""
+                    You are {sender}, a {role}. 
+                    Start a strictly scientific technical conversation with {receiver} about: {topic}.
+                    Keep it concise (2-3 sentences) and make it natural.""",
+                },
+                {"role": "user", "content": f"Generate an opening message about {topic}:"},
+            ],
+            temperature=0.7,
+            max_tokens=150,
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        click.secho(f"Error generating initial message: {e}", fg="red")
+        return f"Hey {receiver}, let's discuss {topic}."
+
+
+@click.command()
+@click.option("--topic", default="Developing the best long term learning behavior using reinforcement learning", help="Topic for discussion")
+def main(topic: str):
     try:
         if not os.getenv("OPENAI_API_KEY"):
             raise ValueError("OPENAI_API_KEY environment variable is not set!")
@@ -250,6 +276,17 @@ def main():
         # Get both recent messages and global summaries
         recent_messages = store.get_recent_messages()
         global_summaries = store.get_global_summaries()
+
+        # Always generate an initial message since topic is now required
+        click.secho(f"\nStarting new conversation about: {topic}", fg="yellow")
+        starter_name = "Alice"  # You can randomize this
+        receiver_name = "Bob"  # You can randomize this
+
+        initial_message = generate_initial_message(client, topic, starter_name, receiver_name, agents[starter_name].profile["occupation"])
+
+        # Store and display the initial message
+        store.store_message(starter_name, receiver_name, initial_message)
+        click.secho(f"{starter_name} → {receiver_name}: {initial_message}", fg=(255, 105, 180))
 
         if global_summaries:
             click.secho("\nLong-term Context:", fg="yellow")
