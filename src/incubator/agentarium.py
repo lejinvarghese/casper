@@ -1,23 +1,47 @@
 from agentarium import Agent
+from agentarium.CheckpointManager import CheckpointManager
 from src.utils.secrets import get_secret
 from src.utils.logger import BaseLogger
+
 
 OPEN_AI_API_KEY = get_secret("OPEN_AI_API_KEY")
 logger = BaseLogger(__name__)
 
+if __name__ == "__main__":
+    checkpointer = CheckpointManager("demox")
 
-# Create some agents
-alice_agent = Agent.create_agent(name="Alice", occupation="Software Engineer")
-bob_agent = Agent.create_agent(name="Bob", occupation="Data Scientist")
+    agent_profiles = {
+        "Alice": {"occupation": "Software Engineer"},
+        "Bob": {"occupation": "Data Scientist"},
+        "Cassia": {"occupation": "Machine Learning Engineer"},
+    }
+    agents = {}
+    for name, profile in agent_profiles.items():
+        agents[name] = Agent.create_agent(name=name, occupation=profile.get("occupation"))
+        logger.debug(f"Created agent: {name}, ID: {agents[name].agent_id}")
 
-alice_agent.talk_to(bob_agent, "Hello Bob! I heard you're working on some interesting data science projects.")
-bob_agent.talk_to(alice_agent, "Hi Alice! Yes, I'm currently working on a machine learning model for natural language processing.")
+    def agent_conversation(n_rounds=3):
+        conversations = [
+            ("Alice", "Bob", "Hey Bob, what are you working on?"),
+            ("Bob", "Cassia", "Cassia, any thoughts on NLP models?"),
+            ("Cassia", "Alice", "Alice, how do you optimize large-scale applications?"),
+        ]
 
-alice_agent.act() # Let the agents decide what to do :D
-bob_agent.act()
+        for _ in range(n_rounds):
+            for sender, receiver, message in conversations:
+                logger.debug(
+                    f"{sender} (ID: {agents[sender].agent_id}) → {receiver} (ID: {agents[receiver].agent_id})"
+                )
+                try:
+                    agents[sender].talk_to(agents[receiver], message)
+                    agents[sender].act()
+                except Exception as e:
+                    logger.error(f"Error: {e}")
+                    continue
 
-logger.info("Alice's interactions:")
-logger.info(alice_agent.get_interactions())
+    agent_conversation(n_rounds=3)
+    for name, agent in agents.items():
+        logger.info(f"\n{name}'s interactions:")
+        logger.info(agent.get_interactions())
 
-logger.info("\nBob's interactions:")
-logger.info(bob_agent.get_interactions())
+    checkpointer.save()
