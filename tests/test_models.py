@@ -1,6 +1,6 @@
 import pytest
 
-from models.completion import MistralModelAdapter
+from models.completion import LlamaCPPModelAdapter
 from models.embeddings import EmbeddingModelAdapter
 from utils.logger import BaseLogger
 
@@ -18,7 +18,7 @@ def sample_query():
 
 @pytest.fixture
 def sample_llm():
-    return MistralModelAdapter()
+    return LlamaCPPModelAdapter()
 
 
 def test_embedding(sample_query):
