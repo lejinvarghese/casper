@@ -12,7 +12,6 @@ from src.utils.secrets import get_secret
 from src.tools.image import generate_image
 
 
-# Tavily search tool following smolagents Tool interface
 class TavilySearchTool(Tool):
     name = "web_search"
     description = "Performs a web search using Tavily AI and returns formatted search results."
@@ -67,6 +66,17 @@ def create_artwork(prompt: str, style: str = "realistic", enhance: bool = True) 
         enhance: Whether to enhance the prompt for better results
     """
     try:
+        # Load .env from asgard folder specifically
+        from dotenv import load_dotenv
+
+        asgard_env_path = os.path.join(os.path.dirname(__file__), ".env")
+        load_dotenv(asgard_env_path)
+
+        # Get API key
+        api_key = os.environ.get("RUNWARE_API_KEY")
+        if not api_key:
+            return "❌ Artwork creation failed: Missing API Key. Get one at https://my.runware.ai/signup"
+
         enhanced_prompt = f"{prompt}, {style} style, high quality, detailed"
         images = asyncio.run(generate_image(prompt=enhanced_prompt, enhance=enhance, n_results=1))
         return f"🎨 Artwork created: {images[0].imageURL}" if images else "❌ Failed to create artwork"

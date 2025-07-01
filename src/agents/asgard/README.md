@@ -1,10 +1,10 @@
-# ⚡ Asgard Citadel - Your AI Drone Swarm
+# ⚡ Asgard Citadel
 
-An Odin-commanded citadel of specialized AI drones dwelling together, always alive and working to help with daily planning, creative projects, and life management.
+A citadel of with an AI drone swarm dwelling together and led by Odin himself, alive and collaborating to help with daily planning, creative projects, and life management.
 
 ## 🤖 Meet Your Drone Swarm
 
-- **⚡ Odin** - All-Father Commander & Drone Orchestrator (GPT-4o)
+- **⚡ Odin** - All Father Commander & Drone Orchestrator
 - **🍯 Freya** - Kitchen Drone & Nutritionist (dwelling in the great kitchens)
 - **📋 Sága** - Strategic Planning Drone & Event Coordinator (keeping the archives)  
 - **🎨 Loki** - Creative Forge Drone & Artist (working the creative forges)
@@ -64,52 +64,52 @@ python3 -m src.agents.asgard.citadel --request "Help me balance work and persona
 ### 🍽️ Meal Planning
 ```bash
 # Dinner ideas
-python3 -m src.agents.asgard.citadel --request "Plan dinner for tonight" --staff "chef"
+python3 -m src.agents.asgard.citadel --request "Plan dinner for tonight" --drone "chef"
 
 # Weekly meal prep
-python3 -m src.agents.asgard.citadel --request "Plan healthy meals for the week" --staff "chef"
+python3 -m src.agents.asgard.citadel --request "Plan healthy meals for the week" --drone "chef"
 
 # Special occasion menu
-python3 -m src.agents.asgard.citadel --request "Plan a romantic dinner menu" --staff "chef"
+python3 -m src.agents.asgard.citadel --request "Plan a romantic dinner menu" --drone "chef"
 ```
 
 ### 🎨 Creative Projects
 ```bash
 # Generate artwork
-python3 -m src.agents.asgard.citadel --request "Create a serene landscape painting" --staff "artist"
+python3 -m src.agents.asgard.citadel --request "Create a serene landscape painting" --drone "artist"
 
 # Creative inspiration
-python3 -m src.agents.asgard.citadel --request "Give me ideas for a creative hobby project" --staff "artist"
+python3 -m src.agents.asgard.citadel --request "Give me ideas for a creative hobby project" --drone "artist"
 ```
 
 ### 🎯 Life Guidance
 ```bash
 # Deep thinking
-python3 -m src.agents.asgard.citadel --request "Help me think through a difficult decision" --staff "philosopher"
+python3 -m src.agents.asgard.citadel --request "Help me think through a difficult decision" --drone "philosopher"
 
 # Life philosophy
-python3 -m src.agents.asgard.citadel --request "What's the meaning of a fulfilling life?" --staff "philosopher"
+python3 -m src.agents.asgard.citadel --request "What's the meaning of a fulfilling life?" --drone "philosopher"
 ```
 
 ### 🎉 Fun & Entertainment
 ```bash
 # Spontaneous fun
-python3 -m src.agents.asgard.citadel --request "Surprise me with something fun" --staff "devil"
+python3 -m src.agents.asgard.citadel --request "Surprise me with something fun" --drone "devil"
 
 # Date night ideas
-python3 -m src.agents.asgard.citadel --request "Plan a mischievous date night" --staff "devil"
+python3 -m src.agents.asgard.citadel --request "Plan a mischievous date night" --drone "devil"
 ```
 
 
-## 🏙️ Toronto-Aware Features
+## 🌍 Location Aware Features
 
-All agents are familiar with Toronto, Ontario and provide location-specific recommendations:
+All drones are configured for your operational territory and provide location specific intelligence:
 
-- **Seasonal ingredients** (Niagara peaches, Ontario corn, etc.)
-- **Local attractions** (CN Tower, Harbourfront, High Park)
-- **Ontario VQA wines** for pairings
+- **Seasonal ingredients** and local food sources
+- **Local attractions** and cultural landmarks  
+- **Regional specialties** for pairings and recommendations
 - **Weather-appropriate activities** for each season
-- **Toronto neighborhoods** and transit considerations
+- **Neighborhood knowledge** and transit considerations
 
 ## ⚙️ Setup Requirements
 
@@ -134,24 +134,24 @@ pip install duckduckgo-search
 
 ## 🧠 How It Works
 
-### Butler Orchestration
-The Butler (Jeeves) acts as a **CodeAgent** that manages other specialized agents:
+### Drone Swarm Coordination
+Odin acts as a **CodeAgent** that commands the specialized drone swarm:
 
-- When you request day planning, the butler coordinates multiple staff members
-- Uses **managed agents** pattern for proper delegation
-- Each specialist provides their expertise, butler synthesizes the response
+- When you request day planning, Odin deploys multiple specialized drones
+- Uses **managed drone** pattern for proper task delegation
+- Each drone provides their expertise, Odin synthesizes collective intelligence
 
-### Agent Specialization
-- **Chef Auguste**: Uses seasonal Toronto ingredients, considers nutrition and dietary needs
-- **Sophia**: Knows Toronto events, neighborhoods, and activity recommendations  
-- **Leonardo**: Creates artwork via Runware API integration
-- **Aristotle**: Provides thoughtful philosophical perspectives
-- **Imp**: Adds creativity and spontaneous fun to any plan
+### Drone Specialization
+- **Freya**: Uses seasonal local ingredients, handles nutrition and dietary needs
+- **Sága**: Knows local events, neighborhoods, and activity recommendations  
+- **Loki**: Creates artwork via Runware API integration
+- **Mimir**: Provides deep philosophical perspectives and wisdom
+- **Luci**: Adds creativity, mischief, and spontaneous adventures
 
 ### Smart Context
 - Automatically detects current date/time for seasonal appropriateness
-- Toronto-based recommendations and local knowledge
-- No need to specify location or preferences - agents make smart assumptions
+- Location-based recommendations and local knowledge
+- No need to specify location or preferences - drones make smart assumptions
 
 ## 🔧 Advanced Usage
 
@@ -161,28 +161,28 @@ python3 -m src.agents.asgard.citadel --request "Plan my day" --verbose
 ```
 Shows detailed agent interactions and decision-making process.
 
-### Direct Staff Access
-You can bypass the butler and go directly to any staff member:
+### Direct Drone Access
+You can bypass Odin and go directly to any specialized drone:
 ```bash
---staff "chef"        # Chef Auguste
---staff "planner"     # Sophia  
---staff "artist"      # Leonardo
---staff "philosopher" # Aristotle
---staff "devil"       # Imp
+--drone "freya"       # Kitchen Drone
+--drone "saga"        # Planning Drone  
+--drone "loki"        # Creative Drone
+--drone "mimir"       # Wisdom Drone
+--drone "luci"        # Shadow Drone
 ```
 
 ### Integration Examples
 ```python
-from src.agents.asgard.citadel import SymphoniumEnsemble
+from src.agents.asgard.citadel import AsgardCitadel
 
-# Create household
-household = SymphoniumEnsemble(verbose=True)
+# Create citadel
+citadel = AsgardCitadel(verbose=True)
 
-# Full day planning (butler orchestrates)
-day_plan = household.serve("Plan my whole day")
+# Full day planning (Odin orchestrates drone swarm)
+day_plan = citadel.serve("Plan my whole day")
 
-# Direct staff access
-dinner_plan = household.direct_staff("chef", "Plan dinner for 4 people")
+# Direct drone access
+dinner_plan = citadel.direct_drone("freya", "Plan dinner for 4 people")
 ```
 
 ## 🐛 Troubleshooting
@@ -205,36 +205,73 @@ dinner_plan = household.direct_staff("chef", "Plan dinner for 4 people")
    ```
    DuckDuckGoSearchException: 202 Ratelimit
    ```
-   Solution: Wait a moment and try again, or use staff members without search requirements
+   Solution: Wait a moment and try again, or use direct drone access without search requirements
 
 ### Performance Tips
 
-- Use `--staff` for specific requests to avoid butler coordination overhead
-- The butler is best for complex, multi-faceted requests
-- Individual staff members are faster for specialized requests
+- Use `--drone` for specific requests to avoid full swarm coordination overhead
+- Odin's full swarm deployment is best for complex, multi-faceted requests
+- Individual drones are faster for specialized requests
 
 ## 🎯 Examples Gallery
 
 ### Perfect Weekend Day
 ```bash
-python3 -m src.agents.asgard.citadel --request "Plan a perfect Toronto weekend day with great food, culture, and fun"
+python3 -m src.agents.asgard.citadel --request "Plan a perfect weekend day with great food, culture, and fun"
 ```
 
 ### Dinner Party Planning  
 ```bash
-python3 -m src.agents.asgard.citadel --request "Plan a dinner party for 6 friends" --staff "chef"
+python3 -m src.agents.asgard.citadel --request "Plan a dinner party for 6 friends" --drone "chef"
 ```
 
 ### Creative Inspiration
 ```bash
-python3 -m src.agents.asgard.citadel --request "I'm feeling creatively stuck, help me" --staff "artist"
+python3 -m src.agents.asgard.citadel --request "I'm feeling creatively stuck, help me" --drone "artist"
 ```
 
 ### Life Decision Support
 ```bash
-python3 -m src.agents.asgard.citadel --request "I'm considering a career change, help me think through this" --staff "philosopher"
+python3 -m src.agents.asgard.citadel --request "I'm considering a career change, help me think through this" --drone "philosopher"
 ```
+
+## 🌐 Web Interface
+
+### Running the Complete Application
+
+You can interact with your drone swarm through a modern web interface:
+
+**Terminal 1 (Backend API Server):**
+```bash
+cd /media/starscream/wheeljack1/projects/casper/src/agents/asgard
+python3 -m src.agents.asgard.api
+```
+The API runs on `http://localhost:8000`
+
+**Terminal 2 (Frontend Interface):**
+```bash
+cd /media/starscream/wheeljack1/projects/casper/src/agents/asgard/frontend
+npm install
+npm run dev
+```
+The web interface runs on `http://localhost:3000`
+
+### Web Interface Features
+
+- **🎨 Modern Citadel UI** - Sleek, neural-themed interface with smooth animations
+- **⚡ Interactive Agent Cards** - Visual selection of specialized drones
+- **📝 Smart Request Panel** - Quick commands and custom requests
+- **🔄 Real-time Processing** - Live feedback and step-by-step execution
+- **⚙️ Configuration Panel** - Theme selection and verbose mode settings
+- **📊 Response Display** - Formatted responses with copy functionality
+
+### Web API Endpoints
+
+- `GET /agents` - List all available drones
+- `POST /request` - Submit requests to drone swarm
+- `GET /health` - System health check
+- `POST /configure` - Update citadel settings
 
 ---
 
-*Welcome to your AI household! Your distinguished staff awaits your requests.* 🏠✨
+*Welcome to Asgard Citadel! Your drone swarm awaits deployment.* ⚡🤖
