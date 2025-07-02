@@ -1,75 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Source Sans 3', 'Myriad Pro', 'Myriad', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.005em;
   }
   
   .font-display {
-    font-family: 'Outfit', 'Inter', sans-serif;
+    font-family: 'Nunito Sans', 'Myriad Pro', 'Myriad', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif !important;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+    font-display: swap;
   }
   
   body {
-    @apply bg-white text-neutral-800 min-h-screen;
+    @apply bg-neutral-25 text-neutral-800 min-h-screen;
     @apply antialiased;
+    font-feature-settings: 'liga' 1, 'kern' 1;
   }
 }
 
 @layer components {
   .card {
-    @apply bg-white border border-neutral-200 rounded-2xl;
+    @apply bg-white border border-neutral-200/60 rounded-2xl;
     @apply shadow-sm transition-all duration-300;
+    backdrop-filter: blur(10px);
+  }
+  
+  .card-professional {
+    @apply bg-white/80 border border-neutral-200/40 rounded-2xl;
+    @apply shadow-lg transition-all duration-300;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 10px 25px -3px rgba(17, 24, 39, 0.05), 0 4px 6px -2px rgba(17, 24, 39, 0.03);
   }
   
   .card-hover {
-    @apply hover:shadow-lg hover:shadow-neutral-900/5;
-    @apply hover:border-neutral-300 hover:-translate-y-1;
+    @apply hover:shadow-xl hover:border-neutral-300/60 hover:-translate-y-1;
   }
   
-  .agent-card {
-    @apply card p-6 card-hover cursor-pointer;
-    @apply hover:bg-neutral-50;
+  .card-hover:hover {
+    box-shadow: 0 20px 25px -5px rgba(17, 24, 39, 0.08), 0 10px 10px -5px rgba(17, 24, 39, 0.04);
   }
   
-  .input-modern {
-    @apply bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3;
-    @apply text-neutral-800 placeholder-neutral-400;
-    @apply focus:outline-none focus:ring-2 focus:ring-agents-odin/20;
-    @apply focus:border-agents-odin/30 transition-all duration-200;
+  .input-professional {
+    @apply bg-white/60 border border-neutral-200/50 rounded-xl px-4 py-3;
+    @apply text-neutral-700 placeholder-neutral-400 font-medium;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500/20;
+    @apply focus:border-primary-500/40 focus:bg-white transition-all duration-200;
+    backdrop-filter: blur(10px);
   }
   
-  .btn-primary {
-    @apply bg-neutral-900 text-white font-medium py-3 px-8 rounded-xl;
+  .btn-professional {
+    @apply bg-neutral-900 text-white font-semibold py-3 px-6 rounded-xl;
     @apply transition-all duration-200 hover:bg-neutral-800;
-    @apply hover:shadow-lg hover:shadow-neutral-900/20;
-    @apply focus:outline-none focus:ring-2 focus:ring-neutral-900/20;
-    @apply hover:-translate-y-0.5;
+    @apply hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-neutral-900/20;
+    @apply hover:-translate-y-0.5 active:translate-y-0;
+    letter-spacing: -0.01em;
   }
   
-  .btn-secondary {
-    @apply bg-neutral-100 text-neutral-700 font-medium py-3 px-8 rounded-xl;
-    @apply border border-neutral-200 transition-all duration-200;
-    @apply hover:bg-neutral-200 hover:border-neutral-300;
-    @apply focus:outline-none focus:ring-2 focus:ring-neutral-900/10;
-    @apply hover:-translate-y-0.5;
+  .btn-professional:hover {
+    box-shadow: 0 10px 15px -3px rgba(17, 24, 39, 0.25), 0 4px 6px -2px rgba(17, 24, 39, 0.05);
   }
   
-  .subtle-pattern {
-    background-image: radial-gradient(circle at 1px 1px, rgba(163, 163, 163, 0.08) 1px, transparent 0);
-    background-size: 24px 24px;
+  .btn-secondary-professional {
+    @apply bg-white/80 text-neutral-700 font-semibold py-3 px-6 rounded-xl;
+    @apply border border-neutral-200/60 transition-all duration-200;
+    @apply hover:bg-neutral-50 hover:border-neutral-300/60;
+    @apply focus:outline-none focus:ring-2 focus:ring-neutral-400/20;
+    @apply hover:-translate-y-0.5 active:translate-y-0;
+    backdrop-filter: blur(10px);
+    letter-spacing: -0.01em;
   }
   
-  .floating-element {
-    @apply animate-float;
+  .text-professional {
+    @apply text-neutral-700 font-medium;
+    font-family: 'Source Sans 3', 'Myriad Pro', 'Myriad', sans-serif;
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+    font-feature-settings: 'liga' 1, 'kern' 1;
   }
   
-  .fade-in {
-    @apply animate-fade-in;
+  .text-professional-muted {
+    @apply text-neutral-500 font-medium;
+    font-family: 'Source Sans 3', 'Myriad Pro', 'Myriad', sans-serif;
+    letter-spacing: -0.005em;
+    line-height: 1.4;
+    font-feature-settings: 'liga' 1, 'kern' 1;
   }
   
-  .slide-up {
-    @apply animate-slide-up;
+  .heading-professional {
+    @apply text-neutral-900 font-semibold;
+    font-family: 'Nunito Sans', 'Myriad Pro', 'Myriad', sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+  }
+  
+  .heading-dynamic {
+    @apply text-neutral-900 font-bold;
+    font-family: 'Nunito Sans', 'Myriad Pro', 'Myriad', sans-serif;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    font-feature-settings: 'liga' 1, 'kern' 1;
+  }
+  
+  .surface-professional {
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(228, 228, 231, 0.4);
+  }
+  
+  .minimal-pattern {
+    background-image: radial-gradient(circle at 1px 1px, rgba(107, 114, 128, 0.04) 1px, transparent 0);
+    background-size: 32px 32px;
   }
 }

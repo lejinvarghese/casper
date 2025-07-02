@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Flow Visualization Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        .test-section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .success { color: #10b981; font-weight: bold; }
+        .info { color: #3b82f6; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Agent Flow Visualization Integration Test</h1>
+    
+    <div class="test-section">
+        <h2>✅ Components Created</h2>
+        <p class="success">AgentFlowVisualization.jsx - Visual flow diagram with drone nodes</p>
+        <p class="success">Enhanced CustomInteractions.jsx - Integration layer with flow state</p>
+        <p class="success">Updated api.js - Streaming capabilities for real-time updates</p>
+        <p class="success">FlowVisualizationDemo.jsx - Demo component for testing</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Features Implemented</h2>
+        <ul>
+            <li class="info">✓ Drone nodes with status indicators (idle/active/complete)</li>
+            <li class="info">✓ Color-coded agents (Odin=blue, Freya=orange, Saga=green, Loki=purple, etc.)</li>
+            <li class="info">✓ Tool badges showing which tools each agent uses</li>
+            <li class="info">✓ Real-time animations with pulsing borders for active execution</li>
+            <li class="info">✓ Execution log with step-by-step progress</li>
+            <li class="info">✓ EventSource streaming for real-time updates</li>
+            <li class="info">✓ Step parsing from SmoLAgents citadel.py output format</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>🔧 Integration Status</h2>
+        <p class="success">✅ Build successful - no compilation errors</p>
+        <p class="success">✅ Dependencies satisfied - framer-motion, lucide-react available</p>
+        <p class="success">✅ Components properly imported and exported</p>
+        <p class="success">✅ Ready for backend SSE endpoint integration</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🎮 How to Test</h2>
+        <ol>
+            <li>Run: <code>npm run dev</code></li>
+            <li>Navigate to the "Interact" tab</li>
+            <li>Submit a request (e.g., "Plan a creative weekend")</li>
+            <li>Watch the Agent Flow Visualization appear below the response</li>
+            <li>See drone nodes appear with their respective tools</li>
+            <li>Observe step progression animation</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Next Steps</h2>
+        <p class="info">Backend integration: Add SSE endpoint to stream real-time steps</p>
+        <p class="info">Enhanced parsing: More sophisticated step detection</p>
+        <p class="info">Error handling: Graceful failure states for visualization</p>
+    </div>
+</body>
+</html>

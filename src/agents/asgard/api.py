@@ -12,6 +12,7 @@ import uvicorn
 import os
 from dotenv import load_dotenv
 from src.agents.asgard.citadel import AsgardCitadel
+from src.agents.asgard.automation_orchestrator import AutomationOrchestrator
 
 
 load_dotenv()
@@ -35,10 +36,13 @@ class CitadelService:
 
     def __init__(self):
         self._citadel: Optional[AsgardCitadel] = None
+        self._automation_orchestrator: Optional[AutomationOrchestrator] = None
 
     def initialize(self, verbose: bool = False) -> None:
-        """Initialize the citadel"""
+        """Initialize the citadel and automation system"""
         self._citadel = AsgardCitadel(verbose=verbose)
+        self._automation_orchestrator = AutomationOrchestrator(self._citadel)
+        self._automation_orchestrator.start_background_automations()
 
     def get_citadel(self) -> AsgardCitadel:
         """Get the citadel instance"""
@@ -46,9 +50,19 @@ class CitadelService:
             raise HTTPException(status_code=500, detail="Citadel not initialized")
         return self._citadel
 
+    def get_automation_orchestrator(self) -> AutomationOrchestrator:
+        """Get the automation orchestrator instance"""
+        if self._automation_orchestrator is None:
+            raise HTTPException(status_code=500, detail="Automation system not initialized")
+        return self._automation_orchestrator
+
     def reconfigure(self, verbose: bool = False) -> None:
         """Reconfigure the citadel"""
+        if self._automation_orchestrator:
+            self._automation_orchestrator.stop_background_automations()
         self._citadel = AsgardCitadel(verbose=verbose)
+        self._automation_orchestrator = AutomationOrchestrator(self._citadel)
+        self._automation_orchestrator.start_background_automations()
 
 
 # Service instance
@@ -157,6 +171,70 @@ async def health_check(service: CitadelService = Depends(get_citadel_service)):
         return {"status": "healthy", "citadel_ready": True}
     except HTTPException:
         return {"status": "healthy", "citadel_ready": False}
+
+
+@app.get("/automations/status")
+async def get_automation_status(service: CitadelService = Depends(get_citadel_service)):
+    """Get automation system status"""
+    try:
+        orchestrator = service.get_automation_orchestrator()
+        status = orchestrator.get_automation_status()
+        return {"success": True, **status}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/automations/recent")
+async def get_recent_automations(hours: int = 24, service: CitadelService = Depends(get_citadel_service)):
+    """Get recent automation executions"""
+    try:
+        orchestrator = service.get_automation_orchestrator()
+        recent = orchestrator.get_recent_automations(hours)
+        return {"success": True, "automations": recent}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/automations/{automation_id}/toggle")
+async def toggle_automation(automation_id: str, enabled: bool, service: CitadelService = Depends(get_citadel_service)):
+    """Enable or disable a specific automation"""
+    try:
+        orchestrator = service.get_automation_orchestrator()
+        result = orchestrator.toggle_automation(automation_id, enabled)
+        if result:
+            return {"success": True, "automation_id": automation_id, "enabled": enabled}
+        else:
+            raise HTTPException(status_code=404, detail="Automation not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/automations/{automation_id}/trigger")
+async def trigger_automation(automation_id: str, service: CitadelService = Depends(get_citadel_service)):
+    """Manually trigger an automation"""
+    try:
+        orchestrator = service.get_automation_orchestrator()
+        result = orchestrator.trigger_automation_now(automation_id)
+        if result:
+            return {"success": True, "result": result}
+        else:
+            raise HTTPException(status_code=404, detail="Automation not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/automations/{automation_id}")
+async def get_automation_details(automation_id: str, service: CitadelService = Depends(get_citadel_service)):
+    """Get details for a specific automation"""
+    try:
+        orchestrator = service.get_automation_orchestrator()
+        details = orchestrator.get_automation_details(automation_id)
+        if details:
+            return {"success": True, "automation": details}
+        else:
+            raise HTTPException(status_code=404, detail="Automation not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":

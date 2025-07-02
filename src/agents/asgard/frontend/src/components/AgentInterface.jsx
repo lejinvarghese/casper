@@ -26,10 +26,10 @@ const AgentInterface = ({ agents, selectedAgent, onAgentSelect }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="card p-6"
+        className="card-professional p-6"
       >
-        <h2 className="font-display text-xl font-semibold text-neutral-900 mb-6">
-          Drone Swarm
+        <h2 className="heading-dynamic text-xl mb-6">
+          Drone Collective
         </h2>
         
         <div className="space-y-3">
@@ -45,40 +45,41 @@ const AgentInterface = ({ agents, selectedAgent, onAgentSelect }) => {
                 className={`
                   w-full p-4 rounded-xl transition-all duration-300 border
                   ${isSelected 
-                    ? colorClass + ' shadow-md' 
-                    : 'bg-white border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
+                    ? 'bg-primary-50 border-primary-200 shadow-sm' 
+                    : 'bg-white/60 border-neutral-200/60 hover:border-neutral-300/60 hover:bg-white'
                   }
                 `}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.01, y: -1 }}
+                whileTap={{ scale: 0.99 }}
                 layout
+                style={{ backdropFilter: 'blur(10px)' }}
               >
                 <div className="flex items-center space-x-4">
                   <div className={`
                     p-3 rounded-xl transition-all duration-200 relative
                     ${isSelected 
-                      ? 'bg-white/80 shadow-sm' 
-                      : 'bg-neutral-100'
+                      ? 'bg-white shadow-sm' 
+                      : 'bg-neutral-100/60'
                     }
                   `}>
                     <IconComponent className={`w-5 h-5 ${
                       isSelected 
-                        ? colorClass.split(' ')[0] 
+                        ? 'text-primary-600' 
                         : 'text-neutral-600'
                     }`} />
                     {isSelected && (
-                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent-500 rounded-full animate-pulse border-2 border-white"></div>
                     )}
                   </div>
                   <div className="text-left flex-1 relative group">
-                    <div className={`font-medium capitalize ${
+                    <div className={`font-semibold capitalize ${
                       isSelected ? 'text-neutral-900' : 'text-neutral-700'
-                    }`}>
+                    }`} style={{ letterSpacing: '-0.01em' }}>
                       {key}
                     </div>
-                    <div className={`text-sm ${
+                    <div className={`text-sm font-medium ${
                       isSelected ? 'text-neutral-600' : 'text-neutral-500'
-                    } break-words leading-tight`}>
+                    } break-words leading-tight`} style={{ letterSpacing: '-0.005em' }}>
                       {description}
                     </div>
                     

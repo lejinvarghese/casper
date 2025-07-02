@@ -1,0 +1,8 @@
+{
+  "sample_response": {
+    "success": true,
+    "result": "I've deployed the drone swarm to plan your perfect Toronto day! Here's what each specialist contributed:\n\n**Morning Schedule**\n- Start with fresh Ontario peaches at St. Lawrence Market\n- Visit the ROM's new exhibition on ancient myths\n\n**Afternoon Activities** \n- Take photos at the Distillery District's cobblestone streets\n- Enjoy a patio lunch with seasonal ingredients\n\n**Evening Plans**\n- Watch sunset from CN Tower\n- Dinner at a rooftop restaurant with city views",
+    "drone_used": "odin commander",
+    "steps": "Step 1: ActionStep -> Drone: odin\nStep 2: ToolCallingStep -> Tool: get_current_time\nStep 3: ActionStep -> Drone: freya\nStep 4: ToolCallingStep -> Tool: get_search_tool\nStep 5: ActionStep -> Drone: saga\nStep 6: ToolCallingStep -> Tool: search_local_events\nStep 7: ActionStep -> Drone: loki\nStep 8: ToolCallingStep -> Tool: create_artwork\nStep 9: ActionStep -> Drone: mimir\nStep 10: FinalStep -> Complete mission synthesis"
+  }
+}

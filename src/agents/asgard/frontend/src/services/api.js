@@ -27,6 +27,41 @@ export const apiService = {
     return response.data
   },
 
+  streamAgentExecution(requestData, onStep, onComplete, onError) {
+    const eventSource = new EventSource(`${API_BASE_URL}/stream-request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        request: requestData.request,
+        drone: requestData.agent,
+        verbose: true
+      })
+    })
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+        if (data.type === 'step') {
+          onStep(data.step)
+        } else if (data.type === 'complete') {
+          onComplete(data.result)
+          eventSource.close()
+        }
+      } catch (error) {
+        onError(error)
+      }
+    }
+
+    eventSource.onerror = (error) => {
+      onError(error)
+      eventSource.close()
+    }
+
+    return eventSource
+  },
+
   async configure(config) {
     const response = await api.post('/configure', config)
     return response.data
