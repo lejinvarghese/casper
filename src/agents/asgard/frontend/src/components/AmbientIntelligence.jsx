@@ -28,6 +28,7 @@ const AmbientIntelligence = ({ automationService }) => {
   const [recentAutomations, setRecentAutomations] = useState([])
   const [expanded, setExpanded] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [expandedAutomation, setExpandedAutomation] = useState(null)
 
   useEffect(() => {
     loadAutomationStatus()
@@ -44,6 +45,10 @@ const AmbientIntelligence = ({ automationService }) => {
       
       const recentData = await automationService.getRecent(24)
       console.log('Recent data received:', recentData)
+      console.log('Recent automations array:', recentData.automations)
+      if (recentData.automations && recentData.automations.length > 0) {
+        console.log('First automation details:', recentData.automations[0])
+      }
       setRecentAutomations(recentData.automations || [])
     } catch (error) {
       console.error('Failed to load automation status:', error)
@@ -126,7 +131,7 @@ const AmbientIntelligence = ({ automationService }) => {
               )}
             </div>
             <div>
-              <h3 className="heading-dynamic text-base">Neural Harmonics</h3>
+              <h3 className="heading-dynamic text-base">Harmonics</h3>
               <p className="text-professional-muted text-sm capitalize">
                 {status.context?.time_segment?.replace('_', ' ')} • {status.enabled_automations} active resonance
               </p>
@@ -197,50 +202,105 @@ const AmbientIntelligence = ({ automationService }) => {
         )}
       </AnimatePresence>
 
-      {/* Recent Activity */}
+      {/* Recent Activity - Expanded and Prominent */}
       {recentAutomations.length > 0 && (
         <motion.div
-          className="card p-4"
+          className="card p-6 border-blue-200/40 bg-gradient-to-br from-blue-50/30 to-indigo-50/20"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          <h4 className="font-medium text-neutral-900 mb-3 flex items-center space-x-2">
-            <CheckCircle className="w-4 h-4 text-green-500" />
+          <h4 className="font-semibold text-lg text-slate-800 mb-4 flex items-center space-x-2">
+            <CheckCircle className="w-5 h-5 text-slate-600" />
             <span>Recent Activity</span>
           </h4>
           
-          <div className="space-y-2 max-h-32 overflow-y-auto">
-            {recentAutomations.slice(0, 3).map((automation, index) => {
+          <div className="space-y-3">
+            {recentAutomations.slice(0, 5).map((automation, index) => {
               const DroneIcon = droneIcons[automation.drone] || Brain
               const timeAgo = new Date() - new Date(automation.executed_at)
               const hoursAgo = Math.floor(timeAgo / (1000 * 60 * 60))
               
               return (
-                <motion.div
-                  key={automation.automation_id}
-                  className="flex items-center space-x-3 p-2 hover:bg-neutral-50 rounded-lg transition-colors"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div className="p-1 bg-neutral-100 rounded">
-                    <DroneIcon className="w-3 h-3 text-neutral-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-neutral-800 truncate">
-                      {automation.automation_name}
-                    </p>
-                    <p className="text-xs text-neutral-500">
-                      {hoursAgo > 0 ? `${hoursAgo}h ago` : 'Recently'}
-                    </p>
-                  </div>
-                  {automation.success ? (
-                    <CheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
-                  ) : (
-                    <AlertCircle className="w-3 h-3 text-red-500 flex-shrink-0" />
-                  )}
-                </motion.div>
+                <div key={automation.automation_id}>
+                  <motion.div
+                    className={`border rounded-lg p-4 hover:shadow-sm transition-all cursor-pointer ${
+                      automation.success 
+                        ? 'border-blue-200 bg-gradient-to-br from-blue-50/50 to-white hover:from-blue-100/50' 
+                        : 'border-red-200 bg-gradient-to-br from-red-50/50 to-white hover:from-red-100/50'
+                    }`}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    onClick={() => setExpandedAutomation(
+                      expandedAutomation === automation.automation_id ? null : automation.automation_id
+                    )}
+                  >
+                    <div className="flex items-start space-x-3">
+                      <div className={`p-2 rounded-lg ${
+                        automation.success ? 'bg-blue-100' : 'bg-red-100'
+                      }`}>
+                        <DroneIcon className={`w-4 h-4 ${
+                          automation.success ? 'text-blue-600' : 'text-red-600'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className={`text-sm font-semibold ${
+                            automation.success ? 'text-blue-900' : 'text-red-900'
+                          }`}>
+                            {automation.automation_name}
+                          </p>
+                          <div className="flex items-center space-x-2">
+                            <p className="text-xs text-neutral-500">
+                              {hoursAgo > 0 ? `${hoursAgo}h ago` : 'Recently'}
+                            </p>
+                            {automation.success ? (
+                              <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                            ) : (
+                              <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                            )}
+                          </div>
+                        </div>
+                        {automation.result && (
+                          <p className={`text-sm leading-relaxed ${
+                            automation.success ? 'text-blue-800' : 'text-red-800'
+                          }`}>
+                            {typeof automation.result === 'string' ? automation.result.substring(0, 200) + (automation.result.length > 200 ? '...' : '') : 'Result available'}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                  
+                  {/* Expanded result view */}
+                  <AnimatePresence>
+                    {expandedAutomation === automation.automation_id && (
+                      <motion.div
+                        className={`mt-3 p-4 rounded-lg border ${
+                          automation.success 
+                            ? 'bg-indigo-50 border-indigo-300' 
+                            : 'bg-rose-50 border-rose-300'
+                        }`}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                      >
+                        <p className={`text-sm whitespace-pre-wrap max-h-48 overflow-y-auto leading-relaxed ${
+                          automation.success ? 'text-indigo-900' : 'text-rose-900'
+                        }`}>
+                          {automation.result || 'No result available'}
+                        </p>
+                        {automation.error && (
+                          <div className="mt-3 p-3 bg-red-100 rounded border-l-4 border-red-300">
+                            <p className="text-sm font-medium text-red-800 mb-1">Error:</p>
+                            <p className="text-sm text-red-700">{automation.error}</p>
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               )
             })}
           </div>

@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Nunito+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,19 +6,20 @@
 
 @layer base {
   html {
-    font-family: 'Source Sans 3', 'Myriad Pro', 'Myriad', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-family: 'Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    letter-spacing: -0.005em;
+    letter-spacing: -0.008em;
   }
   
   .font-display {
-    font-family: 'Nunito Sans', 'Myriad Pro', 'Myriad', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', 'Arial', sans-serif !important;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    font-family: 'Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', -apple-system, BlinkMacSystemFont, 'Inter', sans-serif !important;
+    font-weight: 600;
+    letter-spacing: -0.035em;
     font-feature-settings: 'liga' 1, 'kern' 1;
     font-display: swap;
+    text-transform: none;
   }
   
   body {
@@ -82,32 +83,32 @@
   
   .text-professional {
     @apply text-neutral-700 font-medium;
-    font-family: 'Source Sans 3', 'Myriad Pro', 'Myriad', sans-serif;
-    letter-spacing: -0.01em;
+    font-family: 'Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', 'Inter', sans-serif;
+    letter-spacing: -0.012em;
     line-height: 1.5;
     font-feature-settings: 'liga' 1, 'kern' 1;
   }
   
   .text-professional-muted {
     @apply text-neutral-500 font-medium;
-    font-family: 'Source Sans 3', 'Myriad Pro', 'Myriad', sans-serif;
-    letter-spacing: -0.005em;
+    font-family: 'Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', 'Inter', sans-serif;
+    letter-spacing: -0.008em;
     line-height: 1.4;
     font-feature-settings: 'liga' 1, 'kern' 1;
   }
   
   .heading-professional {
     @apply text-neutral-900 font-semibold;
-    font-family: 'Nunito Sans', 'Myriad Pro', 'Myriad', sans-serif;
-    letter-spacing: -0.02em;
+    font-family: 'Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', 'Inter', sans-serif;
+    letter-spacing: -0.025em;
     line-height: 1.2;
     font-feature-settings: 'liga' 1, 'kern' 1;
   }
   
   .heading-dynamic {
     @apply text-neutral-900 font-bold;
-    font-family: 'Nunito Sans', 'Myriad Pro', 'Myriad', sans-serif;
-    letter-spacing: -0.025em;
+    font-family: 'Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', 'Inter', sans-serif;
+    letter-spacing: -0.03em;
     line-height: 1.1;
     font-feature-settings: 'liga' 1, 'kern' 1;
   }

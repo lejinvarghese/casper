@@ -164,16 +164,19 @@ export default function AgentFlowVisualization({ isStreaming, steps = [], curren
 
   useEffect(() => {
     if (steps.length > 0) {
+      console.log('🎯 AgentFlowVisualization received steps:', steps)
       const parsedSteps = steps.map((step, idx) => {
         const droneMatch = step.match(/Drone: (.+?)(?:\s|$)/)
         const toolMatch = step.match(/Tool: (.+?)(?:\s|$)/)
         
-        return {
+        const parsed = {
           id: idx,
           type: step.split(':')[1]?.split('->')[0]?.trim() || 'Action',
           drone: droneMatch ? droneMatch[1].trim() : null,
           tools: toolMatch ? toolMatch[1].split(',').map(t => t.trim()) : []
         }
+        console.log(`🎯 Parsed step ${idx}:`, step, '->', parsed)
+        return parsed
       })
       
       setExecutionLog(parsedSteps)

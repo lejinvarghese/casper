@@ -11,123 +11,76 @@ const droneIcons = {
   luci: Flame
 }
 
-const formatResponseText = (text) => {
-  if (!text) return []
+const renderMarkdown = (text) => {
+  if (!text) return ''
   
-  const lines = text.split('\n')
-  const formatted = []
+  let html = text
+    // Headers
+    .replace(/^### (.*$)/gim, '<h3 class="text-lg font-semibold text-slate-900 mt-6 mb-3">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 class="text-xl font-bold text-slate-900 mt-6 mb-4">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 class="text-2xl font-bold text-slate-900 mt-6 mb-4">$1</h1>')
+    
+    // Images - detect URLs that are images and render them
+    .replace(/(https?:\/\/[^\s]+\.(?:jpg|jpeg|png|gif|webp|svg))/gi, '<div class="my-6"><img src="$1" alt="Generated artwork" class="max-w-full h-auto rounded-lg shadow-lg border border-slate-200" loading="lazy" /></div>')
+    
+    // Artwork creation messages with URLs - handle various formats
+    .replace(/🎨 \[.*?\]\((https?:\/\/[^\)]+)\)/gi, '<div class="my-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200"><div class="flex items-center space-x-2 mb-3"><span class="text-2xl">🎨</span><span class="font-semibold text-slate-900">Artwork Created</span></div><img src="$1" alt="Generated artwork" class="max-w-full h-auto rounded-lg shadow-lg border border-slate-200" loading="lazy" /><div class="mt-3 text-sm text-slate-600"><a href="$1" target="_blank" rel="noopener noreferrer" class="text-purple-600 hover:text-purple-800 underline">View full size</a></div></div>')
+    .replace(/🎨 Artwork created: (https?:\/\/[^\s]+)/gi, '<div class="my-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200"><div class="flex items-center space-x-2 mb-3"><span class="text-2xl">🎨</span><span class="font-semibold text-slate-900">Artwork Created</span></div><img src="$1" alt="Generated artwork" class="max-w-full h-auto rounded-lg shadow-lg border border-slate-200" loading="lazy" /><div class="mt-3 text-sm text-slate-600"><a href="$1" target="_blank" rel="noopener noreferrer" class="text-purple-600 hover:text-purple-800 underline">View full size</a></div></div>')
+    
+    // Bold text
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900">$1</strong>')
+    .replace(/__(.*?)__/g, '<strong class="font-semibold text-slate-900">$1</strong>')
+    
+    // Italic text
+    .replace(/\*(.*?)\*/g, '<em class="italic text-slate-800">$1</em>')
+    .replace(/_(.*?)_/g, '<em class="italic text-slate-800">$1</em>')
+
+  // Handle lists properly
+  const lines = html.split('\n')
+  const processedLines = []
+  let inList = false
   
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim()
     
-    if (!line) {
-      formatted.push({ type: 'break' })
-      continue
-    }
-    
-    // Headers (lines with ###, ##, or all caps)
-    if (line.match(/^#{1,4}\s+/) || line.match(/^[A-Z\s]{3,}:?\s*$/)) {
-      formatted.push({
-        type: 'header',
-        content: line.replace(/^#+\s*/, ''),
-        level: (line.match(/^#+/) || [''])[0].length || 1
-      })
-    }
-    // Lists (lines starting with -, *, •, or numbers)
-    else if (line.match(/^[-*•]\s+/) || line.match(/^\d+\.\s+/)) {
-      formatted.push({
-        type: 'list-item',
-        content: line.replace(/^[-*•]\s+/, '').replace(/^\d+\.\s+/, ''),
-        isNumbered: line.match(/^\d+\./)
-      })
-    }
-    // Bold text (**text** or __text__)
-    else if (line.includes('**') || line.includes('__')) {
-      formatted.push({
-        type: 'text',
-        content: line,
-        hasBold: true
-      })
-    }
-    // Regular text
-    else {
-      formatted.push({
-        type: 'text',
-        content: line
-      })
+    if (line.match(/^[-*•]\s+/)) {
+      const content = line.replace(/^[-*•]\s+/, '')
+      if (!inList) {
+        processedLines.push('<ul class="list-disc list-inside space-y-2 mb-4 ml-4 text-slate-700">')
+        inList = true
+      }
+      processedLines.push(`<li class="leading-relaxed">${content}</li>`)
+    } else {
+      if (inList) {
+        processedLines.push('</ul>')
+        inList = false
+      }
+      if (line) {
+        processedLines.push(`<p class="mb-4 leading-relaxed text-slate-700">${line}</p>`)
+      } else {
+        processedLines.push('<div class="h-2"></div>')
+      }
     }
   }
   
-  return formatted
+  if (inList) {
+    processedLines.push('</ul>')
+  }
+  
+  return processedLines.join('')
 }
 
 const FormattedContent = ({ content }) => {
-  const formatted = formatResponseText(content)
+  const formattedHtml = renderMarkdown(content)
   
   return (
-    <div className="space-y-4">
-      {formatted.map((item, index) => {
-        switch (item.type) {
-          case 'header':
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={`
-                  ${item.level === 1 ? 'text-xl font-bold' : 'text-lg font-semibold'}
-                  text-slate-900 py-3 px-4 rounded-lg
-                  bg-gradient-to-r from-rose-50 to-orange-50 
-                  border-l-4 border-rose-300
-                  shadow-sm
-                `}
-              >
-                {item.content}
-              </motion.div>
-            )
-          
-          case 'list-item':
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="flex items-start space-x-3 py-2 px-4 rounded-lg bg-slate-50 border border-slate-200"
-              >
-                <span className="inline-block w-2 h-2 bg-rose-400 rounded-full mt-2.5 flex-shrink-0" />
-                <span className="text-slate-700 leading-relaxed">
-                  {item.content}
-                </span>
-              </motion.div>
-            )
-          
-          case 'text':
-            return (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.03 }}
-                className="text-slate-700 leading-relaxed px-2"
-                dangerouslySetInnerHTML={{
-                  __html: item.hasBold 
-                    ? item.content.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-slate-900 bg-yellow-100 px-1 rounded">$1</strong>')
-                        .replace(/__(.*?)__/g, '<strong class="font-semibold text-slate-900 bg-yellow-100 px-1 rounded">$1</strong>')
-                    : item.content
-                }}
-              />
-            )
-          
-          case 'break':
-            return <div key={index} className="h-3" />
-          
-          default:
-            return null
-        }
-      })}
-    </div>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="prose prose-slate max-w-none"
+      dangerouslySetInnerHTML={{ __html: formattedHtml }}
+    />
   )
 }
 

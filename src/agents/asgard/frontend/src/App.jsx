@@ -16,7 +16,7 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('interact')
   const [config, setConfig] = useState({
-    theme: 'citadel',
+    theme: 'asgard',
     verbose: false
   })
 
@@ -42,11 +42,14 @@ function App() {
         verbose: config.verbose
       })
       setResponse(result)
+      return result  // Return the result for CustomInteractions
     } catch (error) {
-      setResponse({ 
+      const errorResponse = { 
         success: false, 
         error: error.message || 'Request failed' 
-      })
+      }
+      setResponse(errorResponse)
+      return errorResponse  // Return error response
     } finally {
       setLoading(false)
     }
@@ -93,10 +96,10 @@ function App() {
               </motion.div>
               <div>
                 <h1 className="font-display text-3xl text-neutral-900 font-bold">
-                  Asgard Citadel
+                  Asgard
                 </h1>
                 <p className="text-professional-muted text-sm">
-                  Advanced Intelligence Platform
+                  Neural Command Center
                 </p>
               </div>
             </div>

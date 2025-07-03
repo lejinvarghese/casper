@@ -1,9 +1,11 @@
 """
-Asgard Citadel Tools - Specialized tools for drone operations
+Asgard Tools - Specialized tools for drone operations
 """
 
 import os
 import asyncio
+import sqlite3
+import json
 from datetime import datetime
 from smolagents import tool, Tool
 from tavily import TavilyClient
@@ -78,7 +80,25 @@ def create_artwork(prompt: str, style: str = "realistic", enhance: bool = True) 
             return "❌ Artwork creation failed: Missing API Key. Get one at https://my.runware.ai/signup"
 
         enhanced_prompt = f"{prompt}, {style} style, high quality, detailed"
-        images = asyncio.run(generate_image(prompt=enhanced_prompt, enhance=enhance, n_results=1))
+
+        # Create a new event loop for this thread to avoid conflict
+        import threading
+
+        def run_image_generation():
+            new_loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(new_loop)
+            try:
+                return new_loop.run_until_complete(generate_image(prompt=enhanced_prompt, enhance=enhance, n_results=1))
+            finally:
+                new_loop.close()
+
+        # Run in a separate thread to avoid event loop conflicts
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(run_image_generation)
+            images = future.result(timeout=60)  # 60 second timeout
+
         return f"🎨 Artwork created: {images[0].imageURL}" if images else "❌ Failed to create artwork"
     except Exception as e:
         return f"❌ Artwork creation failed: {str(e)}"
@@ -102,6 +122,121 @@ def search_local_events(location: str, activity_type: str = "any") -> str:
     return search_tool(f"local events {activity_type} {location} this weekend")
 
 
+@tool
+def schedule_automation(name: str, drone: str, prompt: str, schedule_time: str, notes: str = "") -> str:
+    """Schedule a new automation event for today
+
+    Args:
+        name: Name of the automation event
+        drone: Which drone to use (freya, saga, loki, mimir, luci)
+        prompt: The prompt/task for the drone to execute
+        schedule_time: Time to run in HH:MM format (e.g., "15:30")
+        notes: Optional notes about this automation
+    """
+    try:
+        # Get current date
+        date = datetime.now().strftime("%Y-%m-%d")
+
+        # Database path (same as temporal engine)
+        db_path = "asgard_schedule.db"
+
+        # Create unique ID
+        event_id = f"odin_{date}_{name.lower().replace(' ', '_')}"
+
+        # Connect to database
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        # Get day of week
+        day_name = datetime.now().strftime("%A").lower()
+
+        # Insert into scheduled_events
+        cursor.execute(
+            """
+            INSERT OR REPLACE INTO scheduled_events 
+            (id, name, drone, prompt, schedule_time, days, enabled, created_by, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+            (
+                event_id,
+                name,
+                drone,
+                prompt,
+                schedule_time,
+                json.dumps([day_name]),
+                True,
+                "odin",
+                datetime.now().isoformat(),
+            ),
+        )
+
+        # Insert into daily_plans
+        event_data = {"id": event_id, "name": name, "drone": drone, "prompt": prompt, "schedule_time": schedule_time}
+
+        cursor.execute(
+            """
+            INSERT OR REPLACE INTO daily_plans (date, events_json, created_by, notes)
+            VALUES (?, ?, ?, ?)
+        """,
+            (date, json.dumps([event_data]), "odin", notes),
+        )
+
+        conn.commit()
+        conn.close()
+
+        return f"✅ Scheduled '{name}' for {schedule_time} today using {drone} drone. Event ID: {event_id}"
+
+    except Exception as e:
+        return f"❌ Failed to schedule automation: {str(e)}"
+
+
+@tool
+def list_todays_automations() -> str:
+    """List all automations scheduled for today"""
+    try:
+        date = datetime.now().strftime("%Y-%m-%d")
+        db_path = "asgard_schedule.db"
+
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        # Get today's scheduled events
+        cursor.execute(
+            """
+            SELECT name, drone, schedule_time, created_by 
+            FROM scheduled_events 
+            WHERE enabled = 1 AND (
+                days LIKE '%daily%' OR 
+                days LIKE ? OR
+                id LIKE ?
+            )
+            ORDER BY schedule_time
+        """,
+            (f'%{datetime.now().strftime("%A").lower()}%', f"%{date}%"),
+        )
+
+        events = cursor.fetchall()
+        conn.close()
+
+        if not events:
+            return "No automations scheduled for today."
+
+        result = "📅 Today's Scheduled Automations:\n\n"
+        for event in events:
+            name, drone, time, creator = event
+            result += f"• {time} - {name} ({drone}) [by {creator}]\n"
+
+        return result
+
+    except Exception as e:
+        return f"❌ Failed to list automations: {str(e)}"
+
+
 def get_search_tool():
     """Returns the configured search tool for all agents"""
     return TavilySearchTool()
+
+
+def get_automation_tools():
+    """Returns automation scheduling tools for Odin"""
+    return [schedule_automation, list_todays_automations]

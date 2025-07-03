@@ -1,6 +1,6 @@
-# ⚡ Asgard Citadel
+# ⚡ Asgard
 
-A citadel of with an AI drone swarm dwelling together and led by Odin himself, alive and collaborating to help with daily planning, creative projects, and life management.
+Asgard with an AI drone swarm dwelling together and led by Odin himself, alive and collaborating to help with daily planning, creative projects, and life management.
 
 ## 🤖 Meet Your Drone Swarm
 
@@ -173,16 +173,16 @@ You can bypass Odin and go directly to any specialized drone:
 
 ### Integration Examples
 ```python
-from src.agents.asgard.citadel import AsgardCitadel
+from src.agents.asgard.citadel import Asgard
 
-# Create citadel
-citadel = AsgardCitadel(verbose=True)
+# Create Asgard
+asgard = Asgard(verbose=True)
 
 # Full day planning (Odin orchestrates drone swarm)
-day_plan = citadel.serve("Plan my whole day")
+day_plan = asgard.serve("Plan my whole day")
 
 # Direct drone access
-dinner_plan = citadel.direct_drone("freya", "Plan dinner for 4 people")
+dinner_plan = asgard.direct_drone("freya", "Plan dinner for 4 people")
 ```
 
 ## 🐛 Troubleshooting
@@ -258,7 +258,7 @@ The web interface runs on `http://localhost:3000`
 
 ### Web Interface Features
 
-- **🎨 Modern Citadel UI** - Sleek, neural-themed interface with smooth animations
+- **🎨 Modern Asgard UI** - Sleek interface with smooth animations
 - **⚡ Interactive Agent Cards** - Visual selection of specialized drones
 - **📝 Smart Request Panel** - Quick commands and custom requests
 - **🔄 Real-time Processing** - Live feedback and step-by-step execution
@@ -270,8 +270,50 @@ The web interface runs on `http://localhost:3000`
 - `GET /agents` - List all available drones
 - `POST /request` - Submit requests to drone swarm
 - `GET /health` - System health check
-- `POST /configure` - Update citadel settings
+- `POST /configure` - Update Asgard settings
 
 ---
 
-*Welcome to Asgard Citadel! Your drone swarm awaits deployment.* ⚡🤖
+*Welcome to Asgard! Your drone swarm awaits deployment.* ⚡🤖
+
+
+## 🤖 Asgard Automation System - Debug Commands
+
+### Quick Status Check
+```bash
+# System health and recent automations
+curl -s http://localhost:8000/health | python3 -m json.tool
+curl -s http://localhost:8000/automations/recent | python3 -m json.tool
+
+# Pretty-printed recent activity
+curl -s http://localhost:8000/automations/recent | python3 -c "
+import json, sys; data = json.load(sys.stdin)
+for i, a in enumerate(data['automations'][:3], 1):
+    print(f'{i}. {a[\"automation_name\"]} ({a[\"drone\"]}) - {\"✅\" if a[\"success\"] else \"❌\"}')"
+```
+
+### Debug & Testing
+```bash
+# Full system debug
+curl -s http://localhost:8000/debug/automations | python3 -m json.tool
+
+# Test automation
+curl -X POST http://localhost:8000/automations/test
+
+# Trigger specific automation
+curl -X POST http://localhost:8000/automations/morning_energy/trigger
+```
+
+### Custom Scheduling (Odin)
+```bash
+# Create custom daily plan
+curl -X POST http://localhost:8000/automations/custom-plan \
+  -H "Content-Type: application/json" \
+  -d '{
+    "date": "'$(date +%Y-%m-%d)'",
+    "events": [
+      {"id": "test", "name": "Test Event", "drone": "saga", 
+       "prompt": "Test automation", "schedule_time": "15:30"}
+    ]
+  }'
+``` 

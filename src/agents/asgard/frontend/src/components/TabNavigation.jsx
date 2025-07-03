@@ -4,7 +4,7 @@ import { MessageSquare, Sparkles, Settings } from 'lucide-react'
 
 const tabs = [
   { id: 'interact', label: 'Interact', icon: MessageSquare },
-  { id: 'ambient', label: 'Neural Harmonics', icon: Sparkles },
+  { id: 'ambient', label: 'Harmonics', icon: Sparkles },
 ]
 
 const TabNavigation = ({ activeTab, onTabChange }) => {

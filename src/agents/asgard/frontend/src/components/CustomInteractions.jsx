@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AgentInterface from './AgentInterface'
 import RequestPanel from './RequestPanel'
 import ResponseDisplay from './ResponseDisplay'
-import AgentFlowVisualization from './AgentFlowVisualization'
+import SimpleEventFlow from './SimpleEventFlow'
 
 const CustomInteractions = ({ 
   agents, 
@@ -26,14 +26,23 @@ const CustomInteractions = ({
       const result = await onSubmit(requestData)
       
       // Parse steps from response if available
+      console.log('🔍 Full result object:', result)
+      console.log('🔍 Result.steps exists?', !!result?.steps)
+      console.log('🔍 Result.steps value:', result?.steps)
+      
       if (result && result.steps) {
+        console.log('🔍 Raw steps from API:', result.steps)
         const steps = result.steps.split('\n').filter(step => step.trim())
+        console.log('🔍 Parsed steps array:', steps)
+        console.log('🔍 Number of steps:', steps.length)
         setFlowSteps(steps)
         
         // Simulate step progression for visualization
         steps.forEach((_, idx) => {
           setTimeout(() => setCurrentStep(idx + 1), (idx + 1) * 800)
         })
+      } else {
+        console.log('🔍 No steps found in result. Full result:', JSON.stringify(result, null, 2))
       }
       
       return result
@@ -99,8 +108,7 @@ const CustomInteractions = ({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <AgentFlowVisualization
-            isStreaming={isStreaming}
+          <SimpleEventFlow
             steps={flowSteps}
             currentStep={currentStep}
           />

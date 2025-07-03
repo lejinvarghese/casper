@@ -7,9 +7,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['Source Sans 3', 'Myriad Pro', 'Myriad', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
-        'display': ['Nunito Sans', 'Myriad Pro', 'Myriad', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
-        'heading': ['Nunito Sans', 'Source Sans 3', 'Myriad Pro', 'sans-serif'],
+        'sans': ['Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', '-apple-system', 'BlinkMacSystemFont', 'Inter', 'Segoe UI', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'],
+        'display': ['Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', '-apple-system', 'BlinkMacSystemFont', 'Inter', 'sans-serif'],
+        'heading': ['Avenir Next', 'Avenir', 'Myriad Pro', 'Myriad', 'Inter', 'sans-serif'],
       },
       colors: {
         neutral: {

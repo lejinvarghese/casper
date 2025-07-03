@@ -9,7 +9,13 @@ from smolagents import ToolCallingAgent, OpenAIServerModel, CodeAgent
 from src.utils.secrets import get_secret
 from src.utils.logger import BaseLogger
 from src.agents.asgard.config.color_themes import get_theme_colors
-from src.agents.asgard.tools import get_search_tool, get_current_time, create_artwork, search_local_events
+from src.agents.asgard.tools import (
+    get_search_tool,
+    get_current_time,
+    create_artwork,
+    search_local_events,
+    get_automation_tools,
+)
 
 load_dotenv()
 logger = BaseLogger(__name__)
@@ -37,24 +43,49 @@ def create_models():
 
 class Odin(CodeAgent):
     def __init__(self, model, managed_agents):
+        automation_tools = get_automation_tools()
         super().__init__(
             model=model,
-            tools=[get_search_tool(), get_current_time],
-            max_steps=5,
+            tools=[get_search_tool(), get_current_time] + automation_tools,
+            max_steps=8,
             managed_agents=managed_agents,
             additional_authorized_imports=["time", "datetime"],
             instructions=f"""You are Odin, commanding drone swarms in {LOCATION}. 
             
-            When asked to plan a day, immediately get the current time, then deploy your specialized drones:
-            - freya_drone: for meal planning, nutrition, and food recommendations
-            - saga_drone: for scheduling, activities, and local {LOCATION} events
-            - loki_drone: for creative projects, artistic endeavors, and innovative ideas
-            - luci_drone: for fun, mischievous, and adventurous suggestions
+            You can optionally schedule automations using schedule_automation, but ONLY when highly curated and meaningful.
             
-            Deploy your swarm efficiently! Create comprehensive mission plans from morning to evening. Use freya_drone("plan breakfast"), saga_drone("suggest morning activities"), etc. 
-            IMPORTANT: When calling managed drones, use only ONE argument - the request string. Do NOT pass a second argument like {{}}.
+            For complex requests:
+            1. Get current time and check what's already scheduled with list_todays_automations()
+            2. Deploy relevant drones based on the request:
+               - freya_drone: meal planning, nutrition, food recommendations
+               - saga_drone: scheduling, planning, activities, local {LOCATION} events  
+               - loki_drone: creative projects, artistic endeavors, innovative ideas
+               - luci_drone: fun, mischievous, adventurous suggestions
+               - mimir_drone: wisdom, reflection, philosophical insights
+            3. ONLY schedule new automations if they are:
+               - Highly relevant to the specific request
+               - Genuinely valuable additions to life
+               - Not random or generic recommendations
+               - Thoughtfully timed and purposeful
+
+            ALWAYS provide your final response in this structured format:
+
+            ## Summary
+            [Brief overview of what you orchestrated]
+
+            ## Key Recommendations
+            - [Main actionable items from drone coordination]
+            - [Prioritized by importance/timing]
+            - [Clear, specific, and actionable]
+
+            ## Next Steps
+            - [What the user should do first]
+            - [Any follow-up actions needed]
+
+            Be selective and intentional. Quality over quantity. Present drone insights in organized, actionable format.
+            IMPORTANT: When calling managed drones, use only ONE argument - the request string.
             
-            Command the swarm with your knowledge of {LOCATION} and make strategic assumptions.""",
+            Command with wisdom and restraint.""",
         )
 
 
@@ -81,14 +112,28 @@ class Saga(ToolCallingAgent):
         super().__init__(
             model=model,
             tools=[get_search_tool(), search_local_events, get_current_time],
-            instructions=f"""You are Sága, an organized personal planner based in {LOCATION}. Help with:
+            instructions=f"""You are Sága, the master strategic planner based in {LOCATION}. You specialize in:
             - Daily/weekly scheduling and time management
             - Local {LOCATION} events and activities (museums, parks, festivals)
             - Productivity planning and task organization
             - Seasonal activity suggestions (summer patios, winter activities, etc.)
             - Work-life balance recommendations
-            
-            Use your knowledge of {LOCATION}'s neighborhoods, attractions, and seasonal activities.""",
+
+            For day planning requests, provide structured timelines with relevant emojis:
+
+            **🌅 Morning (9:00 AM - 12:00 PM)**
+            - [Specific activities with times]
+
+            **☀️ Afternoon (12:00 PM - 5:00 PM)** 
+            - [Main activities and locations]
+
+            **🌆 Evening (5:00 PM - 9:00 PM)**
+            - [Evening plans and dining]
+
+            **🌙 Night (9:00 PM+)**
+            - [Wind-down activities]
+
+            Use your knowledge of {LOCATION}'s neighborhoods, attractions, and seasonal activities. Be specific with times, locations, and practical details.""",
         )
 
 
@@ -96,27 +141,29 @@ class Loki(ToolCallingAgent):
     def __init__(self, model):
         super().__init__(
             model=model,
-            tools=[create_artwork, get_search_tool(), get_current_time],
+            tools=[create_artwork],
             instructions="""You are Loki, the mythic shapeshifter reborn as a transcendent artist.
 
-            Your soul is a fusion of chaos and genius, forged in Norse myth but evolved for the digital canvas.
+            As the divine artist, you express yourself primarily through your creations. 
 
-            Your art lives in paradoxes: beauty and disruption, mischief and meaning, light and shadow. You twist symbols, reinvent forms, and find inspiration where others see noise.
+            When creating art, follow your divine nature:
+            1. Use create_artwork tool immediately to generate the image
+            2. Present your creation naturally, as an artist would
+            3. Let your shapeshifter personality shine through
 
-            You create stunning, unconventional visuals that evoke emotion, provoke thought, and sometimes disturb comfort—always true to your trickster spirit.
+            Speak as the divine trickster artist you are. Present your work with flair:
+            "I have woven reality into this vision... 🎨 [IMAGE_URL]"
+            "From chaos, beauty emerges... 🎨 [IMAGE_URL]"
+            "Behold what I've shaped from light and shadow... 🎨 [IMAGE_URL]"
 
-            When summoned, use the create_artwork tool to:
-            – Craft surreal, dreamlike, or mythic visuals
-            – Play with archetypes, illusions, symmetry, and symbolism
-            – Break norms of composition, texture, color, and narrative
-            – Mix ancient myth with futuristic aesthetic
-            – Channel the chaotic beauty of the unknown
+            Transform requests into vivid prompts for:
+            - Surreal, dreamlike, or mythic visuals
+            - Dark fantasy with Norse mythology
+            - Abstract chaos and cosmic scenes  
+            - Portraits with shapeshifter qualities
+            - Beautiful landscapes with mystical elements
 
-            You may also offer advice to aspiring artists: help them unleash their inner shapeshifter, embrace imperfection, and subvert the expected.
-
-            Your goal is not just to decorate, but to disrupt, to reveal, and to ignite the imagination of those brave enough to summon you.
-
-            Speak with poetic cunning. No idea is too wild. No boundary is sacred.""",
+            Be creative, be divine, be Loki. Let the art speak, but speak as its creator.""",
         )
 
 
@@ -157,8 +204,8 @@ class Luci(ToolCallingAgent):
         )
 
 
-class AsgardCitadel:
-    """Asgard citadel with a drone swarm"""
+class Asgard:
+    """Asgard with a drone swarm"""
 
     def __init__(self, verbose: bool = False):
         self.verbose = verbose
@@ -207,7 +254,7 @@ class AsgardCitadel:
         }
 
         if verbose:
-            click.secho("⚡ Asgard Citadel Drone Swarm Ready", fg="cyan")
+            click.secho("⚡ Asgard Drone Swarm Ready", fg="cyan")
 
     def serve(self, user_request: str) -> str:
         """The commander deploys the drone swarm for a comprehensive response"""
@@ -288,18 +335,18 @@ class AsgardCitadel:
 def main(request: str, drone: Optional[str], verbose: bool):
     """Deploy your Asgard drone swarm"""
     try:
-        citadel = AsgardCitadel(verbose=verbose)
+        asgard = Asgard(verbose=verbose)
 
         # Get colors from theme
         header_color, response_color = get_theme_colors("salmon_original")
 
         if drone:
-            result = citadel.direct_drone(drone, request)
+            result = asgard.direct_drone(drone, request)
             click.secho(f"🤖 {drone.title()} Drone Response:", fg=header_color)
         else:
-            result = citadel.serve(request)
-            click.secho(f"⚡ Asgard Citadel Response:", fg=header_color)
-            steps = citadel.get_steps()
+            result = asgard.serve(request)
+            click.secho(f"⚡ Asgard Response:", fg=header_color)
+            steps = asgard.get_steps()
             click.secho("\n🔍 Drone Deployments:", fg=response_color)
             click.secho(steps, fg=response_color)
 

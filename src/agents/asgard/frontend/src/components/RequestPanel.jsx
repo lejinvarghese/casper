@@ -30,8 +30,16 @@ const RequestPanel = ({ selectedAgent, onSubmit, onAgentSelect, loading }) => {
     
     onSubmit({
       request: request.trim(),
-      agent: selectedAgent
+      agent: selectedAgent === 'odin' ? null : selectedAgent
     })
+  }
+
+  const handleKeyDown = (e) => {
+    // Submit on Ctrl+Enter or Cmd+Enter
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault()
+      handleSubmit(e)
+    }
   }
 
   const handlePresetSelect = (preset) => {
@@ -44,7 +52,7 @@ const RequestPanel = ({ selectedAgent, onSubmit, onAgentSelect, loading }) => {
     // Also submit the request with the appropriate agent
     onSubmit({
       request: preset.text,
-      agent: preset.agent
+      agent: preset.agent === 'odin' ? null : preset.agent
     })
   }
 
@@ -61,7 +69,8 @@ const RequestPanel = ({ selectedAgent, onSubmit, onAgentSelect, loading }) => {
             <textarea
               value={request}
               onChange={(e) => setRequest(e.target.value)}
-              placeholder="What would you like assistance with today?"
+              onKeyDown={handleKeyDown}
+              placeholder="What would you like assistance with today? (Ctrl+Enter to submit)"
               className="w-full h-32 input-professional resize-none text-sm"
               rows={4}
             />

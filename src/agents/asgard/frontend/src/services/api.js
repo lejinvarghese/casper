@@ -22,8 +22,11 @@ export const apiService = {
       drone: requestData.agent,
       verbose: requestData.verbose || false
     }
-    console.log('Sending request to backend:', backendData) // Debug log
+    console.log('🚀 Sending request to backend:', backendData) // Debug log
     const response = await api.post('/request', backendData)
+    console.log('📥 Received response from backend:', response.data) // Debug log
+    console.log('📥 Steps in response:', response.data.steps) // Debug log
+    console.log('📥 Steps type:', typeof response.data.steps) // Debug log
     return response.data
   },
 

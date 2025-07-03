@@ -217,7 +217,7 @@ const AutomationDetails = ({ automationService }) => {
                                       automation.id?.includes('mimir') ? 'mimir' :
                                       automation.id?.includes('luci') ? 'luci' : 'odin']
           
-          const automationName = automation.id?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown'
+          const automationName = automation.id?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Unknown'
           
           return (
             <motion.div

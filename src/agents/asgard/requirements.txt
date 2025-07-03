@@ -11,3 +11,4 @@ tavily-python>=0.3.0
 duckduckgo-search>=7.0.2
 requests>=2.31.0
 aiohttp>=3.9.0
+schedule>=1.2.0
