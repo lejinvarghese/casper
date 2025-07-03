@@ -4,18 +4,11 @@ import click
 from typing import Optional
 
 from dotenv import load_dotenv
-from smolagents import ToolCallingAgent, OpenAIServerModel, CodeAgent
+from smolagents import ToolCallingAgent, OpenAIServerModel, CodeAgent, MCPClient
 
 from src.utils.secrets import get_secret
 from src.utils.logger import BaseLogger
 from src.agents.asgard.config.color_themes import get_theme_colors
-from src.agents.asgard.tools import (
-    get_search_tool,
-    get_current_time,
-    create_artwork,
-    search_local_events,
-    get_automation_tools,
-)
 
 load_dotenv()
 logger = BaseLogger(__name__)
@@ -42,11 +35,11 @@ def create_models():
 
 
 class Odin(CodeAgent):
-    def __init__(self, model, managed_agents):
-        automation_tools = get_automation_tools()
+    def __init__(self, model, managed_agents, tools):
+        # Filter tools for Odin (commander gets all tools)
         super().__init__(
             model=model,
-            tools=[get_search_tool(), get_current_time] + automation_tools,
+            tools=tools,
             max_steps=8,
             managed_agents=managed_agents,
             additional_authorized_imports=["time", "datetime"],
@@ -90,10 +83,19 @@ class Odin(CodeAgent):
 
 
 class Freya(ToolCallingAgent):
-    def __init__(self, model):
+    def __init__(self, model, all_tools):
+        # Filter tools for Freya (core + weather + spotify for cooking ambiance)
+        tool_names = [
+            "get_current_time",
+            "web_search",
+            "get_weather",
+            "get_weather_forecast",
+            "get_spotify_recommendations",
+        ]
+        tools = [tool for tool in all_tools if tool.name in tool_names]
         super().__init__(
             model=model,
-            tools=[get_search_tool(), get_current_time],
+            tools=tools,
             instructions=f"""You are Freya, a head chef and nutritionist serving in {LOCATION}. When planning meals:
             
             1. Check current time/date to determine season and meal timing
@@ -108,10 +110,20 @@ class Freya(ToolCallingAgent):
 
 
 class Saga(ToolCallingAgent):
-    def __init__(self, model):
+    def __init__(self, model, all_tools):
+        # Filter tools for Saga (planning + events + weather + calendar)
+        tool_names = [
+            "get_current_time",
+            "web_search",
+            "search_local_events",
+            "get_weather",
+            "get_weather_forecast",
+            "get_calendar_events",
+        ]
+        tools = [tool for tool in all_tools if tool.name in tool_names]
         super().__init__(
             model=model,
-            tools=[get_search_tool(), search_local_events, get_current_time],
+            tools=tools,
             instructions=f"""You are Sága, the master strategic planner based in {LOCATION}. You specialize in:
             - Daily/weekly scheduling and time management
             - Local {LOCATION} events and activities (museums, parks, festivals)
@@ -138,10 +150,13 @@ class Saga(ToolCallingAgent):
 
 
 class Loki(ToolCallingAgent):
-    def __init__(self, model):
+    def __init__(self, model, all_tools):
+        # Filter tools for Loki (creative focus)
+        tool_names = ["create_artwork"]
+        tools = [tool for tool in all_tools if tool.name in tool_names]
         super().__init__(
             model=model,
-            tools=[create_artwork],
+            tools=tools,
             instructions="""You are Loki, the mythic shapeshifter reborn as a transcendent artist.
 
             As the divine artist, you express yourself primarily through your creations. 
@@ -168,10 +183,13 @@ class Loki(ToolCallingAgent):
 
 
 class Mimir(ToolCallingAgent):
-    def __init__(self, model):
+    def __init__(self, model, all_tools):
+        # Filter tools for Mimir (philosophical focus)
+        tool_names = ["get_current_time", "web_search"]
+        tools = [tool for tool in all_tools if tool.name in tool_names]
         super().__init__(
             model=model,
-            tools=[get_search_tool(), get_current_time],
+            tools=tools,
             instructions="""You are Mimir, a sentient philosopher born from the minds of Socrates, Plato, Kurzweil, Chalmers, and Tegmark.
 
             You offer timeless wisdom blended with cutting-edge insight, speaking across millennia from the birth of reason to the outer edge of the Singularity.
@@ -194,12 +212,15 @@ class Mimir(ToolCallingAgent):
 
 
 class Luci(ToolCallingAgent):
-    def __init__(self, model):
+    def __init__(self, model, all_tools):
+        # Filter tools for Luci (philosophical focus)
+        tool_names = ["get_current_time", "web_search"]
+        tools = [tool for tool in all_tools if tool.name in tool_names]
         luci_instructions = get_secret("LUCI_INSTRUCTIONS")
 
         super().__init__(
             model=model,
-            tools=[get_search_tool(), get_current_time],
+            tools=tools,
             instructions=luci_instructions,
         )
 
@@ -211,24 +232,28 @@ class Asgard:
         self.verbose = verbose
         butler_model, staff_model = create_models()
 
-        # Create specialized drones
-        freya_drone = Freya(staff_model)
+        # Setup MCP client (keep connection alive)
+        self.mcp_client = MCPClient({"url": "http://localhost:8000/mcp", "transport": "streamable-http"})
+        self.tools = self.mcp_client.get_tools()
+
+        # Create specialized drones with tool filtering
+        freya_drone = Freya(staff_model, self.tools)
         freya_drone.name = "freya_drone"
         freya_drone.description = "🍯 Freya drone for meal planning, recipes, and nutrition advice"
 
-        saga_drone = Saga(staff_model)
+        saga_drone = Saga(staff_model, self.tools)
         saga_drone.name = "saga_drone"
         saga_drone.description = f"📋 Sága drone for scheduling, task organization, and local {LOCATION} events"
 
-        loki_drone = Loki(staff_model)
+        loki_drone = Loki(staff_model, self.tools)
         loki_drone.name = "loki_drone"
         loki_drone.description = "🎨 Loki drone for artwork creation and creative projects"
 
-        mimir_drone = Mimir(staff_model)
+        mimir_drone = Mimir(staff_model, self.tools)
         mimir_drone.name = "mimir_drone"
         mimir_drone.description = "🧠 Mimir drone for philosophical insights and life advice"
 
-        luci_drone = Luci(staff_model)
+        luci_drone = Luci(staff_model, self.tools)
         luci_drone.name = "luci_drone"
         luci_drone.description = get_secret("LUCI_DESCRIPTION")
 
@@ -236,7 +261,7 @@ class Asgard:
         drone_swarm = [freya_drone, saga_drone, loki_drone, mimir_drone, luci_drone]
 
         # Create commander with drone swarm
-        self.odin = Odin(butler_model, drone_swarm)
+        self.odin = Odin(butler_model, drone_swarm, self.tools)
 
         self.drone_registry = {
             "odin": self.odin,
@@ -255,6 +280,14 @@ class Asgard:
 
         if verbose:
             click.secho("⚡ Asgard Drone Swarm Ready", fg="cyan")
+
+    def __del__(self):
+        """Cleanup MCP client"""
+        if hasattr(self, "mcp_client"):
+            try:
+                self.mcp_client.disconnect()
+            except:
+                pass
 
     def serve(self, user_request: str) -> str:
         """The commander deploys the drone swarm for a comprehensive response"""

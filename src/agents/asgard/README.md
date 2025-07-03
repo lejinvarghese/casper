@@ -241,14 +241,31 @@ python3 -m src.agents.asgard.citadel --request "I'm considering a career change,
 
 You can interact with your drone swarm through a modern web interface:
 
-**Terminal 1 (Backend API Server):**
+#### Option 1: Automated Startup (Recommended)
 ```bash
 cd /media/starscream/wheeljack1/projects/casper/src/agents/asgard
-python3 -m src.agents.asgard.api
+./start_asgard.sh
 ```
-The API runs on `http://localhost:8000`
+This automatically starts:
+- **MCP Server**: `http://localhost:8000/mcp` (tools backend)
+- **API Server**: `http://localhost:8001` (REST API)
 
-**Terminal 2 (Frontend Interface):**
+#### Option 2: Manual Startup
+**Terminal 1 (MCP Tools Server):**
+```bash
+cd /media/starscream/wheeljack1/projects/casper/src/agents/asgard
+python3 mcp.py
+```
+The MCP server runs on `http://localhost:8000/mcp`
+
+**Terminal 2 (API Server):**
+```bash
+cd /media/starscream/wheeljack1/projects/casper/src/agents/asgard
+PORT=8001 python3 -m src.agents.asgard.api
+```
+The API server runs on `http://localhost:8001`
+
+**Terminal 3 (Frontend Interface):**
 ```bash
 cd /media/starscream/wheeljack1/projects/casper/src/agents/asgard/frontend
 npm install
@@ -265,12 +282,32 @@ The web interface runs on `http://localhost:3000`
 - **⚙️ Configuration Panel** - Theme selection and verbose mode settings
 - **📊 Response Display** - Formatted responses with copy functionality
 
+### Architecture Overview
+
+The Asgard system now uses a **modular MCP (Model Context Protocol) architecture**:
+
+- **MCP Server** (`mcp.py`): FastMCP server providing all tools (weather, spotify, calendar, etc.)
+- **API Server** (`api.py`): REST API that connects to MCP server and manages drone swarm  
+- **Frontend**: Web interface for user interaction
+
 ### Web API Endpoints
 
-- `GET /agents` - List all available drones
+- `GET /drones` - List all available drones
 - `POST /request` - Submit requests to drone swarm
 - `GET /health` - System health check
 - `POST /configure` - Update Asgard settings
+- `GET /automations/status` - Check automation system status
+
+### Available Tools via MCP
+
+The MCP server provides these tools to all drones:
+- **Weather**: `get_weather`, `get_weather_forecast`
+- **Music**: `get_spotify_recommendations` 
+- **Calendar**: `get_calendar_events` (placeholder)
+- **Search**: `web_search`, `search_local_events`
+- **Creative**: `create_artwork`
+- **Time**: `get_current_time`
+- **Automation**: `schedule_automation`, `list_todays_automations`
 
 ---
 

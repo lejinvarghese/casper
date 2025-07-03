@@ -8,7 +8,7 @@ import sqlite3
 import json
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Callable
-from src.agents.asgard.temporal_engine import TemporalEngine, ScheduledEvent
+from src.agents.asgard.automation.temporal_engine import TemporalEngine, ScheduledEvent
 from src.agents.asgard.citadel import Asgard
 from src.utils.logger import BaseLogger
 

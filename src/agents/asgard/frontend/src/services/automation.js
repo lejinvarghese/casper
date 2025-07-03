@@ -3,7 +3,7 @@
  * Handles API calls for the ambient intelligence system
  */
 
-const API_BASE = 'http://localhost:8000'
+const API_BASE = 'http://localhost:8001'
 
 class AutomationService {
   async getStatus() {

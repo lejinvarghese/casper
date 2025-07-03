@@ -12,7 +12,7 @@ import uvicorn
 import os
 from dotenv import load_dotenv
 from src.agents.asgard.citadel import Asgard
-from src.agents.asgard.automation_orchestrator import AutomationOrchestrator
+from src.agents.asgard.automation import AutomationOrchestrator
 
 
 load_dotenv()
@@ -278,7 +278,7 @@ async def test_automation_system(service: AsgardService = Depends(get_asgard_ser
         orchestrator = service.get_automation_orchestrator()
 
         # Create a test event
-        from src.agents.asgard.temporal_engine import ScheduledEvent
+        from src.agents.asgard.automation import ScheduledEvent
 
         test_event = ScheduledEvent(
             id="test_automation",
@@ -454,4 +454,5 @@ async def debug_steps(request_data: RequestModel, service: AsgardService = Depen
 
 
 if __name__ == "__main__":
-    uvicorn.run("src.agents.asgard.api:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run("src.agents.asgard.api:app", host="0.0.0.0", port=port, reload=True)

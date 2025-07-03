@@ -7,9 +7,8 @@ import schedule
 import sqlite3
 import json
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
-from pathlib import Path
 import threading
 import time
 from src.utils.logger import BaseLogger
