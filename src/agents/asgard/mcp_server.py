@@ -231,10 +231,42 @@ def create_artwork(prompt: str, style: str = "realistic", enhance: bool = True) 
         return f"❌ Artwork creation failed: {str(e)}"
 
 
+def _search_local_events_impl(location: str, activity_type: str = "any") -> str:
+    """Implementation for searching local events and activities"""
+    try:
+        from tavily import TavilyClient
+        
+        api_key = os.environ.get("TAVILY_API_KEY")
+        if not api_key:
+            return "❌ Tavily API key not found. Add TAVILY_API_KEY to your environment."
+
+        tavily_client = TavilyClient(api_key=api_key)
+        query = f"local events {activity_type} {location} this weekend"
+        response = tavily_client.search(query, max_results=5)
+
+        if not isinstance(response, dict) or "results" not in response:
+            return "No local events found."
+
+        results = response["results"]
+        if not results:
+            return "No local events found."
+
+        formatted_results = f"## Local Events: {activity_type} in {location}\n\n"
+        for result in results:
+            title = result.get("title", "No title")
+            url = result.get("url", "")
+            content = result.get("content", "No description")
+            formatted_results += f"**{title}**\n{content}\n{url}\n\n"
+
+        return formatted_results.strip()
+
+    except Exception as e:
+        return f"❌ Search for local events failed: {str(e)}"
+
 @mcp.tool()
 def search_local_events(location: str, activity_type: str = "any") -> str:
     """Search for local events and activities"""
-    return web_search(f"local events {activity_type} {location} this weekend")
+    return _search_local_events_impl(location, activity_type)
 
 
 @mcp.tool()
